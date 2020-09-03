@@ -18,7 +18,7 @@ export const listUserApi = () => {
 export const getUsersApi = (data) => {
   return new Promise((resolve, reject) => {
     return axios
-      .get("/users", { params: data })
+      .get("/api/users", { params: data })
       .then((res) => {
         resolve(res.data);
       })

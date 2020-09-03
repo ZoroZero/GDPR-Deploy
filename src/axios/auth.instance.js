@@ -1,14 +1,15 @@
 import axios from "axios";
+import { checkToken } from "utils/localstorage";
 
-const instance = axios.create({ baseURL: "http://localhost:5000/api" });
+const instance = axios.create({
+  baseURL: process.env.REACT_APP_SERVER_BASEURL,
+});
 
 instance.interceptors.request.use(
   (req) => {
-    if (instance.defaults.headers.common["Authorization"]) {
-      return req;
-    } else {
-      throw { message: "the token is not available" };
-    }
+    const token = checkToken();
+    instance.defaults.headers.common["Authorization"] = "Bearer " + token;
+    return req;
   },
   (error) => {
     return Promise.reject(error);
@@ -21,16 +22,5 @@ instance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export const setAuthToken = (token) => {
-  if (token) {
-    //applying token
-    //console.log(token);
-    instance.defaults.headers.common["Authorization"] = "Bearer " + token;
-  } else {
-    //deleting token
-    delete instance.defaults.headers.common["Authorization"];
-  }
-};
 
 export default instance;

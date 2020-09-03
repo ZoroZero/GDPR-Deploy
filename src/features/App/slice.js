@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { setCookie, deleteAllCookies } from "utils/cookies";
+import { setAccessToken, deleteAccessToken } from "utils/localstorage";
 import { loginApi } from "api/authentication";
 import { setAuthToken } from "axios/auth.instance";
 
@@ -39,7 +39,7 @@ export default slice.reducer;
 
 export const onLogout = () => (dispatch) => {
   dispatch(loading());
-  deleteAllCookies();
+  deleteAccessToken();
   dispatch(logout());
   dispatch(stopLoading());
 };
@@ -50,16 +50,19 @@ export const onLogin = (username, password) => (dispatch) => {
     return loginApi(username, password)
       .then((res) => {
         const { access_token } = res;
-        console.log(access_token);
-        setCookie("token", access_token);
-        setAuthToken(access_token);
+        // console.log(access_token);
+        setAccessToken(access_token);
+        // setAuthToken(access_token);
         dispatch(login({ access_token }));
-        dispatch(stopLoading());
+        // dispatch(stopLoading());
         resolve();
       })
       .catch((error) => {
-        dispatch(stopLoading());
+        // dispatch(stopLoading());
         reject(error);
+      })
+      .finally(() => {
+        dispatch(stopLoading());
       });
   });
 };

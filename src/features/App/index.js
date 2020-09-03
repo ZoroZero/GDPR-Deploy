@@ -6,7 +6,7 @@ import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 
 import "./index.scss";
 
-import { getCookie } from "utils/cookies";
+import { checkToken } from "utils/localstorage";
 import PropTypes from "prop-types";
 import LoginPage from "features/App/pages/Login";
 import NotFound from "components/NotFound";
@@ -45,7 +45,7 @@ function App(props) {
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
-    const tokenCookie = getCookie("token");
+    const tokenCookie = checkToken();
     if (tokenCookie) dispatch(login({ token: tokenCookie }));
   }, []);
 
@@ -53,7 +53,6 @@ function App(props) {
     dispatch(onLogout());
   };
   const toggle = () => setCollapsed(!collapsed);
-  console.log(token);
 
   return (
     <div className="app">

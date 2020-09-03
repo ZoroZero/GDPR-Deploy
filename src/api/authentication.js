@@ -1,10 +1,10 @@
-import axios from "axios";
+import axios from "axios/auth.instance";
 
 export const loginApi = (username, password) => {
   return new Promise((resolve, reject) => {
     return axios
       .post(
-        "http://localhost:5000/auth/login",
+        "/auth/login",
         {
           username: username,
           password: password,
