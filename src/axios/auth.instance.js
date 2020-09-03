@@ -1,11 +1,14 @@
 import axios from "axios";
 
-const instance = axios.create({ baseURL: "https://reqres.in/api" });
+const instance = axios.create({ baseURL: "http://localhost:5000/api" });
 
 instance.interceptors.request.use(
   (req) => {
-    if (axios.defaults.headers.common["Authorization"]) return req;
-    throw { message: "the token is not available" };
+    if (instance.defaults.headers.common["Authorization"]) {
+      return req;
+    } else {
+      throw { message: "the token is not available" };
+    }
   },
   (error) => {
     return Promise.reject(error);
@@ -15,22 +18,15 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (response) => response,
   (error) => {
-    const fallbackValue = [
-      {
-        userId: "Not authorized",
-        id: "aerw15311sq",
-        title: "Please try again",
-        completed: false,
-      },
-    ];
-    return Promise.reject(fallbackValue);
+    return Promise.reject(error);
   }
 );
 
 export const setAuthToken = (token) => {
   if (token) {
     //applying token
-    instance.defaults.headers.common["Authorization"] = token;
+    //console.log(token);
+    instance.defaults.headers.common["Authorization"] = "Bearer " + token;
   } else {
     //deleting token
     delete instance.defaults.headers.common["Authorization"];

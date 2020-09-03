@@ -20,13 +20,13 @@ function LoginPage(props) {
   const dispatch = useDispatch();
   const history = useHistory();
   const onFinish = (values) => {
-    dispatch(onLogin(values.email, values.password))
+    dispatch(onLogin(values.username, values.password))
       .then(() => {
         message.success("login successfully");
-        history.push("/");
+        history.push("/users");
       })
       .catch((error) => {
-        message.error(error[0].title);
+        // message.error(error[0].title);
         console.log(error);
       });
   };
@@ -46,17 +46,17 @@ function LoginPage(props) {
           onFinishFailed={onFinishFailed}
         >
           <Form.Item
-            label="Email"
-            name="email"
-            initialValue="eve.holt@reqres.in"
-            rules={[{ required: true, message: "Please input your email!" }]}
+            label="Username"
+            name="username"
+            initialValue="lwadhams1"
+            rules={[{ required: true, message: "Please input your username!" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             label="Password"
             name="password"
-            initialValue="cityslicka"
+            initialValue="dYtb2lAAFbVJ"
             rules={[{ required: true, message: "Please input your password!" }]}
           >
             <Input.Password />

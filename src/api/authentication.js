@@ -1,12 +1,16 @@
 import axios from "axios";
 
-export const loginApi = (email, password) => {
+export const loginApi = (username, password) => {
   return new Promise((resolve, reject) => {
     return axios
-      .post("https://reqres.in/api/login", {
-        email: email,
-        password: password,
-      })
+      .post(
+        "http://localhost:5000/auth/login",
+        {
+          username: username,
+          password: password,
+        },
+        { headers: { "Access-Control-Allow-Origin": "*" } }
+      )
       .then((res) => {
         resolve(res.data);
       })

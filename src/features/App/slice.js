@@ -19,7 +19,7 @@ const slice = createSlice({
   initialState,
   reducers: {
     login(state, action) {
-      state.token = action.payload.token;
+      state.token = action.payload.access_token;
     },
     logout(state, action) {
       state.token = null;
@@ -44,16 +44,16 @@ export const onLogout = () => (dispatch) => {
   dispatch(stopLoading());
 };
 
-export const onLogin = (email, password) => (dispatch) => {
+export const onLogin = (username, password) => (dispatch) => {
   return new Promise((resolve, reject) => {
     dispatch(loading());
-    return loginApi(email, password)
+    return loginApi(username, password)
       .then((res) => {
-        const { token } = res;
-        console.log(token);
-        setCookie("token", token);
-        setAuthToken(token);
-        dispatch(login({ token }));
+        const { access_token } = res;
+        console.log(access_token);
+        setCookie("token", access_token);
+        setAuthToken(access_token);
+        dispatch(login({ access_token }));
         dispatch(stopLoading());
         resolve();
       })

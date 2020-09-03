@@ -53,6 +53,7 @@ function App(props) {
     dispatch(onLogout());
   };
   const toggle = () => setCollapsed(!collapsed);
+  console.log(token);
 
   return (
     <div className="app">
