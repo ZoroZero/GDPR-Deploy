@@ -60,7 +60,7 @@ function App(props) {
         <BrowserRouter>
           <Layout>
             {loading && <Loading />}
-            {token && (
+            {token === null ? null : (
               <Sider
                 style={{ minHeight: "100vh" }}
                 trigger={null}
@@ -74,7 +74,7 @@ function App(props) {
               </Sider>
             )}
             <Layout className="site-layout">
-              {token && (
+              {token === null ? null : (
                 <Header
                   className="site-layout-background"
                   style={{ padding: 0 }}
