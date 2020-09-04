@@ -7,7 +7,9 @@ import App from "features/App";
 import "./index.scss";
 import * as serviceWorker from "./serviceWorker";
 import { configureAppStore } from "./store";
-
+require("dotenv").config();
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+console.log(BASE_URL);
 ReactDOM.render(
   <Provider store={configureAppStore()}>
     <HelmetProvider>
