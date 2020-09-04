@@ -43,7 +43,7 @@ function MainPage() {
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const [loading, setLoading] = useState(false);
-  const { startDate } = useSelector((state) => state.users);
+  const { startDate } = useSelector((state) => state.userManagement);
   useEffect(() => {
     fetch({ pagination });
   }, []);

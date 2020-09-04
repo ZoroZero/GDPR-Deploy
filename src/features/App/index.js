@@ -19,12 +19,12 @@ import { login, onLogout } from "./slice";
 const store = getStore();
 const { Header, Content, Sider } = Layout;
 
-const User = React.lazy(() =>
+const ManageUser = React.lazy(() =>
   import("features/ManageUser").then(async (module) => {
     const reducer = await import("features/ManageUser/slice").then(
       (slide) => slide.default
     );
-    store.injectReducer("users", reducer);
+    store.injectReducer("userManagement", reducer);
     return module;
   })
 );
@@ -35,6 +35,26 @@ const ManageRequest = React.lazy(() =>
       (slide) => slide.default
     );
     store.injectReducer("requestManagement", reducer);
+    return module;
+  })
+);
+
+const ManageServer = React.lazy(() =>
+  import("features/ManageServer").then(async (module) => {
+    const reducer = await import("features/ManageServer/slice").then(
+      (slide) => slide.default
+    );
+    store.injectReducer("serverManagement", reducer);
+    return module;
+  })
+);
+
+const ManageCustomer = React.lazy(() =>
+  import("features/ManageCustomer").then(async (module) => {
+    const reducer = await import("features/ManageCustomer/slice").then(
+      (slide) => slide.default
+    );
+    store.injectReducer("customerManagement", reducer);
     return module;
   })
 );
@@ -106,11 +126,22 @@ function App(props) {
               >
                 <Switch>
                   {/* <PrivateRoute path="/" component={User} /> */}
-                  <Redirect exact from="/" to="/users" />
-                  <PrivateRoute path="/users" component={User} />
+                  <Redirect exact from="/" to="/user-management" />
+                  <PrivateRoute
+                    path="/user-management"
+                    component={ManageUser}
+                  />
                   <PrivateRoute
                     path="/request-management"
                     component={ManageRequest}
+                  />
+                  <PrivateRoute
+                    path="/server-management"
+                    component={ManageServer}
+                  />
+                  <PrivateRoute
+                    path="/customer-management"
+                    component={ManageCustomer}
                   />
                   <Route exact path="/login" component={LoginPage} />
                   <Route component={NotFound} />

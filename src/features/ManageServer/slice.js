@@ -1,17 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export const initialState = {
-  startDate: null,
-  endDate: null,
+  blockIds: null,
 };
 
 const slice = createSlice({
-  name: "userManagement",
+  name: "serverManagement",
   initialState,
   reducers: {
     setFilter: (state, action) => {
-      state.startDate = action.payload.startDate;
-      state.endDate = action.payload.endDate;
+      state.blockIds = action.payload.blockIds;
     },
   },
 });

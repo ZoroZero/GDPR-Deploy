@@ -23,7 +23,7 @@ function LoginPage(props) {
     dispatch(onLogin(values.username, values.password))
       .then(() => {
         message.success("login successfully");
-        history.push("/users");
+        history.push("/user-management");
       })
       .catch((error) => {
         // message.error(error[0].title);
