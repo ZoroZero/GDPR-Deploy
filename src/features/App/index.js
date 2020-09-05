@@ -15,8 +15,10 @@ import MainMenu from "components/MainMenu";
 import Loading from "components/Loading";
 import { getStore } from "store";
 import { login, onLogout } from "./slice";
+import { Can } from "permission/can";
 
 const store = getStore();
+console.log(store.getState());
 const { Header, Content, Sider } = Layout;
 
 const ManageUser = React.lazy(() =>
@@ -127,6 +129,7 @@ function App(props) {
                 <Switch>
                   {/* <PrivateRoute path="/" component={User} /> */}
                   <Redirect exact from="/" to="/user-management" />
+
                   <PrivateRoute
                     path="/user-management"
                     component={ManageUser}

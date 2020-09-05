@@ -9,6 +9,7 @@ export const initialState = {
     exp: null,
     fullName: null,
     email: null,
+    role: null,
   },
   token: null,
   loading: false,
@@ -31,10 +32,13 @@ const slice = createSlice({
     stopLoading(state, action) {
       state.loading = false;
     },
+    setRole(state, action) {
+      state.userInfo.role = "dc-member";
+    },
   },
 });
 
-export const { login, logout, loading, stopLoading } = slice.actions;
+export const { login, logout, loading, stopLoading, setRole } = slice.actions;
 export default slice.reducer;
 
 export const onLogout = () => (dispatch) => {
@@ -54,6 +58,7 @@ export const onLogin = (username, password) => (dispatch) => {
         setAccessToken(access_token);
         // setAuthToken(access_token);
         dispatch(login({ access_token }));
+        dispatch(setRole());
         // dispatch(stopLoading());
         resolve();
       })
