@@ -18,8 +18,9 @@ export const listUserApi = () => {
 export const getUsersApi = (data) => {
   return new Promise((resolve, reject) => {
     return axios
-      .get("/api/users", { params: data })
+      .get("/api/users/list", { headers: data })
       .then((res) => {
+        // console.log(res.data);
         resolve(res.data);
       })
       .catch((error) => {
