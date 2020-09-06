@@ -14,7 +14,7 @@ function HomePage(props) {
           content="A very simple app for the internship program at NP"
         />
       </Helmet>
-      Home
+      Home welcome!!
     </div>
   );
 }

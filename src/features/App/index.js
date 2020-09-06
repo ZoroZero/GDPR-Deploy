@@ -3,19 +3,19 @@ import { BrowserRouter, Route, Switch, Link, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { Layout, Button } from "antd";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
-
 import "./index.scss";
-
 import { checkToken } from "utils/localstorage";
 import PropTypes from "prop-types";
 import LoginPage from "features/App/pages/Login";
+import HomePage from "features/App/pages/Home";
 import NotFound from "components/NotFound";
 import PrivateRoute from "components/PrivateRoute";
 import MainMenu from "components/MainMenu";
 import Loading from "components/Loading";
 import { getStore } from "store";
 import { login, onLogout } from "./slice";
-import { Can } from "permission/can";
+import { Can, AbilityContext } from "permission/can";
+import { useAbility } from "@casl/react";
 
 const store = getStore();
 console.log(store.getState());
@@ -65,11 +65,13 @@ function App(props) {
   const dispatch = useDispatch();
   const { token, loading } = useSelector((state) => state.app);
   const [collapsed, setCollapsed] = useState(false);
+  const ability = useAbility(AbilityContext);
 
   useEffect(() => {
     const tokenCookie = checkToken();
-    if (tokenCookie) dispatch(login({ token: tokenCookie }));
-  }, []);
+    const role = localStorage.getItem("role");
+    if (tokenCookie) dispatch(login({ token: tokenCookie, role: role }));
+  });
 
   const handleLogout = () => {
     dispatch(onLogout());
@@ -127,25 +129,31 @@ function App(props) {
                 }}
               >
                 <Switch>
-                  {/* <PrivateRoute path="/" component={User} /> */}
-                  <Redirect exact from="/" to="/user-management" />
-
-                  <PrivateRoute
-                    path="/user-management"
-                    component={ManageUser}
-                  />
-                  <PrivateRoute
-                    path="/request-management"
-                    component={ManageRequest}
-                  />
-                  <PrivateRoute
-                    path="/server-management"
-                    component={ManageServer}
-                  />
-                  <PrivateRoute
-                    path="/customer-management"
-                    component={ManageCustomer}
-                  />
+                  <PrivateRoute path="/" exact component={HomePage} />
+                  {ability.can("access", "manage-user") && (
+                    <PrivateRoute
+                      path="/user-management"
+                      component={ManageUser}
+                    />
+                  )}
+                  {ability.can("access", "manage-request") && (
+                    <PrivateRoute
+                      path="/request-management"
+                      component={ManageRequest}
+                    />
+                  )}
+                  {ability.can("access", "manage-server") && (
+                    <PrivateRoute
+                      path="/server-management"
+                      component={ManageServer}
+                    />
+                  )}
+                  {ability.can("access", "manage-customer") && (
+                    <PrivateRoute
+                      path="/customer-management"
+                      component={ManageCustomer}
+                    />
+                  )}
                   <Route exact path="/login" component={LoginPage} />
                   <Route component={NotFound} />
                 </Switch>

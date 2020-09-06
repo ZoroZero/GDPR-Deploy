@@ -15,7 +15,7 @@ const ability = new Ability([], { subjectName });
 let currentAuth;
 store.subscribe(() => {
   const prevAuth = currentAuth;
-  currentAuth = store.getState().app.userInfo;
+  currentAuth = store.getState().app.role;
   if (prevAuth !== currentAuth) {
     ability.update(defineRulesFor(currentAuth));
   }
@@ -23,16 +23,16 @@ store.subscribe(() => {
 
 function defineRulesFor(auth) {
   const { can, rules } = new AbilityBuilder();
-  if (auth.role === "admin") {
+  if (auth === "admin") {
     can("access", "manage-user");
     can("access", "manage-request");
     can("access", "manage-server");
     can("access", "manage-customer");
-  } else if (auth.role === "normal-user") {
-  } else if (auth.role === "dc-member") {
+  } else if (auth === "normal-user") {
+  } else if (auth === "dc-member") {
     can("access", "manage-request");
     can("access", "manage-server");
-  } else if (auth.role === "contact-point") {
+  } else if (auth === "contact-point") {
     can("access", "manage-customer");
   }
   return rules;

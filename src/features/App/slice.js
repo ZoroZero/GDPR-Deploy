@@ -1,9 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { setAccessToken, deleteAccessToken } from "utils/localstorage";
+import {
+  setAccessToken,
+  deleteAccessToken,
+  getLocalStorageItem,
+  setLocalStorageItem,
+  deleteAllLocalStorageItem,
+} from "utils/localstorage";
 import { loginApi } from "api/authentication";
 import { setAuthToken } from "axios/auth.instance";
 
-export const initialState = {
+const initialState = {
   userInfo: {
     accessToken: null,
     exp: null,
@@ -11,6 +17,7 @@ export const initialState = {
     email: null,
     role: null,
   },
+  role: null,
   token: null,
   loading: false,
 };
@@ -21,6 +28,7 @@ const slice = createSlice({
   reducers: {
     login(state, action) {
       state.token = action.payload.access_token;
+      state.role = action.payload.role;
     },
     logout(state, action) {
       state.token = null;
@@ -32,18 +40,15 @@ const slice = createSlice({
     stopLoading(state, action) {
       state.loading = false;
     },
-    setRole(state, action) {
-      state.userInfo.role = "dc-member";
-    },
   },
 });
 
-export const { login, logout, loading, stopLoading, setRole } = slice.actions;
+export const { login, logout, loading, stopLoading } = slice.actions;
 export default slice.reducer;
 
 export const onLogout = () => (dispatch) => {
   dispatch(loading());
-  deleteAccessToken();
+  deleteAllLocalStorageItem();
   dispatch(logout());
   dispatch(stopLoading());
 };
@@ -53,12 +58,11 @@ export const onLogin = (username, password) => (dispatch) => {
     dispatch(loading());
     return loginApi(username, password)
       .then((res) => {
-        const { access_token } = res;
-        // console.log(access_token);
+        const access_token = "adfjlawjif";
+        // const { access_token } = res;
+        dispatch(login({ access_token, role: "dc-member" }));
         setAccessToken(access_token);
-        // setAuthToken(access_token);
-        dispatch(login({ access_token }));
-        dispatch(setRole());
+        setLocalStorageItem("role", "dc-member");
         // dispatch(stopLoading());
         resolve();
       })
