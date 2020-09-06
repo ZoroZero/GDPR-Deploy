@@ -3,7 +3,7 @@ import React from "react";
 Resource.propTypes = {};
 
 function Resource() {
-  return <div>Resource</div>;
+  return <div>Requests</div>;
 }
 
 export default Resource;

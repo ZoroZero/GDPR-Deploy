@@ -14,11 +14,10 @@ import MainMenu from "components/MainMenu";
 import Loading from "components/Loading";
 import { getStore } from "store";
 import { login, onLogout } from "./slice";
-import { Can, AbilityContext } from "permission/can";
+import { AbilityContext } from "permission/can";
 import { useAbility } from "@casl/react";
 
 const store = getStore();
-console.log(store.getState());
 const { Header, Content, Sider } = Layout;
 
 const ManageUser = React.lazy(() =>
@@ -63,14 +62,14 @@ const ManageCustomer = React.lazy(() =>
 
 function App(props) {
   const dispatch = useDispatch();
-  const { token, loading } = useSelector((state) => state.app);
+  const { loading } = useSelector((state) => state.app);
   const [collapsed, setCollapsed] = useState(false);
   const ability = useAbility(AbilityContext);
 
   useEffect(() => {
-    const tokenCookie = checkToken();
+    const token = checkToken();
     const role = localStorage.getItem("role");
-    if (tokenCookie) dispatch(login({ token: tokenCookie, role: role }));
+    if (token) dispatch(login({ token: token, role: role }));
   });
 
   const handleLogout = () => {
@@ -81,95 +80,96 @@ function App(props) {
   return (
     <div className="app">
       <Suspense fallback={<div>Loading ...</div>}>
-        <BrowserRouter>
-          <Layout>
-            {loading && <Loading />}
-            {token === null ? null : (
-              <Sider
-                style={{ minHeight: "100vh" }}
-                trigger={null}
-                collapsible
-                collapsed={collapsed}
-              >
-                <Link to="/">
-                  <div className="logo" />
-                </Link>
-                <MainMenu />
-              </Sider>
-            )}
-            <Layout className="site-layout">
-              {token === null ? null : (
-                <Header
-                  className="site-layout-background"
-                  style={{ padding: 0 }}
-                >
-                  {React.createElement(
-                    collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
-                    {
-                      className: "trigger",
-                      onClick: toggle,
-                    }
-                  )}
-                  <Button
-                    onClick={handleLogout}
-                    style={{ float: "right", margin: 14 }}
-                    type="dashed"
-                    danger
-                  >
-                    Logout
-                  </Button>
-                </Header>
+        <Layout>
+          {loading && <Loading />}
+          <Sider
+            style={{ minHeight: "100vh" }}
+            trigger={null}
+            collapsible
+            collapsed={collapsed}
+          >
+            <Link to="/">
+              <div className="logo" />
+            </Link>
+            <MainMenu />
+          </Sider>
+          <Layout className="site-layout">
+            <Header className="site-layout-background" style={{ padding: 0 }}>
+              {React.createElement(
+                collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
+                {
+                  className: "trigger",
+                  onClick: toggle,
+                }
               )}
-              <Content
-                className="site-layout-background"
-                style={{
-                  margin: "24px 16px",
-                  padding: 24,
-                  minHeight: 280,
-                }}
+              <Button
+                onClick={handleLogout}
+                style={{ float: "right", margin: 14 }}
+                type="dashed"
+                danger
               >
-                <Switch>
-                  <PrivateRoute path="/" exact component={HomePage} />
-                  {ability.can("access", "manage-user") && (
-                    <PrivateRoute
-                      path="/user-management"
-                      component={ManageUser}
-                    />
-                  )}
-                  {ability.can("access", "manage-request") && (
-                    <PrivateRoute
-                      path="/request-management"
-                      component={ManageRequest}
-                    />
-                  )}
-                  {ability.can("access", "manage-server") && (
-                    <PrivateRoute
-                      path="/server-management"
-                      component={ManageServer}
-                    />
-                  )}
-                  {ability.can("access", "manage-customer") && (
-                    <PrivateRoute
-                      path="/customer-management"
-                      component={ManageCustomer}
-                    />
-                  )}
-                  <Route exact path="/login" component={LoginPage} />
-                  <Route component={NotFound} />
-                </Switch>
-              </Content>
-            </Layout>
+                Logout
+              </Button>
+            </Header>
+
+            <Content
+              className="site-layout-background"
+              style={{
+                margin: "24px 16px",
+                padding: 24,
+                minHeight: 280,
+              }}
+            >
+              <Switch>
+                {ability.can("access", "manage-user") && (
+                  <PrivateRoute
+                    path="/user-management"
+                    component={ManageUser}
+                  />
+                )}
+                {ability.can("access", "manage-request") && (
+                  <PrivateRoute
+                    path="/request-management"
+                    component={ManageRequest}
+                  />
+                )}
+                {ability.can("access", "manage-server") && (
+                  <PrivateRoute
+                    path="/server-management"
+                    component={ManageServer}
+                  />
+                )}
+                {ability.can("access", "manage-customer") && (
+                  <PrivateRoute
+                    path="/customer-management"
+                    component={ManageCustomer}
+                  />
+                )}
+                <PrivateRoute path="/" exact component={HomePage} />
+                <Route component={NotFound} />
+              </Switch>
+            </Content>
           </Layout>
-        </BrowserRouter>
+        </Layout>
       </Suspense>
     </div>
   );
 }
 
-LoginPage.propTypes = {
-  account: PropTypes.object,
-  emailMessages: PropTypes.object,
-  error: PropTypes.string,
-  idToken: PropTypes.string,
-};
-export default App;
+function Router(props) {
+  const { loading } = useSelector((state) => state.app);
+  return (
+    <Suspense fallback={<div>Loading ...</div>}>
+      {loading && <Loading />}
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/login" component={LoginPage} />
+          <PrivateRoute path="/" component={App} />
+          <Route component={NotFound} />
+        </Switch>
+      </BrowserRouter>
+    </Suspense>
+  );
+}
+
+export default Router;

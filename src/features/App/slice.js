@@ -1,13 +1,10 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import {
   setAccessToken,
-  deleteAccessToken,
-  getLocalStorageItem,
   setLocalStorageItem,
   deleteAllLocalStorageItem,
 } from "utils/localstorage";
 import { loginApi } from "api/authentication";
-import { setAuthToken } from "axios/auth.instance";
 
 const initialState = {
   userInfo: {
@@ -15,7 +12,6 @@ const initialState = {
     exp: null,
     fullName: null,
     email: null,
-    role: null,
   },
   role: null,
   token: null,
@@ -58,16 +54,13 @@ export const onLogin = (username, password) => (dispatch) => {
     dispatch(loading());
     return loginApi(username, password)
       .then((res) => {
-        const access_token = "adfjlawjif";
-        // const { access_token } = res;
-        dispatch(login({ access_token, role: "dc-member" }));
+        const { access_token, role } = res;
+        dispatch(login({ access_token, role }));
         setAccessToken(access_token);
-        setLocalStorageItem("role", "dc-member");
-        // dispatch(stopLoading());
+        setLocalStorageItem("role", role);
         resolve();
       })
       .catch((error) => {
-        // dispatch(stopLoading());
         reject(error);
       })
       .finally(() => {
