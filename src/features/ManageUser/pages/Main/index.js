@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Modal,Table, Space, Button, Input, Row, Col } from "antd";
-import { ExclamationCircleOutlined, AudioOutlined } from '@ant-design/icons';
+import { Modal, Table, Space, Button, Input, Row, Col } from "antd";
+import { ExclamationCircleOutlined, AudioOutlined } from "@ant-design/icons";
 import "./index.scss";
-import CreateUserModal from './CreateUserModal.js';
-import UpdateUserModal from './UpdateUserModal.js';
+import CreateUserModal from "../../../../components/ManageUser/CreateUserModal.js";
+import UpdateUserModal from "../../../../components/ManageUser/UpdateUserModal.js";
 import { getUsersApi } from "api/user";
 import { useSelector } from "react-redux";
 
@@ -12,13 +12,14 @@ const { confirm } = Modal;
 const { Search } = Input;
 function showPromiseConfirm() {
   confirm({
-    title: 'Do you want to delete these items?',
+    title: "Do you want to delete these items?",
     icon: <ExclamationCircleOutlined />,
-    content: 'When clicked the OK button, this dialog will be closed after 1 second',
+    content:
+      "When clicked the OK button, this dialog will be closed after 1 second",
     onOk() {
       return new Promise((resolve, reject) => {
         setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
-      }).catch(() => console.log('Oops errors!'));
+      }).catch(() => console.log("Oops errors!"));
     },
     onCancel() {},
   });
@@ -71,14 +72,16 @@ const columns = [
     dataIndex: "UpdatedDate",
   },
   {
-    title: 'Action',
-    key: 'action',
+    title: "Action",
+    key: "action",
     // sorter: true,
     render: () => (
       <Space size="middle">
         {/* <Button type="primary">Update</Button> */}
-        <UpdateUserModal/>
-    <Button type="primary" danger onClick={showPromiseConfirm}>Delete</Button>
+        <UpdateUserModal />
+        <Button type="primary" danger onClick={showPromiseConfirm}>
+          Delete
+        </Button>
         {/* <a className="ant-dropdown-link">
           More actions <DownOutlined />
         </a> */}
@@ -88,7 +91,6 @@ const columns = [
 ];
 
 function MainPage() {
-  
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 5 });
   const [loading, setLoading] = useState(false);
@@ -121,22 +123,28 @@ function MainPage() {
       // });
       setPagination({
         ...params.pagination,
-        total: res[0].TotalPage*5,
+        total: res[0].TotalPage * 5,
       });
     });
   };
- 
+
   return (
     <div>
       <Row>
-      <Col span={8}><CreateUserModal/></Col>
-      <Col span={8} offset={8}>
-      <Search placeholder="input search text" onSearch={value => console.log(value)} enterButton />
-      </Col>
-    </Row>
-      
-    <br />
-    <br />
+        <Col span={8}>
+          <CreateUserModal />
+        </Col>
+        <Col span={8} offset={8}>
+          <Search
+            placeholder="input search text"
+            onSearch={(value) => console.log(value)}
+            enterButton
+          />
+        </Col>
+      </Row>
+
+      <br />
+      <br />
       <Table
         columns={columns}
         rowKey={(record) => record.Id}

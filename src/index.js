@@ -9,7 +9,7 @@ import * as serviceWorker from "./serviceWorker";
 import { configureAppStore } from "./store";
 import { AbilityContext } from "permission/can";
 import ability from "permission/ability";
-
+require("dotenv").config();
 ReactDOM.render(
   <Provider store={configureAppStore()}>
     <HelmetProvider>
