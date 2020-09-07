@@ -187,7 +187,11 @@ function MainPage() {
         dataSource={data}
         pagination={false}
         loading={loading}
+<<<<<<< HEAD
       // onChange={handleTableChange}
+=======
+        // onChange={handleTableChange}
+>>>>>>> feature/feature_manage_user
       />
       <br />
       <Row>
