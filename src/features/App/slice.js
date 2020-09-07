@@ -1,15 +1,19 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { setAccessToken, deleteAccessToken } from "utils/localstorage";
+import { createSlice } from "@reduxjs/toolkit";
+import {
+  setAccessToken,
+  setLocalStorageItem,
+  deleteAllLocalStorageItem,
+} from "utils/localstorage";
 import { loginApi } from "api/authentication";
-import { setAuthToken } from "axios/auth.instance";
 
-export const initialState = {
+const initialState = {
   userInfo: {
     accessToken: null,
     exp: null,
     fullName: null,
     email: null,
   },
+  role: null,
   token: null,
   loading: false,
 };
@@ -20,6 +24,7 @@ const slice = createSlice({
   reducers: {
     login(state, action) {
       state.token = action.payload.access_token;
+      state.role = action.payload.role;
     },
     logout(state, action) {
       state.token = null;
@@ -39,7 +44,7 @@ export default slice.reducer;
 
 export const onLogout = () => (dispatch) => {
   dispatch(loading());
-  deleteAccessToken();
+  deleteAllLocalStorageItem();
   dispatch(logout());
   dispatch(stopLoading());
 };
@@ -49,16 +54,13 @@ export const onLogin = (username, password) => (dispatch) => {
     dispatch(loading());
     return loginApi(username, password)
       .then((res) => {
-        const { access_token } = res;
-        // console.log(access_token);
+        const { access_token, role } = res;
+        dispatch(login({ access_token, role }));
         setAccessToken(access_token);
-        // setAuthToken(access_token);
-        dispatch(login({ access_token }));
-        // dispatch(stopLoading());
+        setLocalStorageItem("role", role);
         resolve();
       })
       .catch((error) => {
-        // dispatch(stopLoading());
         reject(error);
       })
       .finally(() => {

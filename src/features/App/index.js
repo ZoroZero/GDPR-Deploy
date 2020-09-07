@@ -3,28 +3,29 @@ import { BrowserRouter, Route, Switch, Link, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { Layout, Button } from "antd";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
-
 import "./index.scss";
-
 import { checkToken } from "utils/localstorage";
 import PropTypes from "prop-types";
 import LoginPage from "features/App/pages/Login";
+import HomePage from "features/App/pages/Home";
 import NotFound from "components/NotFound";
 import PrivateRoute from "components/PrivateRoute";
 import MainMenu from "components/MainMenu";
 import Loading from "components/Loading";
 import { getStore } from "store";
 import { login, onLogout } from "./slice";
+import { AbilityContext } from "permission/can";
+import { useAbility } from "@casl/react";
 
 const store = getStore();
 const { Header, Content, Sider } = Layout;
 
-const User = React.lazy(() =>
+const ManageUser = React.lazy(() =>
   import("features/ManageUser").then(async (module) => {
     const reducer = await import("features/ManageUser/slice").then(
       (slide) => slide.default
     );
-    store.injectReducer("users", reducer);
+    store.injectReducer("userManagement", reducer);
     return module;
   })
 );
@@ -39,15 +40,37 @@ const ManageRequest = React.lazy(() =>
   })
 );
 
+const ManageServer = React.lazy(() =>
+  import("features/ManageServer").then(async (module) => {
+    const reducer = await import("features/ManageServer/slice").then(
+      (slide) => slide.default
+    );
+    store.injectReducer("serverManagement", reducer);
+    return module;
+  })
+);
+
+const ManageCustomer = React.lazy(() =>
+  import("features/ManageCustomer").then(async (module) => {
+    const reducer = await import("features/ManageCustomer/slice").then(
+      (slide) => slide.default
+    );
+    store.injectReducer("customerManagement", reducer);
+    return module;
+  })
+);
+
 function App(props) {
   const dispatch = useDispatch();
-  const { token, loading } = useSelector((state) => state.app);
+  const { loading } = useSelector((state) => state.app);
   const [collapsed, setCollapsed] = useState(false);
+  const ability = useAbility(AbilityContext);
 
   useEffect(() => {
-    const tokenCookie = checkToken();
-    if (tokenCookie) dispatch(login({ token: tokenCookie }));
-  }, []);
+    const token = checkToken();
+    const role = localStorage.getItem("role");
+    if (token) dispatch(login({ token: token, role: role }));
+  });
 
   const handleLogout = () => {
     dispatch(onLogout());
@@ -57,77 +80,96 @@ function App(props) {
   return (
     <div className="app">
       <Suspense fallback={<div>Loading ...</div>}>
-        <BrowserRouter>
-          <Layout>
-            {loading && <Loading />}
-            {token && (
-              <Sider
-                style={{ minHeight: "100vh" }}
-                trigger={null}
-                collapsible
-                collapsed={collapsed}
-              >
-                <Link to="/">
-                  <div className="logo" />
-                </Link>
-                <MainMenu />
-              </Sider>
-            )}
-            <Layout className="site-layout">
-              {token && (
-                <Header
-                  className="site-layout-background"
-                  style={{ padding: 0 }}
-                >
-                  {React.createElement(
-                    collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
-                    {
-                      className: "trigger",
-                      onClick: toggle,
-                    }
-                  )}
-                  <Button
-                    onClick={handleLogout}
-                    style={{ float: "right", margin: 14 }}
-                    type="dashed"
-                    danger
-                  >
-                    Logout
-                  </Button>
-                </Header>
+        <Layout>
+          {loading && <Loading />}
+          <Sider
+            style={{ minHeight: "100vh" }}
+            trigger={null}
+            collapsible
+            collapsed={collapsed}
+          >
+            <Link to="/">
+              <div className="logo" />
+            </Link>
+            <MainMenu />
+          </Sider>
+          <Layout className="site-layout">
+            <Header className="site-layout-background" style={{ padding: 0 }}>
+              {React.createElement(
+                collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
+                {
+                  className: "trigger",
+                  onClick: toggle,
+                }
               )}
-              <Content
-                className="site-layout-background"
-                style={{
-                  margin: "24px 16px",
-                  padding: 24,
-                  minHeight: 280,
-                }}
+              <Button
+                onClick={handleLogout}
+                style={{ float: "right", margin: 14 }}
+                type="dashed"
+                danger
               >
-                <Switch>
-                  {/* <PrivateRoute path="/" component={User} /> */}
-                  <Redirect exact from="/" to="/users" />
-                  <PrivateRoute path="/users" component={User} />
+                Logout
+              </Button>
+            </Header>
+
+            <Content
+              className="site-layout-background"
+              style={{
+                margin: "24px 16px",
+                padding: 24,
+                minHeight: 280,
+              }}
+            >
+              <Switch>
+                {ability.can("access", "manage-user") && (
+                  <PrivateRoute
+                    path="/user-management"
+                    component={ManageUser}
+                  />
+                )}
+                {ability.can("access", "manage-request") && (
                   <PrivateRoute
                     path="/request-management"
                     component={ManageRequest}
                   />
-                  <Route exact path="/login" component={LoginPage} />
-                  <Route component={NotFound} />
-                </Switch>
-              </Content>
-            </Layout>
+                )}
+                {ability.can("access", "manage-server") && (
+                  <PrivateRoute
+                    path="/server-management"
+                    component={ManageServer}
+                  />
+                )}
+                {ability.can("access", "manage-customer") && (
+                  <PrivateRoute
+                    path="/customer-management"
+                    component={ManageCustomer}
+                  />
+                )}
+                <PrivateRoute path="/" exact component={HomePage} />
+                <Route component={NotFound} />
+              </Switch>
+            </Content>
           </Layout>
-        </BrowserRouter>
+        </Layout>
       </Suspense>
     </div>
   );
 }
 
-LoginPage.propTypes = {
-  account: PropTypes.object,
-  emailMessages: PropTypes.object,
-  error: PropTypes.string,
-  idToken: PropTypes.string,
-};
-export default App;
+function Router(props) {
+  const { loading } = useSelector((state) => state.app);
+  return (
+    <Suspense fallback={<div>Loading ...</div>}>
+      {loading && <Loading />}
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/login" component={LoginPage} />
+          <PrivateRoute path="/" component={App} />
+          <Route component={NotFound} />
+        </Switch>
+      </BrowserRouter>
+    </Suspense>
+  );
+}
+
+export default Router;
