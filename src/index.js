@@ -7,11 +7,15 @@ import App from "features/App";
 import "./index.scss";
 import * as serviceWorker from "./serviceWorker";
 import { configureAppStore } from "./store";
+import { AbilityContext } from "permission/can";
+import ability from "permission/ability";
 
 ReactDOM.render(
   <Provider store={configureAppStore()}>
     <HelmetProvider>
-      <App />
+      <AbilityContext.Provider value={ability}>
+        <App />
+      </AbilityContext.Provider>
     </HelmetProvider>
   </Provider>,
   document.getElementById("root")

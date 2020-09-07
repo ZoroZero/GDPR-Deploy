@@ -2,7 +2,7 @@ import axios from "axios";
 import { checkToken } from "utils/localstorage";
 
 const instance = axios.create({
-  baseURL: process.env.REACT_APP_SERVER_BASEURL,
+  baseURL: "http://localhost:5000",
 });
 
 instance.interceptors.request.use(
