@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Table, Space, Button, Input, Row, Col } from "antd";
+import {
+  Modal,
+  Table,
+  Space,
+  Button,
+  Input,
+  Row,
+  Col,
+  Pagination,
+  Tag,
+} from "antd";
 import { ExclamationCircleOutlined, AudioOutlined } from "@ant-design/icons";
 import "./index.scss";
 import CreateUserModal from "../../../../components/ManageUser/CreateUserModal.js";
@@ -10,6 +20,15 @@ import { useSelector } from "react-redux";
 MainPage.propTypes = {};
 const { confirm } = Modal;
 const { Search } = Input;
+function onShowSizeChange(current, pageSize) {
+  console.log(current, pageSize);
+}
+function onChange(pageNumber) {
+  console.log("Page: ", pageNumber);
+}
+function showTotal(total) {
+  return `Total ${total} items`;
+}
 function showPromiseConfirm() {
   confirm({
     title: "Do you want to delete these items?",
@@ -66,6 +85,22 @@ const columns = [
   {
     title: "IsActive",
     dataIndex: "IsActive",
+    key: "IsActive",
+    // render: (IsActive) => (
+    //   <>
+    //     {tags.map((tag) => {
+    //       let color = tag.length > 5 ? "geekblue" : "green";
+    //       if (tag === "loser") {
+    //         color = "volcano";
+    //       }
+    //       return (
+    //         <Tag color={color} key={tag}>
+    //           {tag.toUpperCase()}
+    //         </Tag>
+    //       );
+    //     })}
+    //   </>
+    // ),
   },
   {
     title: "UpdatedDate",
@@ -97,16 +132,17 @@ function MainPage() {
   const { startDate } = useSelector((state) => state.userManagement);
   useEffect(() => {
     fetch({ pagination });
+    // fetch();
   }, []);
 
-  const handleTableChange = (tablePagination, filters, sorter) => {
-    fetch({
-      sortField: sorter.field,
-      sortOrder: sorter.order,
-      pagination: tablePagination,
-      ...filters,
-    });
-  };
+  // const handleTableChange = (tablePagination, filters, sorter) => {
+  //   fetch({
+  //     sortField: sorter.field,
+  //     sortOrder: sorter.order,
+  //     pagination: tablePagination,
+  //     ...filters,
+  //   });
+  // };
 
   const fetch = (params = {}) => {
     setLoading(true);
@@ -121,10 +157,10 @@ function MainPage() {
       //   current: 2, pageSize: 5,
       //   total: res[0].TotalPage*5,
       // });
-      setPagination({
-        ...params.pagination,
-        total: res[0].TotalPage * 5,
-      });
+      // setPagination({
+      //   ...params.pagination,
+      //   total: res[0].TotalPage * 5,
+      // });
     });
   };
 
@@ -149,10 +185,23 @@ function MainPage() {
         columns={columns}
         rowKey={(record) => record.Id}
         dataSource={data}
-        pagination={pagination}
+        pagination={false}
         loading={loading}
-        onChange={handleTableChange}
+        // onChange={handleTableChange}
       />
+      <br />
+      <Row>
+        <Col span={12} offset={6}>
+          <Pagination
+            showQuickJumper
+            defaultCurrent={2}
+            total={500}
+            onChange={onChange}
+          />
+        </Col>
+      </Row>
+
+      <br />
     </div>
   );
 }
