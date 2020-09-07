@@ -45,8 +45,8 @@ function showPromiseConfirm() {
 }
 const getRandomuserParams = (params) => {
   return {
-    results: params.pagination.pageSize,
-    page: params.pagination.current,
+    pageSize: params.pagination.pageSize,
+    PageNo: params.pagination.current,
     ...params,
   };
 };
@@ -127,7 +127,7 @@ const columns = [
 
 function MainPage() {
   const [data, setData] = useState([]);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 5 });
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const [loading, setLoading] = useState(false);
   const { startDate } = useSelector((state) => state.userManagement);
   useEffect(() => {
@@ -146,7 +146,7 @@ function MainPage() {
 
   const fetch = (params = {}) => {
     setLoading(true);
-    return getUsersApi(getRandomuserParams(params)).then((res) => {
+    return getUsersApi({ PageNo: 1, PageSize: 10 }).then((res) => {
       setLoading(false);
       // setData(res.results);
       setData(res);
@@ -194,7 +194,7 @@ function MainPage() {
         <Col span={12} offset={6}>
           <Pagination
             showQuickJumper
-            defaultCurrent={2}
+            defaultCurrent={1}
             total={500}
             onChange={onChange}
           />
