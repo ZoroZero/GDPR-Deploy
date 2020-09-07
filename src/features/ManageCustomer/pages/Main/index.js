@@ -14,7 +14,7 @@ import { ExclamationCircleOutlined, AudioOutlined } from "@ant-design/icons";
 import "./index.scss";
 import CreateUserModal from "../../../../components/ManageUser/CreateUserModal.js";
 import UpdateUserModal from "../../../../components/ManageUser/UpdateUserModal.js";
-import { getUsersApi } from "api/user";
+import { getCustomerApi } from "api/customer";
 import { useSelector } from "react-redux";
 
 MainPage.propTypes = {};
@@ -53,40 +53,51 @@ const getRandomuserParams = (params) => {
 
 const columns = [
   {
-    title: "Id",
-    dataIndex: "Id",
-  },
-  {
-    title: "FirstName",
+    title: "Customer Name",
     dataIndex: "FirstName",
+    render: (text, record) => (
+      <p> {text} {record.LastName} </p>
+    )
+  },
+  // {
+  //   title: "Contact Point",
+  //   dataIndex: "ContactPointEmail",
+  //   render: (text) => (
+  //     <p> {text} </p>
+  //   )
+  //   // sorter: true,
+  //   // render: (name) => `${FirstName} ${LastName}`,
+  //   // width: "20%",
+  // },
+  {
+    title: "Contract Begin",
+    dataIndex: "ContractBeginDate",
     // sorter: true,
+
+    render: (text) => (
+      <p> {text} </p>
+    )
     // render: (name) => `${FirstName} ${LastName}`,
     // width: "20%",
   },
   {
-    title: "LastName",
-    dataIndex: "LastName",
-    // sorter: true,
-    // render: (name) => `${FirstName} ${LastName}`,
-    // width: "20%",
+    title: "Contract End",
+    dataIndex: "ContractEndDate",
+
+    render: (text) => (
+      <p> {text} </p>
+    )
   },
+
+
   {
-    title: "Email",
-    dataIndex: "Email",
-  },
-  {
-    title: "Username",
-    dataIndex: "UserName",
-  },
-  {
-    title: "Role",
-    dataIndex: "RoleName",
-  },
-  {
-    title: "IsActive",
+    title: "Status",
     dataIndex: "IsActive",
     key: "IsActive",
     // render: (IsActive) => (
+    render: (text) => (
+      <p> saov {text} </p>
+    )
     //   <>
     //     {tags.map((tag) => {
     //       let color = tag.length > 5 ? "geekblue" : "green";
@@ -129,7 +140,7 @@ function MainPage() {
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 5 });
   const [loading, setLoading] = useState(false);
-  const { startDate } = useSelector((state) => state.userManagement);
+  const { startDate } = useSelector((state) => state.customerManagement);
   useEffect(() => {
     fetch({ pagination });
     // fetch();
@@ -146,7 +157,7 @@ function MainPage() {
 
   const fetch = (params = {}) => {
     setLoading(true);
-    return getUsersApi(getRandomuserParams(params)).then((res) => {
+    return getCustomerApi(getRandomuserParams(params)).then((res) => {
       setLoading(false);
       // setData(res.results);
       setData(res);

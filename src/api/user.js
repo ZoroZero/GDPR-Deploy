@@ -1,4 +1,5 @@
 import axios from "axios/auth.instance";
+import { checkToken } from "utils/localstorage";
 
 export const listUserApi = () => {
   return new Promise((resolve, reject) => {
@@ -17,10 +18,11 @@ export const listUserApi = () => {
 
 export const getUsersApi = (data) => {
   return new Promise((resolve, reject) => {
+    const token = checkToken();
+    console.log("check token get userAPI", token)
     return axios
-      .get("/api/users/list", { headers: data })
+      .get("/api/users", { params: data })
       .then((res) => {
-        // console.log(res.data);
         resolve(res.data);
       })
       .catch((error) => {
