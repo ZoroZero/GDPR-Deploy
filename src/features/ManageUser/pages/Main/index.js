@@ -23,9 +23,7 @@ const { Search } = Input;
 function onShowSizeChange(current, pageSize) {
   console.log(current, pageSize);
 }
-function onChange(pageNumber) {
-  console.log("Page: ", pageNumber);
-}
+
 function showTotal(total) {
   return `Total ${total} items`;
 }
@@ -45,9 +43,17 @@ function showPromiseConfirm() {
 }
 const getRandomuserParams = (params) => {
   return {
-    pageSize: params.pagination.pageSize,
+    PageSize: params.pagination.pageSize,
     PageNo: params.pagination.current,
     ...params,
+  };
+};
+const getPageParams = (params) => {
+  return {
+    paginaion: {
+      pageSize: params.PageSize,
+      current: params.PageNo,
+    },
   };
 };
 
@@ -127,14 +133,19 @@ const columns = [
 
 function MainPage() {
   const [data, setData] = useState([]);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
+  const [total, setTotal] = useState([]);
+  const [pagination, setPagination] = useState({ PageNo: 1, PageSize: 7 });
   const [loading, setLoading] = useState(false);
   const { startDate } = useSelector((state) => state.userManagement);
   useEffect(() => {
-    fetch({ pagination });
+    fetch(pagination);
     // fetch();
   }, []);
-
+  function onChange(pageNumber) {
+    console.log("Page: ", pageNumber);
+    fetch({ PageNo: pageNumber, PageSize: 7 });
+    console.log(getPageParams({ PageNo: pageNumber, PageSize: 7 }));
+  }
   // const handleTableChange = (tablePagination, filters, sorter) => {
   //   fetch({
   //     sortField: sorter.field,
@@ -144,23 +155,25 @@ function MainPage() {
   //   });
   // };
 
-  const fetch = (params = {}) => {
+  const fetch = (params) => {
+    console.log("abc");
     setLoading(true);
-    return getUsersApi({ PageNo: 1, PageSize: 10 }).then((res) => {
+    return getUsersApi(params).then((res) => {
       setLoading(false);
       // setData(res.results);
       setData(res);
+      setTotal(res[0].TotalItem);
       // res.map()
       console.log(res);
-      console.log(res[0].TotalPage);
+      console.log(res[0].TotalItem);
       // setPagination({
       //   current: 2, pageSize: 5,
       //   total: res[0].TotalPage*5,
       // });
-      // setPagination({
-      //   ...params.pagination,
-      //   total: res[0].TotalPage * 5,
-      // });
+      setPagination({
+        ...params.pagination,
+        total: res[0].TotalPage * 5,
+      });
     });
   };
 
@@ -193,9 +206,10 @@ function MainPage() {
       <Row>
         <Col span={12} offset={6}>
           <Pagination
-            showQuickJumper
+            // showQuickJumper
             defaultCurrent={1}
-            total={500}
+            total={total}
+            defaultPageSize={7}
             onChange={onChange}
           />
         </Col>

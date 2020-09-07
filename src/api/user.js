@@ -18,10 +18,10 @@ export const listUserApi = () => {
 export const getUsersApi = (data) => {
   return new Promise((resolve, reject) => {
     return axios
-      .get("/api/users/list", { data })
+      .get("/api/users/list", { params: data })
       .then((res) => {
         // console.log(Request);
-        // console.log(res.data);
+        console.log(res.data);
         resolve(res.data);
       })
       .catch((error) => {
