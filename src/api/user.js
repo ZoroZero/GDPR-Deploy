@@ -48,7 +48,7 @@ export const deleteUsersApi = (data) => {
 export const insertUsersApi = (data) => {
   return new Promise((resolve, reject) => {
     return axios
-      .post("/api/users", { params: data })
+      .post("/api/users/insert", { ...data })
       .then((res) => {
         // console.log(Request);
         console.log(res.data);

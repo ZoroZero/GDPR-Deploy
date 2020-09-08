@@ -56,6 +56,7 @@ function MainPage() {
       onOk() {
         return new Promise((resolve, reject) => {
           deleteUsersApi(row.Id);
+          setTimeout(Math.random() > 0.5 ? resolve : reject, 2000);
           fetch({
             PageNo: PageNo,
             PageSize: PageSize,
@@ -63,7 +64,6 @@ function MainPage() {
             SortBy: SortBy,
             SortOrder: SortOrder,
           });
-          setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log("Oops errors!"));
       },
       onCancel() {},
