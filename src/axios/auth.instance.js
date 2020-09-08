@@ -8,7 +8,8 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (req) => {
     const token = checkToken();
-    instance.defaults.headers.common["Authorization"] = "Bearer " + token;
+    // console.log(token);
+    req.headers.Authorization = "Bearer " + token;
     return req;
   },
   (error) => {
