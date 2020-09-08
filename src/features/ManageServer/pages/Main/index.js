@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Table, Pagination, Input  } from "antd";
+import { Table, Pagination, Input, Button  } from "antd";
 import "./index.scss";
 import { getServersApi } from "api/server";
 import { useDispatch, useSelector } from "react-redux";
 import { setSort } from "features/ManageServer/slice";
-
+import AddEditServerModal from "components/ManageServer/AddEditServerModal"; 
 MainPage.propTypes = {};
 
 const pageSize = 10;
@@ -18,9 +18,10 @@ function MainPage() {
     const [total, setTotal ] = useState(0);
     const [page, setPage ] = useState(1);
     const [searchKeyword, setSearchKeyword] = useState('');    
+    const [modalVisible, setModalVisible] = useState(false);
     useEffect(() => {
         fetch(1, sortColumn, sortOrder, searchKeyword);
-    }, []);
+    }, [sortColumn, sortOrder, searchKeyword]);
 
     // Table columns
     const columns = [
@@ -33,33 +34,45 @@ function MainPage() {
         {
             title: "Ip address",
             dataIndex: "IpAddress",
-            width: "12%",
+            width: "10%",
             sorter: true,
         },
         {
             title: "Start Date",
             dataIndex: "StartDate",
-            width: "12%",
+            width: "10%",
             sorter: true,
         },
         {
             title: "End Date",
             dataIndex: "EndDate",
             sorter: true,
-            width: "12%",
+            width: "10%",
         },
         {
             title: "Status",
             dataIndex: "Status",
-            width: "12%",
+            width: "10%",
             sorter: true,
         },
         {
             title: "Owner",
             dataIndex: "OwnerName",
-            width: "12%",
+            width: "10%",
             sorter: true,
         },
+        {
+            title: 'Edit',
+            key: 'operation',
+            width: "10%",
+            render: () => <Button>Edit</Button>,
+          },
+          {
+            title: 'Delete',
+            key: 'operation',
+            width: "10%",
+            render: () => <Button>Delete</Button>,
+          }
     ];
     
     // Handle change in page number
@@ -106,13 +119,21 @@ function MainPage() {
         fetch(1, sortColumn, sortOrder, keyword)
     }
 
+
     return (
         <React.Fragment>
+            <Button type="primary" onClick={()=> setModalVisible(true)}>
+                Create new server
+            </Button>
+
+            <AddEditServerModal user={null} modalVisible={modalVisible} setModalVisible={setModalVisible}></AddEditServerModal>
+
+
             <Search className="search-bar"
-            placeholder="input search text"
-            enterButton="Search"
-            size="large"
-            onSearch={value => handleSearchServer(value)}
+                placeholder="input search text"
+                enterButton="Search"
+                size="large"
+                onSearch={value => handleSearchServer(value)}
             />
 
             <Table

@@ -35,3 +35,22 @@ export const getServersApi = (data) => {
       });
   });
 };
+
+
+export const createServerApi = (data) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .post(`/api/servers`, {
+          serverName: data.serverName,
+          ipAddress: data.ipAddress,
+          startDate: data.startDate,
+          endDate: data.endDate
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  }); 
+}
