@@ -8,6 +8,7 @@ export const initialState = {
   PageSize: 7,
   SortBy: "",
   SortOrder: 0,
+  Role: "",
 };
 
 const slice = createSlice({
@@ -33,6 +34,9 @@ const slice = createSlice({
     setSortOrder: (state, action) => {
       state.SortOrder = action.payload.Sortorder;
     },
+    setRole: (state, action) => {
+      state.Role = action.payload.Role;
+    },
   },
 });
 
@@ -43,5 +47,6 @@ export const {
   setPageSize,
   setSortBy,
   setSortOrder,
+  setRole,
 } = slice.actions;
 export default slice.reducer;

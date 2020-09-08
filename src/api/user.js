@@ -29,3 +29,33 @@ export const getUsersApi = (data) => {
       });
   });
 };
+
+export const deleteUsersApi = (data) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .delete("/api/users/" + data)
+      .then((res) => {
+        // console.log(Request);
+        console.log(res.data);
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export const insertUsersApi = (data) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .post("/api/users", { params: data })
+      .then((res) => {
+        // console.log(Request);
+        console.log(res.data);
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
