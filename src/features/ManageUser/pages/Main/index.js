@@ -129,6 +129,7 @@ function MainPage() {
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 5 });
   const [loading, setLoading] = useState(false);
+  const [total, setTotal] = useState()
   const { startDate } = useSelector((state) => state.userManagement);
   useEffect(() => {
     fetch({ pagination });
@@ -150,9 +151,13 @@ function MainPage() {
       setLoading(false);
       // setData(res.results);
       setData(res);
+
+      setTotal(res[0].total)
+      console.log(total)
       // res.map()
       console.log(res);
-      console.log(res[0].TotalPage);
+      console.log("total", res[0].total)
+
       // setPagination({
       //   current: 2, pageSize: 5,
       //   total: res[0].TotalPage*5,
@@ -186,6 +191,7 @@ function MainPage() {
         rowKey={(record) => record.Id}
         dataSource={data}
         pagination={false}
+
         loading={loading}
       // onChange={handleTableChange}
       />

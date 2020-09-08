@@ -7,8 +7,8 @@ import {
   Input,
   Row,
   Col,
-  Pagination,
   Tag,
+  Pagination,
 } from "antd";
 import { ExclamationCircleOutlined, AudioOutlined } from "@ant-design/icons";
 import "./index.scss";
@@ -23,12 +23,8 @@ const { Search } = Input;
 function onShowSizeChange(current, pageSize) {
   console.log(current, pageSize);
 }
-function onChange(pageNumber) {
-  console.log("Page: ", pageNumber);
-}
-function showTotal(total) {
-  return `Total ${total} items`;
-}
+
+
 function showPromiseConfirm() {
   confirm({
     title: "Do you want to delete these items?",
@@ -43,42 +39,48 @@ function showPromiseConfirm() {
     onCancel() { },
   });
 }
-const getRandomuserParams = (params) => {
-  return {
-    results: params.pagination.pageSize,
-    page: params.pagination.current,
-    ...params,
-  };
-};
+
 
 const columns = [
   {
     title: "Customer Name",
     dataIndex: "FirstName",
+    sortDirections: ['ascend', 'descend'],
+    key: "Name",
+    sorter: true,
     render: (text, record) => (
       <p> {text} {record.LastName} </p>
     )
   },
-  // {
-  //   title: "Contact Point",
-  //   dataIndex: "ContactPointEmail",
-  //   render: (text) => (
-  //     <p> {text} </p>
-  //   )
-  //   // sorter: true,
-  //   // render: (name) => `${FirstName} ${LastName}`,
-  //   // width: "20%",
-  // },
   {
-    title: "Contract Begin",
-    dataIndex: "ContractBeginDate",
-    // sorter: true,
 
+    title: "Contact Point",
+    dataIndex: "ContactPointEmail",
+
+    sortDirections: ['ascend', 'descend'],
+    key: "ContactPointEmail",
+    filters: [
+      {
+        text: 'Assigned',
+        value: true,
+      },
+      {
+        text: 'Null',
+        value: false,
+      }
+    ],
+    onFilter: (value, record) => value ? record.ContactPointEmail !== null : record.ContactPointEmail == null,
+    sorter: (a, b, sortOrder) => { return a.ContactPointEmail ? (b.ContactPointEmail ? (a.ContactPointEmail).localeCompare(b.ContactPointEmail) : -1) : 1 },
     render: (text) => (
       <p> {text} </p>
     )
-    // render: (name) => `${FirstName} ${LastName}`,
-    // width: "20%",
+  },
+  {
+    title: "Contract Begin",
+    dataIndex: "ContractBeginDate",
+    render: (text) => (
+      <p> {text} </p>
+    )
   },
   {
     title: "Contract End",
@@ -94,28 +96,18 @@ const columns = [
     title: "Status",
     dataIndex: "IsActive",
     key: "IsActive",
-    // render: (IsActive) => (
-    render: (text) => (
-      <p> saov {text} </p>
-    )
-    //   <>
-    //     {tags.map((tag) => {
-    //       let color = tag.length > 5 ? "geekblue" : "green";
-    //       if (tag === "loser") {
-    //         color = "volcano";
-    //       }
-    //       return (
-    //         <Tag color={color} key={tag}>
-    //           {tag.toUpperCase()}
-    //         </Tag>
-    //       );
-    //     })}
-    //   </>
-    // ),
-  },
-  {
-    title: "UpdatedDate",
-    dataIndex: "UpdatedDate",
+    filters: [
+      {
+        text: 'Active',
+        value: true,
+      },
+      {
+        text: 'Inactive',
+        value: false,
+      }
+    ],
+    onFilter: (value, record) => record.IsActive == value,
+    render: val => (val ? <Tag color="green">Active</Tag> : <Tag color="red">Inactive</Tag>)
   },
   {
     title: "Action",
@@ -134,36 +126,63 @@ const columns = [
       </Space>
     ),
   },
+  {
+
+    title: "Machines Owner",
+    dataIndex: "servers",
+    render: (text) => (
+      <Tag color="cyan"> Manage { text ? text : 0} </Tag>
+    )
+
+  },
 ];
 
 function MainPage() {
   const [data, setData] = useState([]);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 5 });
+  const [pagination, setPagination] = useState({ current: 1 });
   const [loading, setLoading] = useState(false);
-  const { startDate } = useSelector((state) => state.customerManagement);
+  const [total, setTotal] = useState();
+  // const [page]
   useEffect(() => {
     fetch({ pagination });
     // fetch();
   }, []);
 
-  // const handleTableChange = (tablePagination, filters, sorter) => {
-  //   fetch({
-  //     sortField: sorter.field,
-  //     sortOrder: sorter.order,
-  //     pagination: tablePagination,
-  //     ...filters,
-  //   });
-  // };
+  const handleTableChange = (tablePagination, filters, sorter) => {
+    console.log(sorter.column)
+    fetch({
+      sortField: sorter.columnKey,
+      sortOrder: sorter.order,
+      pagination: tablePagination,
+      ...filters,
+    });
+  };
+  function onChange(pageNumber) {
+    console.log("Page: ", pageNumber);
+    setPagination({ current: pageNumber });
+    return getCustomerApi({ pageSize: 10, pageNumber }).then((res) => {
+      console.log(pageNumber);
+      setLoading(false);
+      setData(res);
+      setTotal(res[0].total)
+      console.log(res[0])
+      console.log(res);
+      console.log(res[0].total);
+
+    });
+  }
 
   const fetch = (params = {}) => {
     setLoading(true);
-    return getCustomerApi(getRandomuserParams(params)).then((res) => {
+    return getCustomerApi({ pageSize: 10, pageNumber: pagination.current }).then((res) => {
       setLoading(false);
       // setData(res.results);
       setData(res);
       // res.map()
+      setTotal(res[0].total)
+      console.log(res[0])
       console.log(res);
-      console.log(res[0].TotalPage);
+      console.log(res[0].total);
       // setPagination({
       //   current: 2, pageSize: 5,
       //   total: res[0].TotalPage*5,
@@ -198,15 +217,16 @@ function MainPage() {
         dataSource={data}
         pagination={false}
         loading={loading}
-      // onChange={handleTableChange}
+        onChange={handleTableChange}
       />
       <br />
       <Row>
         <Col span={12} offset={6}>
           <Pagination
             showQuickJumper
-            defaultCurrent={2}
-            total={500}
+            defaultCurrent={1}
+            defaultPageSize={10}
+            total={total}
             onChange={onChange}
           />
         </Col>

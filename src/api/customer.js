@@ -21,7 +21,7 @@ export const getCustomerApi = (data) => {
         console.log("check token get userAPI", token)
         return axios
             .get(
-                String(process.env.REACT_APP_BASE_URL) + "/customers", { headers: data })
+                String(process.env.REACT_APP_BASE_URL) + "/customers", { params: data })
             .then((res) => {
                 // console.log(res.data);
                 resolve(res.data);
