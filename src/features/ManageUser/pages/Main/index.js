@@ -70,11 +70,11 @@ function MainPage() {
     });
   }
   const columns = [
-    {
-      title: "Id",
-      dataIndex: "Id",
-      sorter: true,
-    },
+    // {
+    //   title: "Id",
+    //   dataIndex: "Id",
+    //   sorter: true,
+    // },
     {
       title: "FirstName",
       dataIndex: "FirstName",
@@ -93,6 +93,11 @@ function MainPage() {
     {
       title: "Username",
       dataIndex: "UserName",
+      sorter: true,
+    },
+    {
+      title: "HashPasswd",
+      dataIndex: "HashPasswd",
       sorter: true,
     },
     {
@@ -126,7 +131,7 @@ function MainPage() {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <UpdateUserModal />
+          <UpdateUserModal record={record}/>
           <Button
             type="primary"
             danger
