@@ -9,7 +9,7 @@ instance.interceptors.request.use(
   (req) => {
     const token = checkToken();
     console.log("token", token);
-    instance.defaults.headers.common["Authorization"] = "Bearer " + token;
+    req.headers.Authorization = "Bearer " + token;
     return req;
   },
   (error) => {

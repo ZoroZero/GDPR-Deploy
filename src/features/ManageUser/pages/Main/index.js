@@ -15,18 +15,21 @@ import "./index.scss";
 import CreateUserModal from "../../../../components/ManageUser/CreateUserModal.js";
 import UpdateUserModal from "../../../../components/ManageUser/UpdateUserModal.js";
 import { getUsersApi } from "api/user";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { getStore } from "store";
+import {
+  setSearchKey,
+  setPageNo,
+  setPageSize,
+  setSortBy,
+  setSortOrder,
+} from "../../slice";
 
 MainPage.propTypes = {};
 const { confirm } = Modal;
 const { Search } = Input;
-function onShowSizeChange(current, pageSize) {
-  console.log(current, pageSize);
-}
+// const dispatch = useDispatch();
 
-function showTotal(total) {
-  return `Total ${total} items`;
-}
 function showPromiseConfirm() {
   confirm({
     title: "Do you want to delete these items?",
@@ -61,10 +64,12 @@ const columns = [
   {
     title: "Id",
     dataIndex: "Id",
+    sorter: true,
   },
   {
     title: "FirstName",
     dataIndex: "FirstName",
+    sorter: true,
     // sorter: true,
     // render: (name) => `${FirstName} ${LastName}`,
     // width: "20%",
@@ -72,6 +77,7 @@ const columns = [
   {
     title: "LastName",
     dataIndex: "LastName",
+    sorter: true,
     // sorter: true,
     // render: (name) => `${FirstName} ${LastName}`,
     // width: "20%",
@@ -79,22 +85,35 @@ const columns = [
   {
     title: "Email",
     dataIndex: "Email",
+    sorter: true,
   },
   {
     title: "Username",
     dataIndex: "UserName",
+    sorter: true,
   },
   {
     title: "Role",
     dataIndex: "RoleName",
+    filters: [
+      { text: "admin", value: "admin" },
+      { text: "normal-user", value: "normal-user" },
+      { text: "dc-member", value: "dc-member" },
+      { text: "contact-point", value: "contact-point" },
+    ],
   },
   {
     title: "IsActive",
     dataIndex: "IsActive",
     key: "IsActive",
+    filters: [
+      { text: "Active", value: "Active" },
+      { text: "InActive", value: "InActive" },
+    ],
     // render: (IsActive) => (
     //   <>
-    //     {tags.map((tag) => {
+    //     ''+IsActive
+    //     {/* {tags.map((tag) => {
     //       let color = tag.length > 5 ? "geekblue" : "green";
     //       if (tag === "loser") {
     //         color = "volcano";
@@ -104,13 +123,14 @@ const columns = [
     //           {tag.toUpperCase()}
     //         </Tag>
     //       );
-    //     })}
+    //     })} */}
     //   </>
     // ),
   },
   {
     title: "UpdatedDate",
     dataIndex: "UpdatedDate",
+    sorter: true,
   },
   {
     title: "Action",
@@ -132,20 +152,81 @@ const columns = [
 ];
 
 function MainPage() {
+  const dispatch = useDispatch();
   const [data, setData] = useState([]);
   const [total, setTotal] = useState([]);
   const [pagination, setPagination] = useState({ PageNo: 1, PageSize: 7 });
   const [loading, setLoading] = useState(false);
-  const { startDate } = useSelector((state) => state.userManagement);
+  const {
+    startDate,
+    SearchKey,
+    PageNo,
+    PageSize,
+    SortBy,
+    SortOrder,
+  } = useSelector((state) => state.userManagement);
   useEffect(() => {
-    fetch(pagination);
+    // dispatch(setSearchKey({ searchKey: "afhkahsgjk" }));
+    fetch({ PageNo: PageNo, PageSize: PageSize, SearchKey: SearchKey });
     // fetch();
   }, []);
   function onChange(pageNumber) {
     console.log("Page: ", pageNumber);
-    fetch({ PageNo: pageNumber, PageSize: 7 });
-    console.log(getPageParams({ PageNo: pageNumber, PageSize: 7 }));
+    // dispatch(setSearchKey({ searchKey: "a" }));
+    dispatch(setPageNo({ PageNo: pageNumber }));
+    fetch({
+      PageNo: PageNo,
+      PageSize: PageSize,
+      SearchKey: SearchKey,
+      SortBy: SortBy,
+      SortOrder: SortOrder,
+    });
+    // setPagination({PageNo: pageNumber, PageSize: {paginaion}});
+    // console.log(getPageParams({ PageNo: pageNumber, PageSize: 7 }));
   }
+  function onShowSizeChange(current, pageSize) {
+    console.log(current, pageSize);
+    // setTotal(pageSize);
+    dispatch(setPageSize({ PageSize: pageSize }));
+    fetch({ PageNo: PageNo, PageSize: PageSize, SearchKey: SearchKey });
+  }
+  function showTotal(total) {
+    return `Total ${total} items`;
+  }
+  function search(SearchKey) {
+    dispatch(setSearchKey({ SearchKey: SearchKey }));
+    dispatch(setPageNo({ PageNo: 1 }));
+    fetch({
+      PageNo: PageNo,
+      PageSize: PageSize,
+      SearchKey: SearchKey,
+      SortBy: SortBy,
+      SortOrder: SortOrder,
+    });
+  }
+  function handleTableChange(pagination, filters, sorter) {
+    console.log("Various parameters", pagination, filters, sorter);
+    console.log("Filter", filters);
+    console.log("Sorter", sorter);
+    console.log(sorter.length != 0);
+    if (sorter.length != 0) {
+      dispatch(setSortBy({ SortBy: sorter.field }));
+      console.log(sorter.field);
+      dispatch(setSortOrder({ SortOrder: sorter.order }));
+      console.log("Order", SortOrder);
+      console.log("By", sorter.field);
+      fetch({
+        PageNo: PageNo,
+        PageSize: PageSize,
+        SearchKey: SearchKey,
+        SortBy: sorter.field,
+        SortOrder: sorter.order,
+      });
+    }
+  }
+  // function onChange() {
+  //   console.log();
+  // }
   // const handleTableChange = (tablePagination, filters, sorter) => {
   //   fetch({
   //     sortField: sorter.field,
@@ -162,17 +243,20 @@ function MainPage() {
       setLoading(false);
       // setData(res.results);
       setData(res);
-      setTotal(res[0].TotalItem);
+      console.log("res", res.length);
+      if (res.length != 0) setTotal(res[0].TotalItem);
+      else setTotal(0);
+      showTotal({ total });
       // res.map()
-      console.log(res);
-      console.log(res[0].TotalItem);
+      // console.log(res);
+      // console.log(res[0].TotalItem);
       // setPagination({
       //   current: 2, pageSize: 5,
       //   total: res[0].TotalPage*5,
       // });
       setPagination({
         ...params.pagination,
-        total: res[0].TotalPage * 5,
+        // total: res[0].TotalPage * 5,
       });
     });
   };
@@ -186,7 +270,7 @@ function MainPage() {
         <Col span={8} offset={8}>
           <Search
             placeholder="input search text"
-            onSearch={(value) => console.log(value)}
+            onSearch={(value) => search(value)}
             enterButton
           />
         </Col>
@@ -200,15 +284,20 @@ function MainPage() {
         dataSource={data}
         pagination={false}
         loading={loading}
+        onChange={handleTableChange}
+        // onChange={onChangeTable}
         // onChange={handleTableChange}
       />
       <br />
       <Row>
         <Col span={12} offset={6}>
           <Pagination
-            // showQuickJumper
+            showQuickJumper
+            // showSizeChanger
+            // onShowSizeChange={onShowSizeChange}
             defaultCurrent={1}
             total={total}
+            showTotal={showTotal}
             defaultPageSize={7}
             onChange={onChange}
           />
