@@ -21,7 +21,10 @@ export const getServersApi = (data) => {
       .get(`/api/servers`, {
           params: {
               current: data.current,
-              pageSize: data.pageSize
+              pageSize: data.pageSize,
+              sortColumn: data.sortColumn,
+              sortOrder: data.sortOrder,
+              keyword: data.keyword
           }
       })
       .then((res) => {
