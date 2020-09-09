@@ -18,14 +18,11 @@ import { getCustomerApi } from "api/customer";
 
 import { setSort } from "features/ManageCustomer/slice";
 import { useDispatch, useSelector } from "react-redux";
+
 MainPage.propTypes = {};
 const { confirm } = Modal;
 const pageSize = 10;
 const { Search } = Input;
-function onShowSizeChange(current, pageSize) {
-  console.log(current, pageSize);
-}
-
 
 function showPromiseConfirm() {
   confirm({
@@ -42,79 +39,62 @@ function showPromiseConfirm() {
   });
 }
 
-
 const columns = [
   {
     title: "Customer Name",
-    dataIndex: "FirstName",
-    sortDirections: ['ascend', 'descend'],
-    key: "Name",
+    dataIndex: "Name",
     sorter: true,
-    render: (text, record) => (
-      <p> {text} {record.LastName} </p>
-    )
   },
   {
-
     title: "Contact Point",
     dataIndex: "ContactPointEmail",
-
-    sortDirections: ['ascend', 'descend'],
-    key: "ContactPointEmail",
+    sorter: true,
     filters: [
       {
-        text: 'Assigned',
+        text: "Assigned",
         value: true,
       },
       {
-        text: 'Null',
+        text: "Null",
         value: false,
-      }
+      },
     ],
-    onFilter: (value, record) => value ? record.ContactPointEmail !== null : record.ContactPointEmail == null,
-    sorter: (a, b, sortOrder) => { return a.ContactPointEmail ? (b.ContactPointEmail ? (a.ContactPointEmail).localeCompare(b.ContactPointEmail) : -1) : 1 },
-    render: (text) => (
-      <p> {text} </p>
-    )
+    onFilter: (value, record) =>
+      value
+        ? record.ContactPointEmail !== null
+        : record.ContactPointEmail == null,
   },
   {
     title: "Contract Begin",
     dataIndex: "ContractBeginDate",
-    render: (text) => (
-      <p> {text} </p>
-    )
+    sorter: true,
   },
   {
     title: "Contract End",
     dataIndex: "ContractEndDate",
-
-    render: (text) => (
-      <p> {text} </p>
-    )
+    sorter: true,
   },
-
-
   {
     title: "Status",
     dataIndex: "IsActive",
     key: "IsActive",
     filters: [
       {
-        text: 'Active',
+        text: "Active",
         value: true,
       },
       {
-        text: 'Inactive',
+        text: "Inactive",
         value: false,
-      }
+      },
     ],
     onFilter: (value, record) => record.IsActive == value,
-    render: val => (val ? <Tag color="green">Active</Tag> : <Tag color="red">Inactive</Tag>)
+    render: (val) =>
+      val ? <Tag color="green">Active</Tag> : <Tag color="red">Inactive</Tag>,
   },
   {
     title: "Action",
     key: "action",
-    // sorter: true,
     render: () => (
       <Space size="middle">
         {/* <Button type="primary">Update</Button> */}
@@ -129,47 +109,44 @@ const columns = [
     ),
   },
   {
-
     title: "Machines Owner",
     dataIndex: "servers",
-    render: (text) => (
-      <Tag color="cyan"> Manage { text ? text : 0} </Tag>
-    )
-
+    sorter: true,
+    render: (text) => <Tag color="cyan"> Manage {text ? text : 0} </Tag>,
   },
 ];
 
 function MainPage() {
   const [data, setData] = useState([]);
-
-  const dispatch = useDispatch()
-  const { sortColumn, sortOrder } = useSelector((state) => state.customerManagement)
+  const dispatch = useDispatch();
+  const { sortColumn, sortOrder } = useSelector(
+    (state) => state.customerManagement
+  );
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState();
-
   const [page, setPage] = useState(1);
-  const [searchKeyword, setSearchKeyword] = useState('');
+  const [searchKeyword, setSearchKeyword] = useState("null");
+
   useEffect(() => {
     fetch(1, sortColumn, sortOrder, searchKeyword);
   }, [sortColumn, sortOrder, searchKeyword]);
 
   function handleSearchCustomer(keyword) {
-    setSearchKeyword(keyword)
-    fetch(1, sortColumn, sortOrder, keyword)
+    keyword ? setSearchKeyword(keyword) : setSearchKeyword('null');
+    fetch(1, sortColumn, sortOrder, keyword);
   }
 
-
   async function handleSortChange(pagination, filters, sorter) {
-    var newSortColumn = sorter.column ? sorter.column.dataIndex : 'Name'
-    var newSortOrder = sorter.order === 'descend' ? 'descend' : 'ascend'
-    await dispatch(setSort({ sortColumn: newSortColumn, sortOrder: newSortOrder }));
+    var newSortColumn = sorter.column ? sorter.column.dataIndex : "Name";
+    var newSortOrder = sorter.order === "descend" ? "descend" : "ascend";
+    await dispatch(
+      setSort({ sortColumn: newSortColumn, sortOrder: newSortOrder })
+    );
     fetch(page, newSortColumn, newSortOrder, searchKeyword);
   }
   function onPageChange(pageNumber) {
-    console.log("Page: ", pageNumber);
     setPage(pageNumber);
-    fetch(pageNumber, sortColumn, sortOrder, searchKeyword)
-      ;
+    fetch(pageNumber, sortColumn, sortOrder, searchKeyword);
   }
 
   const fetch = (pageNumber, sortColumn, sortOrder, keyword) => {
@@ -179,11 +156,11 @@ function MainPage() {
       pageSize: pageSize,
       sortColumn: sortColumn,
       sortOrder: sortOrder,
-      keyword: keyword
+      keyword: keyword,
     }).then((res) => {
       setLoading(false);
       setData(res);
-      setTotal(res[0] ? res[0].total : 0)
+      setTotal(res[0] ? res[0].Total : 0);
     });
   };
 
@@ -194,11 +171,12 @@ function MainPage() {
           <CreateUserModal />
         </Col>
         <Col span={8} offset={8}>
-          <Search className="search-bar"
+          <Search
+            className="search-bar"
             placeholder="input search text"
             enterButton="Search"
             size="large"
-            onSearch={value => handleSearchCustomer(value)}
+            onSearch={(value) => handleSearchCustomer(value)}
           />
         </Col>
       </Row>
