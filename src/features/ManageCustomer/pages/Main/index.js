@@ -15,10 +15,12 @@ import "./index.scss";
 import CreateUserModal from "../../../../components/ManageUser/CreateUserModal.js";
 import UpdateUserModal from "../../../../components/ManageUser/UpdateUserModal.js";
 import { getCustomerApi } from "api/customer";
-import { useSelector } from "react-redux";
 
+import { setSort } from "features/ManageCustomer/slice";
+import { useDispatch, useSelector } from "react-redux";
 MainPage.propTypes = {};
 const { confirm } = Modal;
+const pageSize = 10;
 const { Search } = Input;
 function onShowSizeChange(current, pageSize) {
   console.log(current, pageSize);
@@ -139,58 +141,49 @@ const columns = [
 
 function MainPage() {
   const [data, setData] = useState([]);
-  const [pagination, setPagination] = useState({ current: 1 });
+
+  const dispatch = useDispatch()
+  const { sortColumn, sortOrder } = useSelector((state) => state.customerManagement)
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState();
-  // const [page]
+
+  const [page, setPage] = useState(1);
+  const [searchKeyword, setSearchKeyword] = useState('');
   useEffect(() => {
-    fetch({ pagination });
-    // fetch();
-  }, []);
+    fetch(1, sortColumn, sortOrder, searchKeyword);
+  }, [sortColumn, sortOrder, searchKeyword]);
 
-  const handleTableChange = (tablePagination, filters, sorter) => {
-    console.log(sorter.column)
-    fetch({
-      sortField: sorter.columnKey,
-      sortOrder: sorter.order,
-      pagination: tablePagination,
-      ...filters,
-    });
-  };
-  function onChange(pageNumber) {
-    console.log("Page: ", pageNumber);
-    setPagination({ current: pageNumber });
-    return getCustomerApi({ pageSize: 10, pageNumber }).then((res) => {
-      console.log(pageNumber);
-      setLoading(false);
-      setData(res);
-      setTotal(res[0].total)
-      console.log(res[0])
-      console.log(res);
-      console.log(res[0].total);
-
-    });
+  function handleSearchCustomer(keyword) {
+    setSearchKeyword(keyword)
+    fetch(1, sortColumn, sortOrder, keyword)
   }
 
-  const fetch = (params = {}) => {
+
+  async function handleSortChange(pagination, filters, sorter) {
+    var newSortColumn = sorter.column ? sorter.column.dataIndex : 'Name'
+    var newSortOrder = sorter.order === 'descend' ? 'descend' : 'ascend'
+    await dispatch(setSort({ sortColumn: newSortColumn, sortOrder: newSortOrder }));
+    fetch(page, newSortColumn, newSortOrder, searchKeyword);
+  }
+  function onPageChange(pageNumber) {
+    console.log("Page: ", pageNumber);
+    setPage(pageNumber);
+    fetch(pageNumber, sortColumn, sortOrder, searchKeyword)
+      ;
+  }
+
+  const fetch = (pageNumber, sortColumn, sortOrder, keyword) => {
     setLoading(true);
-    return getCustomerApi({ pageSize: 10, pageNumber: pagination.current }).then((res) => {
+    return getCustomerApi({
+      current: pageNumber,
+      pageSize: pageSize,
+      sortColumn: sortColumn,
+      sortOrder: sortOrder,
+      keyword: keyword
+    }).then((res) => {
       setLoading(false);
-      // setData(res.results);
       setData(res);
-      // res.map()
-      setTotal(res[0].total)
-      console.log(res[0])
-      console.log(res);
-      console.log(res[0].total);
-      // setPagination({
-      //   current: 2, pageSize: 5,
-      //   total: res[0].TotalPage*5,
-      // });
-      // setPagination({
-      //   ...params.pagination,
-      //   total: res[0].TotalPage * 5,
-      // });
+      setTotal(res[0] ? res[0].total : 0)
     });
   };
 
@@ -201,10 +194,11 @@ function MainPage() {
           <CreateUserModal />
         </Col>
         <Col span={8} offset={8}>
-          <Search
+          <Search className="search-bar"
             placeholder="input search text"
-            onSearch={(value) => console.log(value)}
-            enterButton
+            enterButton="Search"
+            size="large"
+            onSearch={value => handleSearchCustomer(value)}
           />
         </Col>
       </Row>
@@ -217,7 +211,7 @@ function MainPage() {
         dataSource={data}
         pagination={false}
         loading={loading}
-        onChange={handleTableChange}
+        onChange={handleSortChange}
       />
       <br />
       <Row>
@@ -227,7 +221,7 @@ function MainPage() {
             defaultCurrent={1}
             defaultPageSize={10}
             total={total}
-            onChange={onChange}
+            onChange={onPageChange}
           />
         </Col>
       </Row>
