@@ -9,6 +9,7 @@ import {
   Col,
   Pagination,
   Tag,
+  message,
 } from "antd";
 import { ExclamationCircleOutlined, AudioOutlined } from "@ant-design/icons";
 import "./index.scss";
@@ -259,9 +260,14 @@ function MainPage() {
     return getUsersApi(params).then((res) => {
       setLoading(false);
       // setData(res.results);
-      setData(res);
-      console.log("res", res.length);
-      if (res.length != 0) setTotal(res[0].TotalItem);
+      setData(res.data);
+      if (res.status === 200) {
+        // message.success(res.statusText);
+      } else {
+        message.error(res.statusText);
+      }
+      console.log("res", res);
+      if (res.data.length != 0) setTotal(res.data[0].TotalItem);
       else setTotal(0);
       showTotal({ total });
       // res.map()

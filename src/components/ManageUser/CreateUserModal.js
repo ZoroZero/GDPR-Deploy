@@ -16,6 +16,7 @@ import {
   AutoComplete,
   Radio,
   Modal,
+  message,
 } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 
@@ -309,7 +310,14 @@ const CreateUserModal = (pros) => {
 
   const onCreate = (values) => {
     console.log("Received values of form: ", values);
-    insertUsersApi(values);
+    insertUsersApi(values).then((res) => {
+      console.log(res);
+      if (res.status === 201) {
+        message.success(res.statusText);
+      } else {
+        message.error(res.statusText);
+      }
+    });
     pros.onSubmitModal();
     setVisible(false);
   };

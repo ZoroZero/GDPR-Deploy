@@ -17,6 +17,7 @@ import {
   Radio,
   Modal,
   Switch,
+  message,
 } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 
@@ -310,7 +311,15 @@ const UpdateUserModal = (pros) => {
       ...values,
       IsActive: switchState,
     });
-    updateUsersApi(pros.record.Id, { ...values, IsActive: switchState });
+    updateUsersApi(pros.record.Id, { ...values, IsActive: switchState }).then(
+      (res) => {
+        if (res.status === 200) {
+          message.success(res.statusText);
+        } else {
+          message.error(res.statusText);
+        }
+      }
+    );
     pros.onSubmitModal();
     setVisible(false);
   };

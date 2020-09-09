@@ -21,8 +21,8 @@ export const getUsersApi = (data) => {
       .get("/api/users/list", { params: data })
       .then((res) => {
         // console.log(Request);
-        console.log(res.data);
-        resolve(res.data);
+        console.log(res);
+        resolve(res);
       })
       .catch((error) => {
         reject(error);
@@ -36,8 +36,8 @@ export const deleteUsersApi = (data) => {
       .delete("/api/users/" + data)
       .then((res) => {
         // console.log(Request);
-        console.log(res.data);
-        resolve(res.data);
+        console.log(res);
+        resolve(res);
       })
       .catch((error) => {
         reject(error);
@@ -51,8 +51,8 @@ export const insertUsersApi = (data) => {
       .post("/api/users/insert", { ...data })
       .then((res) => {
         // console.log(Request);
-        console.log(res.data);
-        resolve(res.data);
+        console.log(res);
+        resolve(res);
       })
       .catch((error) => {
         reject(error);
@@ -68,8 +68,8 @@ export const updateUsersApi = (id, data) => {
       .put(`/api/users/${id}`, { ...data })
       .then((res) => {
         // console.log(Request);
-        console.log(res.data);
-        resolve(res.data);
+        console.log(res);
+        resolve(res);
       })
       .catch((error) => {
         reject(error);
