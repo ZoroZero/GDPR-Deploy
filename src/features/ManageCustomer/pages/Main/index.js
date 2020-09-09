@@ -12,7 +12,7 @@ import {
 } from "antd";
 import { ExclamationCircleOutlined, AudioOutlined } from "@ant-design/icons";
 import "./index.scss";
-import CreateUserModal from "../../../../components/ManageUser/CreateUserModal.js";
+import AddEditCustomerModal from "../../../../components/ManageCustomer/AddEditCustomerModel";
 import UpdateUserModal from "../../../../components/ManageUser/UpdateUserModal.js";
 import { getCustomerApi } from "api/customer";
 
@@ -75,6 +75,10 @@ const columns = [
     sorter: true,
   },
   {
+    title: "Description",
+    dataIndex: "Description"
+  },
+  {
     title: "Status",
     dataIndex: "IsActive",
     key: "IsActive",
@@ -117,6 +121,7 @@ const columns = [
 ];
 
 function MainPage() {
+  const [contactPoints, setContactPoints] = useState([]);
   const [data, setData] = useState([]);
   const dispatch = useDispatch();
   const { sortColumn, sortOrder } = useSelector(
@@ -126,8 +131,12 @@ function MainPage() {
   const [total, setTotal] = useState();
   const [page, setPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState("");
-
+  const [modalVisible, setModalVisible] = useState(false)
   useEffect(() => {
+    getContactPointsApi().then((res) => {
+      setContactPoints(res);
+      console.loh(res)
+    });
     fetch(1, sortColumn, sortOrder, searchKeyword);
   }, [sortColumn, sortOrder, searchKeyword]);
 
@@ -137,8 +146,8 @@ function MainPage() {
   }
 
   async function handleSortChange(pagination, filters, sorter) {
-    var newSortColumn = sorter.column ? sorter.column.dataIndex : "Name";
-    var newSortOrder = sorter.order === "descend" ? "descend" : "ascend";
+    var newSortColumn = sorter.column ? sorter.column.dataIndex : "CreatedDate";
+    var newSortOrder = sorter.order === "descend" ? "descend" : "descend";
     await dispatch(
       setSort({ sortColumn: newSortColumn, sortOrder: newSortOrder })
     );
@@ -151,7 +160,7 @@ function MainPage() {
 
   const fetch = (pageNumber, sortColumn, sortOrder, keyword) => {
     setLoading(true);
-    return getCustomerApi({
+    getCustomerApi({
       current: pageNumber,
       pageSize: pageSize,
       sortColumn: sortColumn,
@@ -160,15 +169,23 @@ function MainPage() {
     }).then((res) => {
       setLoading(false);
       setData(res);
+      console.log(res)
       setTotal(res[0] ? res[0].Total : 0);
     });
+
   };
 
   return (
     <div>
       <Row>
         <Col span={8}>
-          <CreateUserModal />
+
+          <Button type="primary" onClick={() => setModalVisible(true)}>
+            Create new Customer
+            </Button>
+
+          <AddEditCustomerModal modalVisible={modalVisible} setModalVisible={setModalVisible}> </AddEditCustomerModal>
+
         </Col>
         <Col span={8} offset={8}>
           <Search

@@ -3,8 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 export const initialState = {
   blockIds: null,
 
-  sortColumn: 'Name',
-  sortOrder: 'ascend'
+  sortColumn: 'CreatedDate',
+  sortOrder: 'descend'
 };
 
 const slice = createSlice({
