@@ -86,8 +86,9 @@ function MainPage() {
     const fetch = (pageNumber, sortColumn, sortOrder, keyword) => {
         // console.log("Before", pageNumber)
         setLoading(true);
-        console.log("Sort column", sortColumn);
-        console.log("Sort order", sortOrder);
+        // console.log("Sort column", sortColumn);
+        // console.log("Sort order", sortOrder);
+        console.log("Search keyword", searchKeyword);
         return getServersApi({
                             current: pageNumber, 
                             pageSize: pageSize, 
@@ -95,11 +96,10 @@ function MainPage() {
                             sortOrder: sortOrder,
                             keyword: keyword}).then((res) => {
             setLoading(false);
-            console.log(res)
-            setTotal(res[0]?res[0].Total: 0)
-            setData(res);
-        });
-        
+            console.log(res.data)
+            setTotal(res.data[0]?res.data[0].Total: 0)
+            setData(res.data);
+        }).catch((err) => {console.log(err)});
     };
 
     // Handle sorting
@@ -133,7 +133,7 @@ function MainPage() {
                 placeholder="input search text"
                 enterButton="Search"
                 size="large"
-                onSearch={value => handleSearchServer(value)}
+                onSearch={value => handleSearchServer(value.trim())}
             />
 
             <Table

@@ -20,7 +20,7 @@ export const getServersApi = (data) => {
     return axios
       .get(`/api/servers`, {
           params: {
-              current: data.current,
+              pageNumber: data.current,
               pageSize: data.pageSize,
               sortColumn: data.sortColumn,
               sortOrder: data.sortOrder,
