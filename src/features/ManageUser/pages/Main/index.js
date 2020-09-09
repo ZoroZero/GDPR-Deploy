@@ -225,13 +225,13 @@ function MainPage() {
       dispatch(setSortOrder({ SortOrder: sorter.order }));
       console.log("Order", SortOrder);
       console.log("By", sorter.field);
-      // fetch({
-      //   PageNo: PageNo,
-      //   PageSize: PageSize,
-      //   SearchKey: SearchKey,
-      //   SortBy: sorter.field,
-      //   SortOrder: sorter.order,
-      // });
+      fetch({
+        PageNo: PageNo,
+        PageSize: PageSize,
+        SearchKey: SearchKey,
+        SortBy: sorter.field,
+        SortOrder: sorter.order,
+      });
     }
     if (filters.RoleName !== null) {
       console.log("List roles: ", filters.RoleName.join(","));
