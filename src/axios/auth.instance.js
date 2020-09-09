@@ -2,12 +2,16 @@ import axios from "axios";
 import { checkToken } from "utils/localstorage";
 
 const instance = axios.create({
-  baseURL: process.env.REACT_APP_SERVER_BASEURL,
+  baseURL: process.env.REACT_APP_BASE_URL,
 });
 
 instance.interceptors.request.use(
   (req) => {
     const token = checkToken();
+<<<<<<< HEAD
+=======
+    console.log("token", token);
+>>>>>>> feature/feature_manage_user
     req.headers.Authorization = "Bearer " + token;
     return req;
   },

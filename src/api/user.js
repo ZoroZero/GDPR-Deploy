@@ -18,9 +18,50 @@ export const listUserApi = () => {
 export const getUsersApi = (data) => {
   return new Promise((resolve, reject) => {
     return axios
-      .get("/api/users", { params: data })
+      .get("/api/users/list", { params: data })
       .then((res) => {
-        resolve(res.data);
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export const deleteUsersApi = (data) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .delete("/api/users/" + data)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export const insertUsersApi = (data) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .post("/api/users/insert", { ...data })
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export const updateUsersApi = (id, data) => {
+  return new Promise((resolve, reject) => {
+    console.log("id", id);
+    console.log("data", data);
+    return axios
+      .put(`/api/users/${id}`, { ...data })
+      .then((res) => {
+        resolve(res);
       })
       .catch((error) => {
         reject(error);

@@ -1,84 +1,260 @@
 import React, { useEffect, useState } from "react";
-import { Table } from "antd";
-
+import {
+  Modal,
+  Table,
+  Space,
+  Button,
+  Input,
+  Row,
+  Col,
+  Pagination,
+  Tag,
+  message,
+} from "antd";
+import { ExclamationCircleOutlined, AudioOutlined } from "@ant-design/icons";
 import "./index.scss";
-
-import { getUsersApi } from "api/user";
-import { useSelector } from "react-redux";
+import CreateUserModal from "../../../../components/ManageUser/CreateUserModal.js";
+import UpdateUserModal from "../../../../components/ManageUser/UpdateUserModal.js";
+import { getUsersApi, deleteUsersApi } from "api/user";
+import { useSelector, useDispatch } from "react-redux";
+import { getStore } from "store";
+import {
+  setSearchKey,
+  setPageNo,
+  setPageSize,
+  setSortBy,
+  setSortOrder,
+  setRole,
+} from "../../slice";
 
 MainPage.propTypes = {};
-
-const getRandomuserParams = (params) => {
-  return {
-    results: params.pagination.pageSize,
-    page: params.pagination.current,
-    ...params,
-  };
-};
-
-const columns = [
-  {
-    title: "Name",
-    dataIndex: "name",
-    sorter: true,
-    render: (name) => `${name.first} ${name.last}`,
-    width: "20%",
-  },
-  {
-    title: "Gender",
-    dataIndex: "gender",
-    filters: [
-      { text: "Male", value: "male" },
-      { text: "Female", value: "female" },
-    ],
-    width: "20%",
-  },
-  {
-    title: "Email",
-    dataIndex: "email",
-  },
-];
+const { confirm } = Modal;
+const { Search } = Input;
 
 function MainPage() {
-  const [data, setData] = useState([]);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
-  const [loading, setLoading] = useState(false);
-  const { startDate } = useSelector((state) => state.userManagement);
-  useEffect(() => {
-    fetch({ pagination });
-  }, []);
-
-  const handleTableChange = (tablePagination, filters, sorter) => {
-    fetch({
-      sortField: sorter.field,
-      sortOrder: sorter.order,
-      pagination: tablePagination,
-      ...filters,
+  function showPromiseConfirm(row) {
+    confirm({
+      title: "Do you want to delete user " + row.UserName,
+      icon: <ExclamationCircleOutlined />,
+      content: "Warning: The delete user cannot be recover",
+      onOk() {
+        return new Promise((resolve, reject) => {
+          deleteUsersApi(row.Id);
+          setTimeout(Math.random() > 0.5 ? resolve : reject, 2000);
+          fetch({
+            PageNo: PageNo,
+            PageSize: PageSize,
+            SearchKey: SearchKey,
+            SortBy: SortBy,
+            SortOrder: SortOrder,
+          });
+        }).catch(() => console.log("Oops errors!"));
+      },
+      onCancel() {},
     });
-  };
+  }
+  const columns = [
+    {
+      title: "FirstName",
+      dataIndex: "FirstName",
+      sorter: true,
+    },
+    {
+      title: "LastName",
+      dataIndex: "LastName",
+      sorter: true,
+    },
+    {
+      title: "Email",
+      dataIndex: "Email",
+      sorter: true,
+    },
+    {
+      title: "Username",
+      dataIndex: "UserName",
+      sorter: true,
+    },
+    {
+      title: "HashPasswd",
+      dataIndex: "HashPasswd",
+    },
+    {
+      title: "Role",
+      dataIndex: "RoleName",
+      filters: [
+        { text: "admin", value: "admin" },
+        { text: "normal-user", value: "normal-user" },
+        { text: "dc-member", value: "dc-member" },
+        { text: "contact-point", value: "contact-point" },
+      ],
+    },
+    {
+      title: "IsActive",
+      dataIndex: "IsActive",
+      key: "IsActive",
+      // filters: [
+      //   { text: "Active", value: "Active" },
+      //   { text: "InActive", value: "InActive" },
+      // ],
+      render: (val) =>
+        val ? <Tag color="green">Active</Tag> : <Tag color="red">InActive</Tag>,
+    },
+    {
+      title: "UpdatedDate",
+      dataIndex: "UpdatedDate",
+      sorter: true,
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <Space size="middle">
+          <UpdateUserModal record={record} onSubmitModal={refetch} />
+          <Button
+            type="primary"
+            danger
+            onClick={() => showPromiseConfirm(record)}
+          >
+            Delete
+          </Button>
+        </Space>
+      ),
+    },
+  ];
 
-  const fetch = (params = {}) => {
+  const dispatch = useDispatch();
+  const [data, setData] = useState([]);
+  const [total, setTotal] = useState([]);
+  const [pagination, setPagination] = useState({ PageNo: 1, PageSize: 7 });
+  const [loading, setLoading] = useState(false);
+  const {
+    startDate,
+    SearchKey,
+    PageNo,
+    PageSize,
+    SortBy,
+    SortOrder,
+    Role,
+  } = useSelector((state) => state.userManagement);
+  useEffect(() => {
+    fetch({
+      PageNo: PageNo,
+      PageSize: PageSize,
+      SearchKey: SearchKey,
+      SortBy: SortBy,
+      SortOrder: SortOrder,
+      Role: Role,
+    });
+  }, [SearchKey, PageNo, PageSize, SortBy, SortOrder, Role]);
+  function onChange(pageNumber) {
+    dispatch(setPageNo({ PageNo: pageNumber }));
+  }
+  function refetch() {
+    fetch({
+      PageNo: PageNo,
+      PageSize: PageSize,
+      SearchKey: SearchKey,
+      SortBy: SortBy,
+      SortOrder: SortOrder,
+      Role: Role,
+    });
+  }
+  function showTotal(total) {
+    return `Total ${total} items`;
+  }
+  function search(SearchKey) {
+    dispatch(setSearchKey({ SearchKey: SearchKey }));
+    dispatch(setPageNo({ PageNo: 1 }));
+  }
+  function handleTableChange(pagination, filters, sorter) {
+    // console.log("Various parameters", pagination, filters, sorter);
+    // console.log("Filter", filters);
+    // console.log("Sorter", sorter);
+    // console.log(sorter.length != 0);
+    if (sorter.length != 0) {
+      dispatch(setSortBy({ SortBy: sorter.field }));
+      dispatch(setSortOrder({ SortOrder: sorter.order }));
+      console.log("Order", SortOrder);
+      console.log("By", sorter.field);
+      fetch({
+        PageNo: PageNo,
+        PageSize: PageSize,
+        SearchKey: SearchKey,
+        SortBy: sorter.field,
+        SortOrder: sorter.order,
+        Role: Role,
+      });
+    }
+    if (filters.RoleName !== null) {
+      dispatch(setRole({ Role: filters.RoleName.join(",") }));
+    } else {
+      dispatch(setRole({ Role: "" }));
+    }
+  }
+
+  const fetch = (params) => {
     setLoading(true);
-    return getUsersApi(getRandomuserParams(params)).then((res) => {
+    return getUsersApi(params).then((res) => {
       setLoading(false);
-      setData(res.results);
+      setData(res.data);
+      if (res.status === 200) {
+        // message.success(res.statusText);
+      } else {
+        message.error(res.statusText);
+      }
+      if (res.data.length != 0) setTotal(res.data[0].TotalItem);
+      else setTotal(0);
+      showTotal({ total });
       setPagination({
         ...params.pagination,
-        total: 200,
       });
     });
   };
 
   return (
     <div>
+      <Row>
+        <Col span={8}>
+          <CreateUserModal onSubmitModal={refetch} />
+        </Col>
+        <Col span={8} offset={8}>
+          <Search
+            placeholder="input search text"
+            onSearch={(value) => search(value)}
+            enterButton
+          />
+        </Col>
+      </Row>
+
+      <br />
+      <br />
       <Table
         columns={columns}
-        rowKey={(record) => record.login.uuid}
+        rowKey={(record) => record.Id}
         dataSource={data}
-        pagination={pagination}
+        pagination={false}
         loading={loading}
         onChange={handleTableChange}
+        // onChange={onChangeTable}
+        // onChange={handleTableChange}
       />
+      <br />
+      <Row>
+        <Col span={12} offset={6}>
+          <Pagination
+            showQuickJumper
+            // showSizeChanger
+            // onShowSizeChange={onShowSizeChange}
+            defaultCurrent={1}
+            total={total}
+            showTotal={showTotal}
+            defaultPageSize={7}
+            onChange={onChange}
+          />
+        </Col>
+      </Row>
+
+      <br />
     </div>
   );
 }
