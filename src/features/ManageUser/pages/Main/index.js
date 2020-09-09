@@ -30,23 +30,6 @@ import {
 MainPage.propTypes = {};
 const { confirm } = Modal;
 const { Search } = Input;
-// const dispatch = useDispatch();
-
-// const getRandomuserParams = (params) => {
-//   return {
-//     PageSize: params.pagination.pageSize,
-//     PageNo: params.pagination.current,
-//     ...params,
-//   };
-// };
-// const getPageParams = (params) => {
-//   return {
-//     paginaion: {
-//       pageSize: params.PageSize,
-//       current: params.PageNo,
-//     },
-//   };
-// };
 
 function MainPage() {
   function showPromiseConfirm(row) {
@@ -71,11 +54,6 @@ function MainPage() {
     });
   }
   const columns = [
-    // {
-    //   title: "Id",
-    //   dataIndex: "Id",
-    //   sorter: true,
-    // },
     {
       title: "FirstName",
       dataIndex: "FirstName",
@@ -159,7 +137,6 @@ function MainPage() {
     Role,
   } = useSelector((state) => state.userManagement);
   useEffect(() => {
-    // dispatch(setSearchKey({ searchKey: "afhkahsgjk" }));
     fetch({
       PageNo: PageNo,
       PageSize: PageSize,
@@ -168,21 +145,9 @@ function MainPage() {
       SortOrder: SortOrder,
       Role: Role,
     });
-    // fetch();
   }, [SearchKey, PageNo, PageSize, SortBy, SortOrder, Role]);
   function onChange(pageNumber) {
-    console.log("Page: ", pageNumber);
-    // dispatch(setSearchKey({ searchKey: "a" }));
     dispatch(setPageNo({ PageNo: pageNumber }));
-    // fetch({
-    //   PageNo: pageNumber,
-    //   PageSize: PageSize,
-    //   SearchKey: SearchKey,
-    //   SortBy: SortBy,
-    //   SortOrder: SortOrder,
-    // });
-    // setPagination({PageNo: pageNumber, PageSize: {paginaion}});
-    // console.log(getPageParams({ PageNo: pageNumber, PageSize: 7 }));
   }
   function refetch() {
     fetch({
@@ -194,92 +159,44 @@ function MainPage() {
       Role: Role,
     });
   }
-  // function onShowSizeChange(current, pageSize) {
-  //   console.log(current, pageSize);
-  //   // setTotal(pageSize);
-  //   dispatch(setPageSize({ PageSize: pageSize }));
-  //   fetch({ PageNo: PageNo, PageSize: PageSize, SearchKey: SearchKey });
-  // }
   function showTotal(total) {
     return `Total ${total} items`;
   }
   function search(SearchKey) {
     dispatch(setSearchKey({ SearchKey: SearchKey }));
     dispatch(setPageNo({ PageNo: 1 }));
-    // fetch({
-    //   PageNo: PageNo,
-    //   PageSize: PageSize,
-    //   SearchKey: SearchKey,
-    //   SortBy: SortBy,
-    //   SortOrder: SortOrder,
-    // });
   }
   function handleTableChange(pagination, filters, sorter) {
-    console.log("Various parameters", pagination, filters, sorter);
-    console.log("Filter", filters);
-    console.log("Sorter", sorter);
-    console.log(sorter.length != 0);
+    // console.log("Various parameters", pagination, filters, sorter);
+    // console.log("Filter", filters);
+    // console.log("Sorter", sorter);
+    // console.log(sorter.length != 0);
     if (sorter.length != 0) {
       dispatch(setSortBy({ SortBy: sorter.field }));
-      console.log(sorter.field);
       dispatch(setSortOrder({ SortOrder: sorter.order }));
-      console.log("Order", SortOrder);
-      console.log("By", sorter.field);
-      // fetch({
-      //   PageNo: PageNo,
-      //   PageSize: PageSize,
-      //   SearchKey: SearchKey,
-      //   SortBy: sorter.field,
-      //   SortOrder: sorter.order,
-      // });
     }
     if (filters.RoleName !== null) {
-      console.log("List roles: ", filters.RoleName.join(","));
       dispatch(setRole({ Role: filters.RoleName.join(",") }));
     } else {
       dispatch(setRole({ Role: "" }));
     }
-    console.log("Role role: ", Role);
-    //
   }
-  // function onChange() {
-  //   console.log();
-  // }
-  // const handleTableChange = (tablePagination, filters, sorter) => {
-  //   fetch({
-  //     sortField: sorter.field,
-  //     sortOrder: sorter.order,
-  //     pagination: tablePagination,
-  //     ...filters,
-  //   });
-  // };
 
   const fetch = (params) => {
-    console.log("Fetch params", params);
     setLoading(true);
     return getUsersApi(params).then((res) => {
       setLoading(false);
-      // setData(res.results);
       setData(res.data);
       if (res.status === 200) {
         // message.success(res.statusText);
       } else {
         message.error(res.statusText);
       }
-      console.log("res", res);
       if (res.data.length != 0) setTotal(res.data[0].TotalItem);
       else setTotal(0);
       showTotal({ total });
-      // res.map()
-      // console.log(res);
-      // console.log(res[0].TotalItem);
-      // setPagination({
-      //   current: 2, pageSize: 5,
-      //   total: res[0].TotalPage*5,
-      // });
       setPagination({
         ...params.pagination,
-        // total: res[0].TotalPage * 5,
       });
     });
   };

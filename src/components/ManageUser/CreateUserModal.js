@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// import { Button, Modal, Form, Input, Radio } from "antd";
 import { insertUsersApi } from "../../api/user";
 import CreateUserForm from "./CreateUserForm";
 import "antd/dist/antd.css";
@@ -125,39 +124,6 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
           });
       }}
     >
-      {/* <Form
-        form={form}
-        layout="vertical"
-        name="form_in_modal"
-        initialValues={{
-          modifier: "public",
-        }}
-      >
-        <Form.Item
-          name="title"
-          label="Title"
-          rules={[
-            {
-              required: true,
-              message: "Please input the title of collection!",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item name="description" label="Description">
-          <Input type="textarea" />
-        </Form.Item>
-        <Form.Item
-          name="modifier"
-          className="collection-create-form_last-form-item"
-        >
-          <Radio.Group>
-            <Radio value="public">Public</Radio>
-            <Radio value="private">Private</Radio>
-          </Radio.Group>
-        </Form.Item>
-      </Form> */}
       <Form
         {...formItemLayout}
         form={form}
@@ -271,13 +237,6 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
             },
           ]}
         >
-          {/* <AutoComplete
-            options={websiteOptions}
-            onChange={onWebsiteChange}
-            placeholder="website"
-          >
-            <Input />
-          </AutoComplete> */}
           <Input />
         </Form.Item>
 
@@ -291,13 +250,6 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
             },
           ]}
         >
-          {/* <AutoComplete
-            options={websiteOptions}
-            onChange={onWebsiteChange}
-            placeholder="website"
-          >
-            <Input />
-          </AutoComplete> */}
           <Input />
         </Form.Item>
       </Form>
