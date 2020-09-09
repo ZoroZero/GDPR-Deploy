@@ -79,6 +79,7 @@ function MainPage() {
     const handlePageChange = (pageNumber) => {
         // console.log(pageNumber);
         setPage(pageNumber)
+        console.log("Fetch after pagination change");
         fetch(pageNumber, sortColumn, sortOrder, searchKeyword)
     }
 
@@ -86,9 +87,7 @@ function MainPage() {
     const fetch = (pageNumber, sortColumn, sortOrder, keyword) => {
         // console.log("Before", pageNumber)
         setLoading(true);
-        // console.log("Sort column", sortColumn);
-        // console.log("Sort order", sortOrder);
-        console.log("Search keyword", searchKeyword);
+        // console.log('Fetch normal');
         return getServersApi({
                             current: pageNumber, 
                             pageSize: pageSize, 
@@ -103,20 +102,20 @@ function MainPage() {
     };
 
     // Handle sorting
-    async function handleSortChange(pagination, filters, sorter) {
+    function handleSortChange(pagination, filters, sorter) {
         // console.log('params', sorter);
         var newSortColumn = sorter.column? sorter.column.dataIndex: 'Name'
         var newSortOrder = sorter.order ==='descend'?'descend':'ascend'
-        await dispatch(setSort({sortColumn: newSortColumn, sortOrder: newSortOrder }));
-        fetch(page, newSortColumn, newSortOrder, searchKeyword);
-        // console.log("Sort column", sortColumn);
-        // console.log("Sort order", sortOrder);
+        dispatch(setSort({sortColumn: newSortColumn, sortOrder: newSortOrder }));
+        // console.log("Fetch after sort change");
+        // fetch(page, newSortColumn, newSortOrder, searchKeyword);
     }
 
     //Handle search 
     function handleSearchServer(keyword){
         setSearchKeyword(keyword)
-        fetch(1, sortColumn, sortOrder, keyword)
+        // console.log("Fetch after search");
+        // fetch(1, sortColumn, sortOrder, keyword)
     }
 
 
