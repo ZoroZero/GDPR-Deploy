@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, DatePicker, Button, notification } from "antd";
-import { createServerApi } from 'api/server';
+import { Modal, Form, Input, DatePicker, Button, notification, Switch } from "antd";
+import { createServerApi, updateServerApi } from 'api/server';
+import { SERVER_CONSTANTS } from "constants/ManageServer/server";
 
 function AddEditServerModal(props){
 
     const [form] = Form.useForm();
-
+    const [title, setTitle] = useState('Create new server');
+    const [active, setActive] = useState(true);
     useEffect(() => {
         form.setFieldsValue({ 
             ServerName: '',
@@ -13,28 +15,58 @@ function AddEditServerModal(props){
             StartDate: '',
             EndDate: ''
          });
+
+        setTitle(props.request && props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE?'Create new server' : 'Update server information')
       }, []);
 
-    const onReset = () => {
-        form.resetFields();
-    };
+    
 
     const onFinish = values => {
-        console.log(values);
-        // console.log(values.StartDate.format("YYYY-MM-DD hh:mm:ss")
-        return createServerApi({
-            serverName: values.ServerName,
-            ipAddress: values.IpAddress,
-            startDate: values.StartDate.format("YYYY-MM-DD hh:mm:ss"),
-            endDate: values.EndDate.format("YYYY-MM-DD hh:mm:ss")
-        })
-        .then((res) => {
-            console.log("Sucessfully add new server")
-            openNotification("Sucessfully add new server")
-            props.setModalVisible(false)
-            form.resetFields();
-        })
-        .catch((err) => console.log(err))        
+        // console.log(values);
+        if(props.request.type === SERVER_CONSTANTS.ADD_SERVER_TYPE){
+            return createServerApi({
+                    serverName: values.ServerName,
+                    ipAddress: values.IpAddress,
+                    startDate: values.StartDate.format("YYYY-MM-DD hh:mm:ss"),
+                    endDate: values.EndDate.format("YYYY-MM-DD hh:mm:ss")
+                })
+                .then((res) => {
+                    console.log("Sucessfully add new server")
+                    openNotification("Sucessfully add new server")
+                    props.setModalVisible(false)
+                    form.resetFields();
+                })
+                .catch((err) => console.log(err)) 
+                .finally(() => {
+                    props.setEditRequest(null);
+                    props.setRefreshPage(true);
+                })   
+        }
+        else if(props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE){
+            const id = props.request.data.Id
+            console.log(active);
+            return updateServerApi({
+                id: id,
+                serverName: values.ServerName,
+                ipAddress: values.IpAddress,
+                startDate: values.StartDate.format("YYYY-MM-DD hh:mm:ss"),
+                endDate: values.EndDate.format("YYYY-MM-DD hh:mm:ss"),
+                status: active
+            })
+            .then((res) => {
+                console.log("Sucessfully change server information")
+                openNotification("Sucessfully change server information")
+                props.setModalVisible(false)
+                form.resetFields();
+            })
+            .catch((err) => console.log(err))
+            .finally(() => {
+                props.setEditRequest(null);
+                props.setRefreshPage(true);
+                }
+            ) 
+        }
+        
     };
 
     const openNotification = (message) => {
@@ -50,10 +82,11 @@ function AddEditServerModal(props){
     
     return (    
         <Modal
-            title="Create new server"
+            title= {title}
             centered
             
             visible={props.modalVisible}
+            onCancel={()=>{props.setModalVisible(false)}}
             okButtonProps={{ style: { display: 'none' } }}
             cancelButtonProps={{ style: { display: 'none' } }}
             forceRender={true} 
@@ -106,6 +139,13 @@ function AddEditServerModal(props){
                             <DatePicker showTime style={{  width: '100%' }}/>
                         </Form.Item>
                     </Form.Item>
+                    
+                    {props.request && props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE &&
+                        <Form.Item name='Status'>
+                            <Switch checkedChildren="Active" unCheckedChildren="Inactive" defaultChecked onChange={(checked)=>{setActive(checked)}}/>
+                            <br />
+                        </Form.Item>
+                    }
                 </Form>
 
                 

@@ -54,3 +54,43 @@ export const createServerApi = (data) => {
       });
   }); 
 }
+
+
+export const updateServerApi = (data) => {
+  return new Promise((resolve, reject) => {
+    console.log("Send data", data)
+    return axios
+      .put(`/api/servers`, {
+          Id: data.id,
+          Name: data.serverName,
+          IpAddress: data.ipAddress,
+          StartDate: data.startDate,
+          EndDate: data.endDate,
+          IsActive: data.status
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });  
+
+}
+
+export const deleteServerApi = (data) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .delete(`/api/servers`, {
+          params: {
+              id: data.id
+          }
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Table, Pagination, Input, Button  } from "antd";
 import "./index.scss";
 import { getServersApi } from "api/server";
 import { useDispatch, useSelector } from "react-redux";
 import { setSort } from "features/ManageServer/slice";
 import AddEditServerModal from "components/ManageServer/AddEditServerModal"; 
+import { SERVER_CONSTANTS } from 'constants/ManageServer/server';
 MainPage.propTypes = {};
 
 const pageSize = 10;
@@ -19,9 +20,21 @@ function MainPage() {
     const [page, setPage ] = useState(1);
     const [searchKeyword, setSearchKeyword] = useState('');    
     const [modalVisible, setModalVisible] = useState(false);
+    const [editRequest, setEditRequest] = useState(null);
+    const [refresh, setRefresh] = useState(true);
+    const setRefreshPage = useCallback(() => {
+        setRefresh(refresh => !refresh);
+      }, []);
+
     useEffect(() => {
-        fetch(1, sortColumn, sortOrder, searchKeyword);
-    }, [sortColumn, sortOrder, searchKeyword]);
+        fetch(page, sortColumn, sortOrder, searchKeyword);
+    }, [sortColumn, sortOrder, searchKeyword, refresh]);
+
+
+    useEffect(() => {
+        handleModalActivate()
+        // console.log(serverEdit)
+    }, [editRequest]);
 
     // Table columns
     const columns = [
@@ -65,13 +78,15 @@ function MainPage() {
             title: 'Edit',
             key: 'operation',
             width: "10%",
-            render: () => <Button>Edit</Button>,
+            render: (record) => <Button onClick={() => {setEditRequest({
+                                                            type: SERVER_CONSTANTS.UPDATE_SERVER_TYPE, 
+                                                            data: record})}}>Edit</Button>,
           },
           {
             title: 'Delete',
             key: 'operation',
             width: "10%",
-            render: () => <Button>Delete</Button>,
+            render: (record) => <Button onClick={() => {handleDeleteServer(record.Id)} }>Delete</Button>,
           }
     ];
     
@@ -118,14 +133,26 @@ function MainPage() {
         // fetch(1, sortColumn, sortOrder, keyword)
     }
 
+    // Handle on edit click
+    function handleModalActivate(){
+        if(editRequest){
+            setModalVisible(true)
+        }
+    }
+
+    // Handle delete server
+    function handleDeleteServer(id){
+        console.log("Delete", id);
+    }
 
     return (
         <React.Fragment>
-            <Button type="primary" onClick={()=> setModalVisible(true)}>
+            <Button type="primary" onClick={()=> setEditRequest(SERVER_CONSTANTS.ADD_SERVER_REQUEST)}>
                 Create new server
             </Button>
 
-            <AddEditServerModal user={null} modalVisible={modalVisible} setModalVisible={setModalVisible}></AddEditServerModal>
+            <AddEditServerModal request={editRequest} modalVisible={modalVisible} 
+            setModalVisible={setModalVisible} setEditRequest={setEditRequest} setRefreshPage={setRefreshPage}></AddEditServerModal>
 
 
             <Search className="search-bar"
