@@ -125,14 +125,14 @@ function MainPage() {
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState();
   const [page, setPage] = useState(1);
-  const [searchKeyword, setSearchKeyword] = useState("null");
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   useEffect(() => {
     fetch(1, sortColumn, sortOrder, searchKeyword);
   }, [sortColumn, sortOrder, searchKeyword]);
 
   function handleSearchCustomer(keyword) {
-    keyword ? setSearchKeyword(keyword) : setSearchKeyword('null');
+    keyword ? setSearchKeyword(keyword) : setSearchKeyword('');
     fetch(1, sortColumn, sortOrder, keyword);
   }
 
