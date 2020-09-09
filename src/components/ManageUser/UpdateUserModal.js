@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 // import { Button, Modal, Form, Input, Radio } from "antd";
-import { insertUsersApi } from "../../api/user";
+import { updateUsersApi } from "../../api/user";
 import CreateUserForm from "./CreateUserForm";
 import "antd/dist/antd.css";
 import {
@@ -16,6 +16,7 @@ import {
   AutoComplete,
   Radio,
   Modal,
+  Switch,
 } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 
@@ -71,10 +72,18 @@ const tailFormItemLayout = {
   },
 };
 
-const CollectionCreateForm = ({ visible, onCreate, onCancel, record }) => {
+const CollectionCreateForm = ({
+  visible,
+  onCreate,
+  onCancel,
+  record,
+  switchState,
+  setSwitchState,
+}) => {
   const [form] = Form.useForm();
+
   const onFinish = (values) => {
-    console.log("Received values of form: ", values);
+    console.log("Received values of form: ", { ...values, switchState });
   };
 
   const prefixSelector = (
@@ -101,6 +110,11 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel, record }) => {
     }
   };
 
+  function onChange(checked) {
+    console.log(`switch to ${checked}`);
+    setSwitchState(checked);
+  }
+
   const websiteOptions = autoCompleteResult.map((website) => ({
     label: website,
     value: website,
@@ -108,8 +122,8 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel, record }) => {
   return (
     <Modal
       visible={visible}
-      title="Update user"
-      okText="Create"
+      title={record.Id}
+      okText="Update"
       cancelText="Cancel"
       onCancel={onCancel}
       onOk={() => {
@@ -124,7 +138,6 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel, record }) => {
           });
       }}
     >
-     
       <Form
         {...formItemLayout}
         form={form}
@@ -137,7 +150,7 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel, record }) => {
           password: record.HashPasswd,
           confirm: record.HashPasswd,
           username: record.UserName,
-          role: ["admin", "normal-user", "contact-point", "dc-member"],
+          role: [record.RoleName],
           prefix: "86",
         }}
         scrollToFirstError
@@ -217,7 +230,7 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel, record }) => {
             },
           ]}
         >
-          <Input />
+          <Input disabled={true} />
         </Form.Item>
 
         <Form.Item
@@ -244,13 +257,14 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel, record }) => {
             },
           ]}
         >
-          <AutoComplete
+          {/* <AutoComplete
             options={websiteOptions}
             onChange={onWebsiteChange}
             placeholder="website"
           >
             <Input />
-          </AutoComplete>
+          </AutoComplete> */}
+          <Input />
         </Form.Item>
 
         <Form.Item
@@ -263,13 +277,23 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel, record }) => {
             },
           ]}
         >
-          <AutoComplete
+          {/* <AutoComplete
             options={websiteOptions}
             onChange={onWebsiteChange}
             placeholder="website"
           >
             <Input />
-          </AutoComplete>
+          </AutoComplete> */}
+          <Input />
+        </Form.Item>
+        <Form.Item name="isactive" label="Status">
+          <Switch
+            checkedChildren="Active"
+            unCheckedChildren="InActive"
+            defaultChecked={switchState}
+            onChange={onChange}
+            // onClick={setSwitchState(!switchState)}
+          />
         </Form.Item>
       </Form>
     </Modal>
@@ -277,13 +301,17 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel, record }) => {
 };
 
 const UpdateUserModal = (pros) => {
-
-  console.log(pros.record);
+  // console.log(pros.record);
+  const [switchState, setSwitchState] = useState(pros.record.IsActive);
   const [visible, setVisible] = useState(false);
 
   const onCreate = (values) => {
-    console.log("Received values of form: ", values);
-    // insertUsersApi(values);
+    console.log("Received values of form: ", {
+      ...values,
+      IsActive: switchState,
+    });
+    updateUsersApi(pros.record.Id, { ...values, IsActive: switchState });
+    pros.onSubmitModal();
     setVisible(false);
   };
 
@@ -305,6 +333,8 @@ const UpdateUserModal = (pros) => {
           setVisible(false);
         }}
         record={pros.record}
+        switchState={switchState}
+        setSwitchState={setSwitchState}
       />
     </div>
   );

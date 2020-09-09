@@ -7,7 +7,7 @@ export const initialState = {
   PageNo: 1,
   PageSize: 7,
   SortBy: "",
-  SortOrder: 0,
+  SortOrder: "ascend",
   Role: "",
 };
 

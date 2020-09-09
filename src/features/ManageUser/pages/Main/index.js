@@ -98,7 +98,6 @@ function MainPage() {
     {
       title: "HashPasswd",
       dataIndex: "HashPasswd",
-      sorter: true,
     },
     {
       title: "Role",
@@ -114,10 +113,10 @@ function MainPage() {
       title: "IsActive",
       dataIndex: "IsActive",
       key: "IsActive",
-      filters: [
-        { text: "Active", value: "Active" },
-        { text: "InActive", value: "InActive" },
-      ],
+      // filters: [
+      //   { text: "Active", value: "Active" },
+      //   { text: "InActive", value: "InActive" },
+      // ],
       render: (val) =>
         val ? <Tag color="green">Active</Tag> : <Tag color="red">InActive</Tag>,
     },
@@ -131,7 +130,7 @@ function MainPage() {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <UpdateUserModal record={record}/>
+          <UpdateUserModal record={record} onSubmitModal={refetch} />
           <Button
             type="primary"
             danger
@@ -166,20 +165,21 @@ function MainPage() {
       SearchKey: SearchKey,
       SortBy: SortBy,
       SortOrder: SortOrder,
+      Role: Role,
     });
     // fetch();
-  }, []);
+  }, [SearchKey, PageNo, PageSize, SortBy, SortOrder, Role]);
   function onChange(pageNumber) {
     console.log("Page: ", pageNumber);
     // dispatch(setSearchKey({ searchKey: "a" }));
     dispatch(setPageNo({ PageNo: pageNumber }));
-    fetch({
-      PageNo: pageNumber,
-      PageSize: PageSize,
-      SearchKey: SearchKey,
-      SortBy: SortBy,
-      SortOrder: SortOrder,
-    });
+    // fetch({
+    //   PageNo: pageNumber,
+    //   PageSize: PageSize,
+    //   SearchKey: SearchKey,
+    //   SortBy: SortBy,
+    //   SortOrder: SortOrder,
+    // });
     // setPagination({PageNo: pageNumber, PageSize: {paginaion}});
     // console.log(getPageParams({ PageNo: pageNumber, PageSize: 7 }));
   }
@@ -190,6 +190,7 @@ function MainPage() {
       SearchKey: SearchKey,
       SortBy: SortBy,
       SortOrder: SortOrder,
+      Role: Role,
     });
   }
   // function onShowSizeChange(current, pageSize) {
@@ -204,13 +205,13 @@ function MainPage() {
   function search(SearchKey) {
     dispatch(setSearchKey({ SearchKey: SearchKey }));
     dispatch(setPageNo({ PageNo: 1 }));
-    fetch({
-      PageNo: PageNo,
-      PageSize: PageSize,
-      SearchKey: SearchKey,
-      SortBy: SortBy,
-      SortOrder: SortOrder,
-    });
+    // fetch({
+    //   PageNo: PageNo,
+    //   PageSize: PageSize,
+    //   SearchKey: SearchKey,
+    //   SortBy: SortBy,
+    //   SortOrder: SortOrder,
+    // });
   }
   function handleTableChange(pagination, filters, sorter) {
     console.log("Various parameters", pagination, filters, sorter);
@@ -223,16 +224,22 @@ function MainPage() {
       dispatch(setSortOrder({ SortOrder: sorter.order }));
       console.log("Order", SortOrder);
       console.log("By", sorter.field);
-      fetch({
-        PageNo: PageNo,
-        PageSize: PageSize,
-        SearchKey: SearchKey,
-        SortBy: sorter.field,
-        SortOrder: sorter.order,
-      });
+      // fetch({
+      //   PageNo: PageNo,
+      //   PageSize: PageSize,
+      //   SearchKey: SearchKey,
+      //   SortBy: sorter.field,
+      //   SortOrder: sorter.order,
+      // });
     }
-    if (filters.RoleName != null) {
+    if (filters.RoleName !== null) {
+      console.log("List roles: ", filters.RoleName.join(","));
+      dispatch(setRole({ Role: filters.RoleName.join(",") }));
+    } else {
+      dispatch(setRole({ Role: "" }));
     }
+    console.log("Role role: ", Role);
+    //
   }
   // function onChange() {
   //   console.log();

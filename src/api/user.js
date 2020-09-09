@@ -59,3 +59,20 @@ export const insertUsersApi = (data) => {
       });
   });
 };
+
+export const updateUsersApi = (id, data) => {
+  return new Promise((resolve, reject) => {
+    console.log("id", id);
+    console.log("data", data);
+    return axios
+      .put(`/api/users/${id}`, { ...data })
+      .then((res) => {
+        // console.log(Request);
+        console.log(res.data);
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};

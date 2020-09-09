@@ -108,7 +108,7 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
   return (
     <Modal
       visible={visible}
-      title="Create a new collection"
+      title="Create a new user"
       okText="Create"
       cancelText="Cancel"
       onCancel={onCancel}
@@ -163,7 +163,7 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
         name="register"
         onFinish={onFinish}
         initialValues={{
-          role: ["admin", "normal-user", "contact-point", "dc-member"],
+          role: [],
           prefix: "86",
         }}
         scrollToFirstError
@@ -270,13 +270,14 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
             },
           ]}
         >
-          <AutoComplete
+          {/* <AutoComplete
             options={websiteOptions}
             onChange={onWebsiteChange}
             placeholder="website"
           >
             <Input />
-          </AutoComplete>
+          </AutoComplete> */}
+          <Input />
         </Form.Item>
 
         <Form.Item
@@ -289,25 +290,27 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
             },
           ]}
         >
-          <AutoComplete
+          {/* <AutoComplete
             options={websiteOptions}
             onChange={onWebsiteChange}
             placeholder="website"
           >
             <Input />
-          </AutoComplete>
+          </AutoComplete> */}
+          <Input />
         </Form.Item>
       </Form>
     </Modal>
   );
 };
 
-const CreateUserModal = () => {
+const CreateUserModal = (pros) => {
   const [visible, setVisible] = useState(false);
 
   const onCreate = (values) => {
     console.log("Received values of form: ", values);
     insertUsersApi(values);
+    pros.onSubmitModal();
     setVisible(false);
   };
 
