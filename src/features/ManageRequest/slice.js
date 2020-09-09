@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { loading, stopLoading } from "features/App/slice";
-import { getListRequestApi } from "api/requests";
+import { getListRequestApi, createRequestApi } from "api/requests";
 
 export const initialState = {
   blockIds: null,
@@ -8,8 +8,9 @@ export const initialState = {
   pageSize: 5,
   totalPage: 1,
   currentPage: 1,
-  sortOrder: true,
+  sortOrder: "descend",
   sortBy: "",
+  showModal: false,
 };
 
 const slice = createSlice({
@@ -38,6 +39,9 @@ const slice = createSlice({
       state.pageSize = action.payload.pageSize;
       state.currentPage = 1;
     },
+    setModal: (state, action) => {
+      state.showModal = action.payload.showModal;
+    },
   },
 });
 
@@ -48,6 +52,7 @@ export const {
   setSortTable,
   setCurrentPage,
   setPageSize,
+  setModal,
 } = slice.actions;
 export default slice.reducer;
 
@@ -60,11 +65,29 @@ export const getListRequests = (params = {}) => (dispatch) => {
         dispatch(
           setPagination({
             currentPage: res.CurrentPage,
-            pageSize: params.PageSize,
+            pageSize: params.pageSize,
             totalPage: res.TotalPage,
           })
         );
         dispatch(setData({ data: res.data }));
+        resolve();
+      })
+      .catch((error) => {
+        console.log(error);
+        reject(error);
+      })
+      .finally(() => {
+        dispatch(stopLoading());
+      });
+  });
+};
+
+export const onCreateNewRequest = (data = {}) => (dispatch) => {
+  return new Promise((resolve, reject) => {
+    dispatch(loading());
+    return createRequestApi(data)
+      .then((res) => {
+        console.log(res);
         resolve();
       })
       .catch((error) => {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Pagination } from "antd";
+import { Table, Button, Pagination, Row, Col, Modal } from "antd";
 import "./index.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -7,9 +7,11 @@ import {
   setSortTable,
   setPageSize,
   setCurrentPage,
+  setModal,
 } from "../../slice";
 import Loading from "components/Loading";
 import Search from "antd/lib/input/Search";
+import CreateRequestForm from "components/RequestModal";
 
 const columns = [
   {
@@ -95,14 +97,13 @@ const MainPage = (props) => {
 
   function fetchData(
     params = {
-      PageNumber: currentPage,
-      PageSize: pageSize,
-      SortBy: sortBy,
-      SortOrder: sortOrder,
-      SearchKey: searchKey,
+      pageNumber: currentPage,
+      pageSize: pageSize,
+      sortColumn: sortBy,
+      sortOrder: sortOrder,
+      keyword: searchKey,
     }
   ) {
-    // console.log(searchKey);
     dispatch(getListRequests({ ...params }));
   }
 
@@ -110,7 +111,7 @@ const MainPage = (props) => {
     dispatch(
       setSortTable({
         sortBy: sorter.field,
-        sortOrder: sorter.order !== "ascend",
+        sortOrder: sorter.order,
       })
     );
   }
@@ -118,11 +119,9 @@ const MainPage = (props) => {
     dispatch(setCurrentPage({ currentPage: Page }));
   }
   function onPageSizeChange(current, size) {
-    // console.log(current, size);
     dispatch(setPageSize({ pageSize: size }));
   }
   function onSearch(value) {
-    // console.log(value);
     setSearchKey(value.trim());
   }
 
@@ -136,26 +135,37 @@ const MainPage = (props) => {
   return (
     <>
       {loading && <Loading />}
-      <Search
-        placeholder="input search text"
-        onSearch={onSearch}
-        style={{ width: 200 }}
-      />
-      <Table
-        bordered={true}
-        columns={columns}
-        dataSource={mergeDataColumn}
-        onChange={onTableChange}
-        pagination={false}
-      />
-      <Pagination
-        total={totalPage * pageSize}
-        current={currentPage}
-        pageSize={pageSize}
-        onChange={onPageChange}
-        showSizeChanger
-        onShowSizeChange={onPageSizeChange}
-      />
+      <Row gutter={[16, 16]} justify="center">
+        <Col>
+          <Row justify="space-between" gutter={[16, 16]}>
+            <Col span={6}>
+              <CreateRequestForm />
+            </Col>
+            <Col span={6}>
+              <Search placeholder="input search text" onSearch={onSearch} />
+            </Col>
+          </Row>
+          <Table
+            bordered={true}
+            columns={columns}
+            dataSource={mergeDataColumn}
+            onChange={onTableChange}
+            pagination={false}
+          />
+        </Col>
+      </Row>
+      <Row gutter={[16, 16]} justify="center">
+        <Col span={12} offset={6}>
+          <Pagination
+            total={totalPage * pageSize}
+            current={currentPage}
+            pageSize={pageSize}
+            onChange={onPageChange}
+            showSizeChanger
+            onShowSizeChange={onPageSizeChange}
+          />
+        </Col>
+      </Row>
     </>
   );
 };

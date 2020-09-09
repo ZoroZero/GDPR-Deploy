@@ -13,3 +13,16 @@ export const getListRequestApi = (params = {}) => {
       });
   });
 };
+
+export const createRequestApi = (data) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .post("/api/request", data)
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
