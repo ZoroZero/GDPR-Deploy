@@ -182,6 +182,7 @@ function MainPage() {
         SearchKey: SearchKey,
         SortBy: sorter.field,
         SortOrder: sorter.order,
+        Role: Role,
       });
     }
     if (filters.RoleName !== null) {
