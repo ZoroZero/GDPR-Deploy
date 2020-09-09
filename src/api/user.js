@@ -20,8 +20,6 @@ export const getUsersApi = (data) => {
     return axios
       .get("/api/users/list", { params: data })
       .then((res) => {
-        // console.log(Request);
-        console.log(res);
         resolve(res);
       })
       .catch((error) => {
@@ -35,8 +33,6 @@ export const deleteUsersApi = (data) => {
     return axios
       .delete("/api/users/" + data)
       .then((res) => {
-        // console.log(Request);
-        console.log(res);
         resolve(res);
       })
       .catch((error) => {
@@ -50,8 +46,6 @@ export const insertUsersApi = (data) => {
     return axios
       .post("/api/users/insert", { ...data })
       .then((res) => {
-        // console.log(Request);
-        console.log(res);
         resolve(res);
       })
       .catch((error) => {
@@ -67,8 +61,6 @@ export const updateUsersApi = (id, data) => {
     return axios
       .put(`/api/users/${id}`, { ...data })
       .then((res) => {
-        // console.log(Request);
-        console.log(res);
         resolve(res);
       })
       .catch((error) => {
