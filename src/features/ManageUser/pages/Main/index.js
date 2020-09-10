@@ -41,14 +41,11 @@ function MainPage() {
         return new Promise((resolve, reject) => {
           deleteUsersApi(row.Id);
           setTimeout(Math.random() > 0.5 ? resolve : reject, 2000);
-          fetch({
-            PageNo: PageNo,
-            PageSize: PageSize,
-            SearchKey: SearchKey,
-            SortBy: SortBy,
-            SortOrder: SortOrder,
+        })
+          .catch(() => console.log("Oops errors!"))
+          .then(() => {
+            refetch();
           });
-        }).catch(() => console.log("Oops errors!"));
       },
       onCancel() {},
     });
