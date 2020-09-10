@@ -214,7 +214,7 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
         </Form.Item>
 
         <Form.Item
-          name="role"
+          name="rolelist"
           label="Role permission"
           rules={[
             {
@@ -262,7 +262,7 @@ const CreateUserModal = (pros) => {
 
   const onCreate = (values) => {
     console.log("Received values of form: ", values);
-    insertUsersApi(values).then((res) => {
+    insertUsersApi({ ...values, role: values.rolelist[0] }).then((res) => {
       console.log(res);
       if (res.status === 201) {
         message.success(res.statusText);

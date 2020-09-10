@@ -234,7 +234,7 @@ const CollectionCreateForm = ({
         </Form.Item>
 
         <Form.Item
-          name="role"
+          name="rolelist"
           label="Role permission"
           rules={[
             {
@@ -294,15 +294,17 @@ const UpdateUserModal = (pros) => {
       ...values,
       IsActive: switchState,
     });
-    updateUsersApi(pros.record.Id, { ...values, IsActive: switchState }).then(
-      (res) => {
-        if (res.status === 200) {
-          message.success(res.statusText);
-        } else {
-          message.error(res.statusText);
-        }
+    updateUsersApi(pros.record.Id, {
+      ...values,
+      role: values.rolelist[0],
+      IsActive: switchState,
+    }).then((res) => {
+      if (res.status === 200) {
+        message.success(res.statusText);
+      } else {
+        message.error(res.statusText);
       }
-    );
+    });
     pros.onSubmitModal();
     setVisible(false);
   };
