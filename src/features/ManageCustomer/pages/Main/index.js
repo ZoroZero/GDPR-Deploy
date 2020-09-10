@@ -15,7 +15,8 @@ import "./index.scss";
 import AddEditCustomerModal from "../../../../components/ManageCustomer/AddEditCustomerModel";
 import UpdateUserModal from "../../../../components/ManageUser/UpdateUserModal.js";
 import { getCustomerApi } from "api/customer";
-
+import { getContactPointsApi } from 'api/customer';
+import { deleteCustomerApi } from 'api/customer'
 import { setSort } from "features/ManageCustomer/slice";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -24,101 +25,8 @@ const { confirm } = Modal;
 const pageSize = 10;
 const { Search } = Input;
 
-function showPromiseConfirm() {
-  confirm({
-    title: "Do you want to delete these items?",
-    icon: <ExclamationCircleOutlined />,
-    content:
-      "When clicked the OK button, this dialog will be closed after 1 second",
-    onOk() {
-      return new Promise((resolve, reject) => {
-        setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
-      }).catch(() => console.log("Oops errors!"));
-    },
-    onCancel() { },
-  });
-}
 
-const columns = [
-  {
-    title: "Customer Name",
-    dataIndex: "Name",
-    sorter: true,
-  },
-  {
-    title: "Contact Point",
-    dataIndex: "ContactPointEmail",
-    sorter: true,
-    filters: [
-      {
-        text: "Assigned",
-        value: true,
-      },
-      {
-        text: "Null",
-        value: false,
-      },
-    ],
-    onFilter: (value, record) =>
-      value
-        ? record.ContactPointEmail !== null
-        : record.ContactPointEmail == null,
-  },
-  {
-    title: "Contract Begin",
-    dataIndex: "ContractBeginDate",
-    sorter: true,
-  },
-  {
-    title: "Contract End",
-    dataIndex: "ContractEndDate",
-    sorter: true,
-  },
-  {
-    title: "Description",
-    dataIndex: "Description"
-  },
-  {
-    title: "Status",
-    dataIndex: "IsActive",
-    key: "IsActive",
-    filters: [
-      {
-        text: "Active",
-        value: true,
-      },
-      {
-        text: "Inactive",
-        value: false,
-      },
-    ],
-    onFilter: (value, record) => record.IsActive == value,
-    render: (val) =>
-      val ? <Tag color="green">Active</Tag> : <Tag color="red">Inactive</Tag>,
-  },
-  {
-    title: "Action",
-    key: "action",
-    render: () => (
-      <Space size="middle">
-        {/* <Button type="primary">Update</Button> */}
-        <UpdateUserModal />
-        <Button type="primary" danger onClick={showPromiseConfirm}>
-          Delete
-        </Button>
-        {/* <a className="ant-dropdown-link">
-          More actions <DownOutlined />
-        </a> */}
-      </Space>
-    ),
-  },
-  {
-    title: "Machines Owner",
-    dataIndex: "servers",
-    sorter: true,
-    render: (text) => <Tag color="cyan"> Manage {text ? text : 0} </Tag>,
-  },
-];
+
 
 function MainPage() {
   const [contactPoints, setContactPoints] = useState([]);
@@ -131,14 +39,134 @@ function MainPage() {
   const [total, setTotal] = useState();
   const [page, setPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [modalVisible, setModalVisible] = useState(false)
+  const [typeForm, setTypeForm] = useState(true)
+  const [modalVisible, setModalVisible] = useState(false);
+  const [refresh, setRefresh] = useState(false)
+  const [dataForm, setDataForm] = useState({
+    FirstName: "",
+    LastName: "",
+    ContactPointId: "",
+    ContractBeginDate: null,
+    ContractEndDate: null,
+    Description: "",
+    IsActive: true,
+  })
+  const columns = [
+    {
+      title: "Customer Name",
+      dataIndex: "FirstName",
+      sorter: true,
+      render: (text, record) => <p> {text} {record.LastName}</p>
+    },
+    {
+      title: "Contact Point",
+      dataIndex: "ContactPointEmail",
+      sorter: true,
+      filters: [
+        {
+          text: "Assigned",
+          value: true,
+        },
+        {
+          text: "Null",
+          value: false,
+        },
+      ],
+      onFilter: (value, record) =>
+        value
+          ? record.ContactPointEmail !== null
+          : record.ContactPointEmail == null,
+    },
+    {
+      title: "Contract Begin",
+      dataIndex: "ContractBeginDate",
+      sorter: true,
+    },
+    {
+      title: "Contract End",
+      dataIndex: "ContractEndDate",
+      sorter: true,
+    },
+    {
+      title: "Description",
+      dataIndex: "Description"
+    },
+    {
+      title: "Status",
+      dataIndex: "IsActive",
+      key: "IsActive",
+      filters: [
+        {
+          text: "Active",
+          value: true,
+        },
+        {
+          text: "Inactive",
+          value: false,
+        },
+      ],
+      onFilter: (value, record) => record.IsActive == value,
+      render: (val) =>
+        val ? <Tag color="green">Active</Tag> : <Tag color="red">Inactive</Tag>,
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (record) => (
+        <Space size="middle">
+
+          <Button type="primary" onClick={() => {
+            setModalVisible(true); setTypeForm(false); setDataForm({
+              FirstName: record.FirstName, LastName: record.LastName,
+              ContactPointId: record.ContactPointId,
+              ContractBeginDate: new Date(record.ContractBeginDate),
+              ContractEndDate: record.ContractEndDate,
+              Description: record.Description,
+              IsActive: record.IsActive,
+            });
+          }}>
+            Update
+            </Button>
+
+
+          <Button type="primary" danger onClick={() => { showPromiseConfirm(record.Id) }}>
+            Delete
+        </Button>
+          {/* <a className="ant-dropdown-link">
+          More actions <DownOutlined />
+        </a> */}
+        </Space>
+      ),
+    },
+    {
+      title: "Machines Owner",
+      dataIndex: "servers",
+      sorter: true,
+      render: (text) => <Tag color="cyan"> Manage {text ? text : 0} </Tag>,
+    },
+  ];
+
+
   useEffect(() => {
-    getContactPointsApi().then((res) => {
-      setContactPoints(res);
-      console.loh(res)
+
+    fetch(page, sortColumn, sortOrder, searchKeyword);
+  }, [refresh, sortColumn, sortOrder, searchKeyword]);
+
+  function showPromiseConfirm(id) {
+    confirm({
+      title: "Do you want to delete these items?",
+      icon: <ExclamationCircleOutlined />,
+      content:
+        "When clicked the OK button, this dialog will be closed after 1 second",
+      onOk() {
+        deleteCustomerApi({ Id: id })
+        setTimeout(1000);
+        setRefresh(!refresh);
+
+      },
+      onCancel() { },
     });
-    fetch(1, sortColumn, sortOrder, searchKeyword);
-  }, [sortColumn, sortOrder, searchKeyword]);
+  }
 
   function handleSearchCustomer(keyword) {
     keyword ? setSearchKeyword(keyword) : setSearchKeyword('');
@@ -180,11 +208,11 @@ function MainPage() {
       <Row>
         <Col span={8}>
 
-          <Button type="primary" onClick={() => setModalVisible(true)}>
+          <Button type="primary" onClick={() => { setModalVisible(true); setTypeForm(true) }}>
             Create new Customer
             </Button>
 
-          <AddEditCustomerModal modalVisible={modalVisible} setModalVisible={setModalVisible}> </AddEditCustomerModal>
+          <AddEditCustomerModal typeForm={typeForm} dataForm={dataForm} refresh={refresh} setPage={setPage} setRefresh={setRefresh} modalVisible={modalVisible} setModalVisible={setModalVisible}>  </AddEditCustomerModal>
 
         </Col>
         <Col span={8} offset={8}>
@@ -214,12 +242,14 @@ function MainPage() {
           <Pagination
             showQuickJumper
             defaultCurrent={1}
+            current={page}
             defaultPageSize={10}
             total={total}
             onChange={onPageChange}
           />
         </Col>
       </Row>
+      <button onClick={() => console.log(refresh)}></button>
 
       <br />
     </div>

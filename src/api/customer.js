@@ -37,6 +37,7 @@ export const createCustomerApi = (data) => {
             .post(
                 String(process.env.REACT_APP_BASE_URL) + "/customers", data)
             .then((res) => {
+                console.log(res)
                 resolve(res.data);
             })
             .catch((error) => {
@@ -59,9 +60,39 @@ export const getContactPointsApi = () => {
             });
     });
 };
+
+export const deleteCustomerApi = (data) => {
+
+    return new Promise((resolve, reject) => {
+        const token = checkToken()
+        return axios
+            .delete(
+                String(process.env.REACT_APP_BASE_URL) + "/customers", { params: data })
+            .then((res) => {
+                resolve(res.data);
+            })
+            .catch((error) => {
+                reject(error);
+            });
+    });
+};
+
+export const updateCustomerApi = (data) => {
+
+    return new Promise((resolve, reject) => {
+        const token = checkToken()
+        return axios
+            .put(
+                String(process.env.REACT_APP_BASE_URL) + "/customers", data)
+            .then((res) => {
+                resolve(res.data);
+            })
+            .catch((error) => {
+                reject(error);
+            });
+    });
+};
 /* TODO:
-- Get api => contactpoints (service cua tu') => contactpointid
-- create customer => promise tu backend => refetch data
 - sort date
 
 
