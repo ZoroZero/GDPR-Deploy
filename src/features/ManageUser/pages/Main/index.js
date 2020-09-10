@@ -84,6 +84,16 @@ function MainPage() {
         { text: "dc-member", value: "dc-member" },
         { text: "contact-point", value: "contact-point" },
       ],
+      render: (val) =>
+        val == "admin" ? (
+          <Tag color="green">ADMIN</Tag>
+        ) : val == "normal-user" ? (
+          <Tag color="blue">NORMAL USER</Tag>
+        ) : val == "dc-member" ? (
+          <Tag color="red">DC-MEMBER</Tag>
+        ) : (
+          <Tag color="orange">CONTACT POINT</Tag>
+        ),
     },
     {
       title: "IsActive",
