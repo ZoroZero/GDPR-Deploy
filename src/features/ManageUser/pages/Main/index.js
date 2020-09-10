@@ -235,7 +235,6 @@ function MainPage() {
       </Row>
 
       <br />
-      <br />
       <Table
         columns={columns}
         rowKey={(record) => record.Id}
@@ -256,7 +255,7 @@ function MainPage() {
             defaultCurrent={1}
             total={total}
             showTotal={showTotal}
-            defaultPageSize={7}
+            defaultPageSize={10}
             onChange={onChange}
           />
         </Col>

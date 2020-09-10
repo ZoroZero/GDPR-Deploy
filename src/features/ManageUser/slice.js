@@ -5,7 +5,7 @@ export const initialState = {
   endDate: null,
   SearchKey: "",
   PageNo: 1,
-  PageSize: 7,
+  PageSize: 10,
   SortBy: "",
   SortOrder: "ascend",
   Role: "",
