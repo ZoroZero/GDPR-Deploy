@@ -10,7 +10,7 @@ export const listUserApi = () => {
         resolve(res.data);
       })
       .catch((error) => {
-        reject(error);
+        reject(error.response);
       });
   });
 };
@@ -23,7 +23,7 @@ export const getUsersApi = (data) => {
         resolve(res);
       })
       .catch((error) => {
-        reject(error);
+        reject(error.response);
       });
   });
 };
@@ -36,7 +36,7 @@ export const deleteUsersApi = (data) => {
         resolve(res);
       })
       .catch((error) => {
-        reject(error);
+        reject(error.response);
       });
   });
 };
@@ -49,7 +49,7 @@ export const insertUsersApi = (data) => {
         resolve(res);
       })
       .catch((error) => {
-        reject(error);
+        reject(error.response);
       });
   });
 };
@@ -64,7 +64,7 @@ export const updateUsersApi = (id, data) => {
         resolve(res);
       })
       .catch((error) => {
-        reject(error);
+        reject(error.response);
       });
   });
 };

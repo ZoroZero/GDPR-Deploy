@@ -298,13 +298,15 @@ const UpdateUserModal = (pros) => {
       ...values,
       role: values.rolelist[0],
       IsActive: switchState,
-    }).then((res) => {
-      if (res.status === 200) {
-        message.success(res.statusText);
-      } else {
-        message.error(res.statusText);
-      }
-    });
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          message.success(res.statusText);
+        }
+      })
+      .catch((error) => {
+        message.error(error.data.message);
+      });
     pros.onSubmitModal();
     setVisible(false);
   };

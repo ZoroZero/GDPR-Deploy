@@ -262,14 +262,16 @@ const CreateUserModal = (pros) => {
 
   const onCreate = (values) => {
     console.log("Received values of form: ", values);
-    insertUsersApi({ ...values, role: values.rolelist[0] }).then((res) => {
-      console.log(res);
-      if (res.status === 201) {
-        message.success(res.statusText);
-      } else {
-        message.error(res.statusText);
-      }
-    });
+    insertUsersApi({ ...values, role: values.rolelist[0] })
+      .then((res) => {
+        console.log("res from insert", res);
+        if (res.status === 201) {
+          message.success(res.statusText);
+        }
+      })
+      .catch((error) => {
+        message.error(error.data.message);
+      });
     pros.onSubmitModal();
     setVisible(false);
   };

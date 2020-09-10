@@ -166,6 +166,10 @@ function MainPage() {
     dispatch(setSearchKey({ SearchKey: SearchKey }));
     dispatch(setPageNo({ PageNo: 1 }));
   }
+  function onShowSizeChange(current, pageSize) {
+    console.log(current, pageSize);
+    dispatch(setPageSize({ PageSize: pageSize }));
+  }
   function handleTableChange(pagination, filters, sorter) {
     // console.log("Various parameters", pagination, filters, sorter);
     // console.log("Filter", filters);
@@ -194,21 +198,25 @@ function MainPage() {
 
   const fetch = (params) => {
     setLoading(true);
-    return getUsersApi(params).then((res) => {
-      setLoading(false);
-      setData(res.data);
-      if (res.status === 200) {
-        // message.success(res.statusText);
-      } else {
-        message.error(res.statusText);
-      }
-      if (res.data.length != 0) setTotal(res.data[0].TotalItem);
-      else setTotal(0);
-      showTotal({ total });
-      setPagination({
-        ...params.pagination,
+    return getUsersApi(params)
+      .then((res) => {
+        setLoading(false);
+        setData(res.data);
+        if (res.status === 200) {
+          // message.success(res.statusText);
+        } else {
+          message.error(res.statusText);
+        }
+        if (res.data.length != 0) setTotal(res.data[0].TotalItem);
+        else setTotal(0);
+        showTotal({ total });
+        setPagination({
+          ...params.pagination,
+        });
+      })
+      .catch((error) => {
+        message.error(error.data.message);
       });
-    });
   };
 
   return (
@@ -243,8 +251,8 @@ function MainPage() {
         <Col span={12} offset={6}>
           <Pagination
             showQuickJumper
-            // showSizeChanger
-            // onShowSizeChange={onShowSizeChange}
+            showSizeChanger
+            onShowSizeChange={onShowSizeChange}
             defaultCurrent={1}
             total={total}
             showTotal={showTotal}
