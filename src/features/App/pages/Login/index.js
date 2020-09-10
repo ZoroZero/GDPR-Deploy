@@ -27,7 +27,7 @@ function LoginPage(props) {
       })
       .catch((error) => {
         message.error("login fail");
-        console.log(error);
+        console.log(error.message);
       });
   };
 

@@ -17,9 +17,35 @@ export const getListRequestApi = (params = {}) => {
 export const createRequestApi = (data) => {
   return new Promise((resolve, reject) => {
     return axios
-      .post("/api/request", data)
+      .post("/api/requests", data)
       .then((res) => {
-        resolve(res.data);
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export const getServerOptionsApi = () => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .get("/api/servers/active")
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export const approveRequestApi = (value) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .post("/api/approve-requests", value)
+      .then((res) => {
+        resolve(res);
       })
       .catch((error) => {
         reject(error);

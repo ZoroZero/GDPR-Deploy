@@ -12,6 +12,7 @@ import {
 import Loading from "components/Loading";
 import Search from "antd/lib/input/Search";
 import CreateRequestForm from "components/RequestModal";
+import { Link } from "react-router-dom";
 
 const columns = [
   {
@@ -48,11 +49,17 @@ const columns = [
     title: "Title",
     dataIndex: "Title",
     key: "title",
-    width: 250,
+    width: 300,
     render: (data) => (
       <div>
-        <div>Title: {data.Title}</div>
-        <div>Description: {data.Description}</div>
+        <div>
+          <strong>Title: </strong>
+          {data.Title}
+        </div>
+        <div>
+          <strong>Description: </strong>
+          {data.Description}
+        </div>
       </div>
     ),
   },
@@ -60,21 +67,26 @@ const columns = [
     title: "Request From",
     dataIndex: "StartDate",
     key: "request-from",
-    width: 150,
+    width: 120,
     sorter: true,
   },
   {
     title: "Request To",
     dataIndex: "EndDate",
     key: "request-to",
-    width: 150,
+    width: 120,
     sorter: true,
   },
   {
     title: "Action",
     key: "operation",
+    dataIndex: "link",
     fixed: "right",
-    render: () => <Button>Detail</Button>,
+    render: (data) => (
+      <Link to={data}>
+        <Button>Detail</Button>
+      </Link>
+    ),
   },
 ];
 
@@ -130,7 +142,12 @@ const MainPage = (props) => {
       Title: val.Title,
       Description: val.Description,
     };
-    return { ...val, Title: title, key: val.Id };
+    return {
+      ...val,
+      Title: title,
+      key: val.Id,
+      link: `/request-management/${val.Id}`,
+    };
   });
   return (
     <>

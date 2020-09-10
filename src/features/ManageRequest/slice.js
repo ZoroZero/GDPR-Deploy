@@ -1,6 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { loading, stopLoading } from "features/App/slice";
-import { getListRequestApi, createRequestApi } from "api/requests";
+import {
+  getListRequestApi,
+  createRequestApi,
+  getServerOptionsApi,
+  approveRequestApi,
+} from "api/requests";
+import { message } from "antd";
 
 export const initialState = {
   blockIds: null,
@@ -11,6 +17,7 @@ export const initialState = {
   sortOrder: "descend",
   sortBy: "",
   showModal: false,
+  lstServer: [],
 };
 
 const slice = createSlice({
@@ -42,6 +49,9 @@ const slice = createSlice({
     setModal: (state, action) => {
       state.showModal = action.payload.showModal;
     },
+    setListServer: (state, action) => {
+      state.lstServer = action.payload.lstServer;
+    },
   },
 });
 
@@ -53,6 +63,7 @@ export const {
   setCurrentPage,
   setPageSize,
   setModal,
+  setListServer,
 } = slice.actions;
 export default slice.reducer;
 
@@ -88,14 +99,52 @@ export const onCreateNewRequest = (data = {}) => (dispatch) => {
     return createRequestApi(data)
       .then((res) => {
         console.log(res);
+        message.success("success");
+        dispatch(setModal({ showModal: false }));
+        dispatch(
+          getListRequests({
+            pageSize: initialState.pageSize,
+            pageNumber: initialState.currentPage,
+            sortColumn: initialState.sortBy,
+            sortOrder: initialState.sortOrder,
+            keyword: "",
+          })
+        );
+        resolve(res);
+      })
+      .catch((error) => {
+        message.error(error.response.data.message);
+        reject(error);
+      })
+      .finally(() => {
+        dispatch(stopLoading());
+      });
+  });
+};
+
+export const getListServerOptions = () => (dispatch) => {
+  return new Promise((resolve, reject) => {
+    return getServerOptionsApi()
+      .then((res) => {
+        console.log(res);
+        dispatch(setListServer({ lstServer: res.data.data }));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  });
+};
+
+export const approveRequest = (value) => (dispatch) => {
+  return new Promise((resolve, reject) => {
+    return approveRequestApi(value)
+      .then((res) => {
+        console.log(res);
         resolve();
       })
       .catch((error) => {
         console.log(error);
         reject(error);
-      })
-      .finally(() => {
-        dispatch(stopLoading());
       });
   });
 };
