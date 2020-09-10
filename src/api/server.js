@@ -24,7 +24,9 @@ export const getServersApi = (data) => {
               pageSize: data.pageSize,
               sortColumn: data.sortColumn,
               sortOrder: data.sortOrder,
-              keyword: data.keyword
+              keyword: data.keyword,
+              filterColumn: data.filterColumn,
+              filterKeys: data.filterKeys
           }
       })
       .then((res) => {

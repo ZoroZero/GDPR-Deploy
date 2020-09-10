@@ -16,8 +16,8 @@ function AddEditServerModal(props){
             EndDate: ''
          });
 
-        setTitle(props.request && props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE?'Create new server' : 'Update server information')
-      }, []);
+        setTitle(props.request && props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE?'Update server information' : 'Creat new server')
+      }, [props]);
 
     
 

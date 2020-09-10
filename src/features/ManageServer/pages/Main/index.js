@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Table, Pagination, Input, Button, Modal } from "antd";
+import { Table, Pagination, Input, Button, Modal, Tag } from "antd";
 import "./index.scss";
 import { getServersApi, deleteServerApi } from "api/server";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,27 +16,33 @@ const { confirm } = Modal;
 
 function MainPage() {
     const dispatch = useDispatch()
+
     const {sortColumn, sortOrder} = useSelector((state) => state.serverManagement)
     const [data, setData] = useState([]);
+
     const [loading, setLoading] = useState(false);
     const [total, setTotal ] = useState(0);
+
     const [page, setPage ] = useState(1);
-    const [searchKeyword, setSearchKeyword] = useState('');    
+    const [searchKeyword, setSearchKeyword] = useState('');  
+
+    const [filter, setFilter] = useState({filterColumn: SERVER_CONSTANTS.DEFAULT_FILTER_COLUMN, filterKeys: SERVER_CONSTANTS.DEFAULT_FILTER_KEYS}) 
     const [modalVisible, setModalVisible] = useState(false);
+
     const [editRequest, setEditRequest] = useState(null);
+
     const [refresh, setRefresh] = useState(true);
     const setRefreshPage = useCallback(() => {
         setRefresh(refresh => !refresh);
       }, []);
 
     useEffect(() => {
-        fetch(page, sortColumn, sortOrder, searchKeyword);
-    }, [sortColumn, sortOrder, searchKeyword, refresh]);
+        fetch(page, sortColumn, sortOrder, searchKeyword, filter);
+    }, [page, sortColumn, sortOrder, searchKeyword, refresh, filter]);
 
 
     useEffect(() => {
         handleModalActivate()
-        // console.log(serverEdit)
     }, [editRequest]);
 
     // Table columns
@@ -69,7 +75,11 @@ function MainPage() {
             title: "Status",
             dataIndex: "Status",
             width: "10%",
-            sorter: true,
+            render: (val) => val==='1' ? <Tag color="green">Active</Tag> : <Tag color="red">InActive</Tag>,
+            filters: [
+                { text: 'Active', value: '1' },
+                { text: 'InActive', value: '0' },
+              ],
         },
         {
             title: "Owner",
@@ -81,15 +91,16 @@ function MainPage() {
             title: 'Edit',
             key: 'operation',
             width: "10%",
-            render: (record) => <Button onClick={() => {setEditRequest({
-                                                            type: SERVER_CONSTANTS.UPDATE_SERVER_TYPE, 
-                                                            data: record})}}>Edit</Button>,
+            render: (record) => <Button type="primary" 
+                    onClick={() => {setEditRequest({
+                        type: SERVER_CONSTANTS.UPDATE_SERVER_TYPE, 
+                        data: record})}}>Edit</Button>,
           },
           {
             title: 'Delete',
             key: 'operation',
             width: "10%",
-            render: (record) => <Button onClick={() => {showDeleteModal(record)} }>Delete</Button>,
+            render: (record) => <Button danger type="primary" onClick={() => {showDeleteModal(record)} }>Delete</Button>,
           }
     ];
     
@@ -98,20 +109,19 @@ function MainPage() {
         // console.log(pageNumber);
         setPage(pageNumber)
         console.log("Fetch after pagination change");
-        fetch(pageNumber, sortColumn, sortOrder, searchKeyword)
     }
 
     // Fetch data
-    const fetch = (pageNumber, sortColumn, sortOrder, keyword) => {
-        // console.log("Before", pageNumber)
+    const fetch = (pageNumber, sortColumn, sortOrder, keyword, filter) => {
         setLoading(true);
-        // console.log('Fetch normal');
         return getServersApi({
                             current: pageNumber, 
                             pageSize: pageSize, 
                             sortColumn: sortColumn,
                             sortOrder: sortOrder,
-                            keyword: keyword}).then((res) => {
+                            keyword: keyword,
+                            filterColumn: filter.filterColumn,
+                            filterKeys: filter.filterKeys}).then((res) => {
             setLoading(false);
             console.log(res.data)
             setTotal(res.data[0]?res.data[0].Total: 0)
@@ -119,12 +129,17 @@ function MainPage() {
         }).catch((err) => {console.log(err)});
     };
 
-    // Handle sorting
-    function handleSortChange(pagination, filters, sorter) {
+    // Handle table change: sort, filter
+    function handleTableChange(pagination, filters, sorter) {
         // console.log('params', sorter);
+        console.log('Filters; ',filters);
         var newSortColumn = sorter.column? sorter.column.dataIndex: 'Name'
         var newSortOrder = sorter.order ==='descend'?'descend':'ascend'
         dispatch(setSort({sortColumn: newSortColumn, sortOrder: newSortOrder }));
+
+        // Filter
+        var filterKeys = filters.Status? filters.Status.join(): SERVER_CONSTANTS.DEFAULT_FILTER_KEYS
+        setFilter({filterColumn: filter.filterColumn, filterKeys: filterKeys})
         // console.log("Fetch after sort change");
     }
 
@@ -178,7 +193,7 @@ function MainPage() {
 
     return (
         <React.Fragment>
-            <Button type="primary" onClick={()=> setEditRequest(SERVER_CONSTANTS.ADD_SERVER_REQUEST)}>
+            <Button type="primary" onClick={()=> setEditRequest(SERVER_CONSTANTS.ADD_SERVER_REQUEST)} style={{ background: 'lawngreen', color: 'black'}}>
                 Create new server
             </Button>
 
@@ -199,7 +214,7 @@ function MainPage() {
                 dataSource={data}
                 pagination={false}
                 loading={loading}
-                onChange={handleSortChange}
+                onChange={handleTableChange}
             />
             
             <Pagination
