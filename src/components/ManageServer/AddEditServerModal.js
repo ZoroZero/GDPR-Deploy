@@ -31,7 +31,8 @@ function AddEditServerModal(props){
                     endDate: values.EndDate.format("YYYY-MM-DD hh:mm:ss")
                 })
                 .then((res) => {
-                    console.log("Sucessfully add new server")
+                    
+                    console.log("Sucessfully add new server", res)
                     openNotification("Sucessfully add new server")
                     props.setModalVisible(false)
                     form.resetFields();
@@ -54,7 +55,7 @@ function AddEditServerModal(props){
                 status: active
             })
             .then((res) => {
-                console.log("Sucessfully change server information")
+                console.log("Sucessfully change server information", res)
                 openNotification("Sucessfully change server information")
                 props.setModalVisible(false)
                 form.resetFields();
@@ -71,9 +72,8 @@ function AddEditServerModal(props){
 
     const openNotification = (message) => {
         notification.open({
-          message: 'Successfully create server',
-          description:
-            message,
+          message: message,
+          description: message,
           onClick: () => {
             console.log('Notification Clicked!');
           },

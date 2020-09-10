@@ -1,15 +1,18 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Table, Pagination, Input, Button  } from "antd";
+import { Table, Pagination, Input, Button, Modal } from "antd";
 import "./index.scss";
-import { getServersApi } from "api/server";
+import { getServersApi, deleteServerApi } from "api/server";
 import { useDispatch, useSelector } from "react-redux";
 import { setSort } from "features/ManageServer/slice";
 import AddEditServerModal from "components/ManageServer/AddEditServerModal"; 
 import { SERVER_CONSTANTS } from 'constants/ManageServer/server';
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 MainPage.propTypes = {};
 
 const pageSize = 10;
 const { Search } = Input
+const { confirm } = Modal;
+
 
 function MainPage() {
     const dispatch = useDispatch()
@@ -86,7 +89,7 @@ function MainPage() {
             title: 'Delete',
             key: 'operation',
             width: "10%",
-            render: (record) => <Button onClick={() => {handleDeleteServer(record.Id)} }>Delete</Button>,
+            render: (record) => <Button onClick={() => {showDeleteModal(record)} }>Delete</Button>,
           }
     ];
     
@@ -123,14 +126,12 @@ function MainPage() {
         var newSortOrder = sorter.order ==='descend'?'descend':'ascend'
         dispatch(setSort({sortColumn: newSortColumn, sortOrder: newSortOrder }));
         // console.log("Fetch after sort change");
-        // fetch(page, newSortColumn, newSortOrder, searchKeyword);
     }
 
     //Handle search 
     function handleSearchServer(keyword){
         setSearchKeyword(keyword)
         // console.log("Fetch after search");
-        // fetch(1, sortColumn, sortOrder, keyword)
     }
 
     // Handle on edit click
@@ -140,10 +141,40 @@ function MainPage() {
         }
     }
 
-    // Handle delete server
-    function handleDeleteServer(id){
-        console.log("Delete", id);
+    // Show delete modal
+    function showDeleteModal(record) {
+        confirm({
+          title: "Do you want to delete server " + record.Name,
+          icon: <ExclamationCircleOutlined />,
+          content: "Warning: The delete user cannot be recover",
+          onOk() {
+            handleDeleteServer(record.Id)    
+          },
+          onCancel() {},
+        });
     }
+
+    // Handle delete server
+    function handleDeleteServer(id) {
+        return deleteServerApi({id: id})
+        .then((res) => {
+            console.log("Delete response", res)
+            setRefreshPage();
+        })
+        .catch(() => console.log("Oops errors!"));    
+    }
+    
+    // Open notifcation
+    // const openNotification = (message) => {
+    //     notification.open({
+    //       message: message,
+    //       description:
+    //         message,
+    //       onClick: () => {
+    //         console.log('Notification Clicked!');
+    //       },
+    //     });
+    // };
 
     return (
         <React.Fragment>

@@ -80,6 +80,7 @@ export const updateServerApi = (data) => {
 
 export const deleteServerApi = (data) => {
   return new Promise((resolve, reject) => {
+    console.log("Delete data", data)
     return axios
       .delete(`/api/servers`, {
           params: {
