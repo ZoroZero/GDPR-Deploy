@@ -168,6 +168,7 @@ function MainPage() {
   }
   function onShowSizeChange(current, pageSize) {
     console.log(current, pageSize);
+    if (pageSize != PageSize) dispatch(setPageNo(Math.ceil(total / pageSize)));
     dispatch(setPageSize({ PageSize: pageSize }));
   }
   function handleTableChange(pagination, filters, sorter) {
