@@ -268,6 +268,7 @@ const CreateUserModal = (pros) => {
         if (res.status === 201) {
           message.success(res.statusText);
         }
+        pros.onSubmitModal();
       })
       .catch((error) => {
         message.error(error.data.message);
