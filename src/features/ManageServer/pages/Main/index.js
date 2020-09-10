@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Table, Pagination, Input, Button, Modal, Tag } from "antd";
+import { Table, Pagination, Input, Button, Modal, Tag, Collapse } from "antd";
 import "./index.scss";
 import { getServersApi, deleteServerApi } from "api/server";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,6 +7,8 @@ import { setSort, setData, setPagination } from "features/ManageServer/slice";
 import AddEditServerModal from "components/ManageServer/AddEditServerModal"; 
 import { SERVER_CONSTANTS } from 'constants/ManageServer/server';
 import { ExclamationCircleOutlined } from "@ant-design/icons";
+import ExportServer from 'components/ManageServer/ExportServer';
+
 MainPage.propTypes = {};
 
 const { Search } = Input
@@ -27,7 +29,7 @@ function MainPage() {
 
     const [filter, setFilter] = useState({filterColumn: SERVER_CONSTANTS.DEFAULT_FILTER_COLUMN, filterKeys: SERVER_CONSTANTS.DEFAULT_FILTER_KEYS}) 
     const [modalVisible, setModalVisible] = useState(false);
-
+    const [exporting, setExporting] = useState(false);
     const [editRequest, setEditRequest] = useState(null);
 
     const [refresh, setRefresh] = useState(true);
@@ -196,8 +198,16 @@ function MainPage() {
     //     });
     // };
 
+    function toggleExport() {
+        setExporting(exporting => !exporting)
+    }
+
     return (
         <React.Fragment>
+            <div>
+                <Button onClick={toggleExport} style={{marginBottom: '20px'}}>Export server list</Button>
+                <ExportServer id='export-server' className='export-server' visible = {exporting} csvData={data} fileName='server'></ExportServer>
+            </div>
             <Button type="primary" onClick={()=> setEditRequest(SERVER_CONSTANTS.ADD_SERVER_REQUEST)} style={{ background: 'lawngreen', color: 'black'}}>
                 Create new server
             </Button>

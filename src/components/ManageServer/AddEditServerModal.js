@@ -23,7 +23,7 @@ function AddEditServerModal(props){
             onFill()
       }, [props]);
 
-      const onFill = () => {
+    const onFill = () => {
         console.log(props)
         form.setFieldsValue({
             ServerName: props.request.data.Name,
@@ -33,7 +33,7 @@ function AddEditServerModal(props){
         });
 
         setActive(props.request.data.Status === '1')
-      };
+    };
 
     const onFinish = values => {
         // console.log(values);
