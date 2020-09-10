@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Modal, Form, Input, DatePicker, Button, notification, Switch } from "antd";
 import { createServerApi, updateServerApi } from 'api/server';
 import { SERVER_CONSTANTS } from "constants/ManageServer/server";
+import moment from 'moment';
 
 function AddEditServerModal(props){
 
     const [form] = Form.useForm();
     const [title, setTitle] = useState('Create new server');
     const [active, setActive] = useState(true);
+
     useEffect(() => {
         form.setFieldsValue({ 
             ServerName: '',
@@ -17,9 +19,21 @@ function AddEditServerModal(props){
          });
 
         setTitle(props.request && props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE?'Update server information' : 'Creat new server')
+        if(props.request && props.request.data)
+            onFill()
       }, [props]);
 
-    
+      const onFill = () => {
+        console.log(props)
+        form.setFieldsValue({
+            ServerName: props.request.data.Name,
+            IpAddress: props.request.data.IpAddress,
+            StartDate: moment(props.request.data.StartDate),
+            EndDate: moment(props.request.data.EndDate)
+        });
+
+        setActive(props.request.data.Status === '1')
+      };
 
     const onFinish = values => {
         // console.log(values);
@@ -31,9 +45,8 @@ function AddEditServerModal(props){
                     endDate: values.EndDate.format("YYYY-MM-DD hh:mm:ss")
                 })
                 .then((res) => {
-                    
                     console.log("Sucessfully add new server", res)
-                    openNotification("Sucessfully add new server")
+                    openNotification(`Sucessfully add new server at ${res.createAt}`)
                     props.setModalVisible(false)
                     form.resetFields();
                 })
@@ -41,7 +54,7 @@ function AddEditServerModal(props){
                 .finally(() => {
                     props.setEditRequest(null);
                     props.setRefreshPage(true);
-                })   
+                })    
         }
         else if(props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE){
             const id = props.request.data.Id
@@ -55,8 +68,8 @@ function AddEditServerModal(props){
                 status: active
             })
             .then((res) => {
-                console.log("Sucessfully change server information", res)
-                openNotification("Sucessfully change server information")
+                console.log("Sucessfully update server information", res)
+                openNotification(`Sucessfully update server information at ${res.updateAt}`)
                 props.setModalVisible(false)
                 form.resetFields();
             })
@@ -73,7 +86,7 @@ function AddEditServerModal(props){
     const openNotification = (message) => {
         notification.open({
           message: message,
-          description: message,
+          description: null,
           onClick: () => {
             console.log('Notification Clicked!');
           },
@@ -142,7 +155,7 @@ function AddEditServerModal(props){
                     
                     {props.request && props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE &&
                         <Form.Item name='Status'>
-                            <Switch checkedChildren="Active" unCheckedChildren="Inactive" defaultChecked onChange={(checked)=>{setActive(checked)}}/>
+                            <Switch checkedChildren="Active" unCheckedChildren="Inactive" checked={active} onChange={(checked)=>{setActive(checked)}}/>
                             <br />
                         </Form.Item>
                     }

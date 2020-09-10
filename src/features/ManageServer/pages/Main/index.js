@@ -3,13 +3,12 @@ import { Table, Pagination, Input, Button, Modal, Tag } from "antd";
 import "./index.scss";
 import { getServersApi, deleteServerApi } from "api/server";
 import { useDispatch, useSelector } from "react-redux";
-import { setSort } from "features/ManageServer/slice";
+import { setSort, setData, setPagination } from "features/ManageServer/slice";
 import AddEditServerModal from "components/ManageServer/AddEditServerModal"; 
 import { SERVER_CONSTANTS } from 'constants/ManageServer/server';
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 MainPage.propTypes = {};
 
-const pageSize = 10;
 const { Search } = Input
 const { confirm } = Modal;
 
@@ -17,13 +16,13 @@ const { confirm } = Modal;
 function MainPage() {
     const dispatch = useDispatch()
 
-    const {sortColumn, sortOrder} = useSelector((state) => state.serverManagement)
-    const [data, setData] = useState([]);
+    const {sortColumn, sortOrder, data, pagination} = useSelector((state) => state.serverManagement)
+    // const [data, setData] = useState([]);
 
     const [loading, setLoading] = useState(false);
     const [total, setTotal ] = useState(0);
 
-    const [page, setPage ] = useState(1);
+    // const [page, setPage ] = useState(1);
     const [searchKeyword, setSearchKeyword] = useState('');  
 
     const [filter, setFilter] = useState({filterColumn: SERVER_CONSTANTS.DEFAULT_FILTER_COLUMN, filterKeys: SERVER_CONSTANTS.DEFAULT_FILTER_KEYS}) 
@@ -37,13 +36,14 @@ function MainPage() {
       }, []);
 
     useEffect(() => {
-        fetch(page, sortColumn, sortOrder, searchKeyword, filter);
-    }, [page, sortColumn, sortOrder, searchKeyword, refresh, filter]);
+        fetch(pagination, sortColumn, sortOrder, searchKeyword, filter);
+    }, [pagination, sortColumn, sortOrder, searchKeyword, refresh, filter]);
 
 
     useEffect(() => {
         handleModalActivate()
     }, [editRequest]);
+
 
     // Table columns
     const columns = [
@@ -105,27 +105,32 @@ function MainPage() {
     ];
     
     // Handle change in page number
-    const handlePageChange = (pageNumber) => {
+    const handlePageChange = (pageNumber, pageSize) => {
         // console.log(pageNumber);
-        setPage(pageNumber)
+        var newPageNum = pageNumber
+        if(pageSize != pagination.pageSize)
+            newPageNum =  Math.ceil(pagination.pageSize*pagination.page/pageSize)
+        dispatch(setPagination({pagination: {page: newPageNum, pageSize: pageSize}}))
         console.log("Fetch after pagination change");
     }
 
     // Fetch data
-    const fetch = (pageNumber, sortColumn, sortOrder, keyword, filter) => {
+    const fetch = (pagination, sortColumn, sortOrder, keyword, filter) => {
         setLoading(true);
         return getServersApi({
-                            current: pageNumber, 
-                            pageSize: pageSize, 
+                            current: pagination.page, 
+                            pageSize: pagination.pageSize, 
                             sortColumn: sortColumn,
                             sortOrder: sortOrder,
                             keyword: keyword,
                             filterColumn: filter.filterColumn,
-                            filterKeys: filter.filterKeys}).then((res) => {
+                            filterKeys: filter.filterKeys})
+            .then((res) => {
             setLoading(false);
             console.log(res.data)
             setTotal(res.data[0]?res.data[0].Total: 0)
-            setData(res.data);
+            // setData(res.data);
+            dispatch(setData(res))
         }).catch((err) => {console.log(err)});
     };
 
@@ -218,9 +223,10 @@ function MainPage() {
             />
             
             <Pagination
+                showQuickJumper 
                 total={total}
-                defaultCurrent={1}
-                pageSize={pageSize}
+                current ={pagination.page}
+                pageSize={pagination.pageSize}
                 onChange = {handlePageChange}
             />
         </React.Fragment>
