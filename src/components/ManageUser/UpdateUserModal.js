@@ -315,6 +315,8 @@ const UpdateUserModal = (pros) => {
     <div>
       <Button
         type="primary"
+        // size={"small"}
+        // style={{ color: "blue", borderColor: "blue" }}
         onClick={() => {
           setVisible(true);
         }}

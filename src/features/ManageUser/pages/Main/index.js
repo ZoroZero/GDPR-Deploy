@@ -119,6 +119,7 @@ function MainPage() {
           <UpdateUserModal record={record} onSubmitModal={refetch} />
           <Button
             type="primary"
+            // size={"small"}
             danger
             onClick={() => showPromiseConfirm(record)}
           >
@@ -241,8 +242,8 @@ function MainPage() {
           />
         </Col>
       </Row>
-
       <br />
+      {/* <br /> */}
       <Table
         columns={columns}
         rowKey={(record) => record.Id}
