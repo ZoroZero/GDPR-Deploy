@@ -22,7 +22,7 @@ import {
   InboxOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
-import React, { Component, useState } from "react";
+import React, { Component, useState, useEffect } from "react";
 const { Option } = Select;
 const formItemLayout = {
   labelCol: {
@@ -61,7 +61,11 @@ const normFile = (e) => {
   return e && e.fileList;
 };
 
-const UserSetting = () => {
+const UserSetting = (record) => {
+  useEffect(() => {
+    fetch();
+  }, [record]);
+  const fetch = () => {};
   const [switchState, setSwitchState] = useState(true);
   function onChange(checked) {
     console.log(`switch to ${checked}`);
@@ -76,11 +80,14 @@ const UserSetting = () => {
       name="validate_other"
       {...formItemLayout}
       onFinish={onFinish}
-      initialValues={{
-        "input-number": 3,
-        "checkbox-group": ["A", "B"],
-        rate: 3.5,
-      }}
+      // initialValues={{
+      //   Email: record.Email,
+      //   FirstName: record.FirstName,
+      //   LastName: record.LastName,
+      //   HashPasswd: record.HashPasswd,
+      //   UserName: record.UserName,
+      //   RoleName: record.RoleName,
+      // }}
     >
       <Form.Item>
         <Row
@@ -104,7 +111,7 @@ const UserSetting = () => {
         <Rate />
       </Form.Item> */}
       <Form.Item
-        name="firstname"
+        name="FirstName"
         label="First Name"
         rules={[
           {
@@ -112,12 +119,13 @@ const UserSetting = () => {
             message: "Please input Firstname!",
           },
         ]}
+        value={record.FirstName}
       >
         <Input />
       </Form.Item>
 
       <Form.Item
-        name="lastname"
+        name="LastName"
         label="Last Name"
         rules={[
           {
@@ -129,7 +137,7 @@ const UserSetting = () => {
         <Input />
       </Form.Item>
       <Form.Item
-        name="email"
+        name="Email"
         label="E-mail"
         rules={[
           {
@@ -146,7 +154,7 @@ const UserSetting = () => {
       </Form.Item>
 
       <Form.Item
-        name="password"
+        name="HashPasswd"
         label="Password"
         rules={[
           {
@@ -200,7 +208,7 @@ const UserSetting = () => {
       </Form.Item>
 
       <Form.Item
-        name="username"
+        name="UserName"
         label={
           <span>
             Username&nbsp;
@@ -221,7 +229,7 @@ const UserSetting = () => {
       </Form.Item>
 
       <Form.Item
-        name="role"
+        name="RoleName"
         label="Role permission"
         rules={[
           {
@@ -234,7 +242,7 @@ const UserSetting = () => {
         <Input disabled={true} />
       </Form.Item>
 
-      <Form.Item name="isactive" label="Status">
+      <Form.Item name="IsActive" label="Status">
         <Switch
           disabled={true}
           checkedChildren="Active"

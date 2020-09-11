@@ -18,7 +18,7 @@ import "./index.scss";
 import CreateUserModal from "../../../../components/ManageUser/CreateUserModal.js";
 import UpdateUserModal from "../../../../components/ManageUser/UpdateUserModal.js";
 import UserSetting from "../../../../components/UserSetting/UserSettingForm.js";
-import { getUsersApi, deleteUsersApi } from "api/user";
+import { getUsersApi, deleteUsersApi, getAccountDetailApi } from "api/user";
 import { useSelector, useDispatch } from "react-redux";
 import { getStore } from "store";
 import {
@@ -49,7 +49,7 @@ function MainPage() {
         })
           .catch(() => console.log("Oops errors!"))
           .then(() => {
-            refetch();
+            // refetch();
           });
       },
       onCancel() {},
@@ -57,23 +57,14 @@ function MainPage() {
   }
 
   const dispatch = useDispatch();
-  const [data, setData] = useState([]);
-  const [total, setTotal] = useState([]);
-  const [pagination, setPagination] = useState({ PageNo: 1, PageSize: 7 });
+  const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
   const { SearchKey, PageNo, PageSize, SortBy, SortOrder, Role } = useSelector(
     (state) => state.userSetting
   );
   useEffect(() => {
-    fetch({
-      PageNo: PageNo,
-      PageSize: PageSize,
-      SearchKey: SearchKey,
-      SortBy: SortBy,
-      SortOrder: SortOrder,
-      Role: Role,
-    });
-  }, [SearchKey, PageNo, PageSize, SortBy, SortOrder, Role]);
+    refetch();
+  }, []);
 
   function refetch() {
     fetch({
@@ -85,28 +76,24 @@ function MainPage() {
       Role: Role,
     });
   }
-
-  const fetch = (params) => {
+  var newdata;
+  const fetch = () => {
     setLoading(true);
-    // return getUsersApi(params)
-    //   .then((res) => {
-    //     setLoading(false);
-    //     setData(res.data);
-    //     if (res.status === 200) {
-    //       // message.success(res.statusText);
-    //     } else {
-    //       message.error(res.statusText);
-    //     }
-    //     if (res.data.length != 0) setTotal(res.data[0].TotalItem);
-    //     else setTotal(0);
-    //     showTotal({ total });
-    //     setPagination({
-    //       ...params.pagination,
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     message.error(error.data.message);
-    //   });
+    return getAccountDetailApi()
+      .then((res) => {
+        setLoading(false);
+        setData(res.data);
+        console.log("set data: ", res.data);
+        newdata = res.data;
+        if (res.status === 200) {
+          // message.success(res.statusText);
+        } else {
+          message.error(res.statusText);
+        }
+      })
+      .catch((error) => {
+        message.error(error.data.message);
+      });
   };
 
   return (
@@ -129,7 +116,7 @@ function MainPage() {
         >
           <Meta title="Europe Street beat" description="www.instagram.com" />
         </Card> */}
-      <UserSetting />
+      <UserSetting record={newdata} />
       {/* </Row> */}
     </div>
   );
