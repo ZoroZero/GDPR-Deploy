@@ -1,9 +1,25 @@
-import React from "react";
+import React, { Suspense } from "react";
+import { Route, Switch, useRouteMatch } from "react-router-dom";
 
-Resource.propTypes = {};
+import "./index.scss";
 
-function Resource() {
-  return <div>Requests</div>;
+import NotFound from "components/NotFound";
+import MainPage from "./pages/Main";
+import DetailPage from "./pages/Detail";
+
+Request.propTypes = {};
+
+function Request() {
+  const match = useRouteMatch();
+  return (
+    <Suspense fallback={<div>Loading ...</div>}>
+      <Switch>
+        <Route exact path={match.url} component={MainPage} />
+        <Route exact path={`${match.url}/:requestId`} component={DetailPage} />
+        <Route component={NotFound} />
+      </Switch>
+    </Suspense>
+  );
 }
 
-export default Resource;
+export default Request;
