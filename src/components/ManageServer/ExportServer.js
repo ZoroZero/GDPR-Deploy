@@ -1,7 +1,8 @@
 import React from 'react';
-import { Modal, Form, Input, DatePicker, Button, notification, Switch } from "antd";
+import { Form, Input, DatePicker, Button } from "antd";
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
+import { setSort, setData, setPagination } from "features/ManageServer/slice";
 
 function ExportServer(props){
     const [form] = Form.useForm();
@@ -16,27 +17,41 @@ function ExportServer(props){
         FileSaver.saveAs(data, fileName + fileExtension);
     }
 
+    function onFinish(values) {
+        console.log(values);
+    }
+
     return (
         props.visible?
         <div>
-        <Form  form={form} id="myForm"
+        <Form  form={form} id="myForm"  onFinish={onFinish} 
             layout="vertical">
-            
             <Form.Item>
-                <Form.Item label="From date" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} 
+                <Form.Item label="Server name"  style={{ display: 'inline-block', width: 'calc(25% - 16px)', margin: '0 8px' }}
+                        name='ServerName'>
+                        <Input  />
+                </Form.Item>
+
+                <Form.Item label="IP Address"  style={{ display: 'inline-block', width: 'calc(25% - 16px)', margin: '0 8px' }}
+                            name='IpAddress'>
+                    <Input />
+                </Form.Item>
+
+                <Form.Item label="From date" style={{ display: 'inline-block', width: 'calc(25% - 16px)', margin: '0 8px'  }} 
                             name='FromDate'>
                     <DatePicker showTime  style={{  width: '100%' }}/>
                 </Form.Item>
 
-                <Form.Item label="To date" style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 8px' }}
+                <Form.Item label="To date" style={{ display: 'inline-block', width: 'calc(25% - 16px)', margin: '0 8px' }}
                             name='ToDAte'>
                     <DatePicker showTime style={{  width: '100%' }}/>
+                     
                 </Form.Item>
-            </Form.Item>
+            </Form.Item> 
 
             <Form.Item>
-                <Button>Search</Button>
-                <Button variant="warning" onClick={(e) => exportToCSV(props.csvData,props.fileName)}>Export</Button>
+                <Button form="myForm" key="submit" type="primary" htmlType="submit" >Filter</Button>
+                <Button disabled={!props.csvData[0]} variant="warning" onClick={(e) => exportToCSV(props.csvData,props.fileName)}>Export</Button>
             </Form.Item>
         </Form>
        

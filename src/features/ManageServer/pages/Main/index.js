@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Table, Pagination, Input, Button, Modal, Tag, Collapse } from "antd";
+import { Table, Pagination, Input, Button, Modal, Tag } from "antd";
 import "./index.scss";
 import { getServersApi, deleteServerApi } from "api/server";
 import { useDispatch, useSelector } from "react-redux";
@@ -35,7 +35,9 @@ function MainPage() {
     const [refresh, setRefresh] = useState(true);
     const setRefreshPage = useCallback(() => {
         setRefresh(refresh => !refresh);
-      }, []);
+    }, []);
+    
+    const [exportData, setExportData] = useState([])
 
     useEffect(() => {
         fetch(pagination, sortColumn, sortOrder, searchKeyword, filter);
@@ -110,7 +112,7 @@ function MainPage() {
     const handlePageChange = (pageNumber, pageSize) => {
         // console.log(pageNumber);
         var newPageNum = pageNumber
-        if(pageSize != pagination.pageSize)
+        if(pageSize !== pagination.pageSize)
             newPageNum =  Math.ceil(pagination.pageSize*pagination.page/pageSize)
         dispatch(setPagination({pagination: {page: newPageNum, pageSize: pageSize}}))
         console.log("Fetch after pagination change");
@@ -118,22 +120,24 @@ function MainPage() {
 
     // Fetch data
     const fetch = (pagination, sortColumn, sortOrder, keyword, filter) => {
-        setLoading(true);
-        return getServersApi({
-                            current: pagination.page, 
-                            pageSize: pagination.pageSize, 
-                            sortColumn: sortColumn,
-                            sortOrder: sortOrder,
-                            keyword: keyword,
-                            filterColumn: filter.filterColumn,
-                            filterKeys: filter.filterKeys})
-            .then((res) => {
-            setLoading(false);
-            console.log(res.data)
-            setTotal(res.data[0]?res.data[0].Total: 0)
-            // setData(res.data);
-            dispatch(setData(res))
-        }).catch((err) => {console.log(err)});
+        if(!exporting){
+            setLoading(true);
+            return getServersApi({
+                                current: pagination.page, 
+                                pageSize: pagination.pageSize, 
+                                sortColumn: sortColumn,
+                                sortOrder: sortOrder,
+                                keyword: keyword,
+                                filterColumn: filter.filterColumn,
+                                filterKeys: filter.filterKeys})
+                .then((res) => {
+                setLoading(false);
+                console.log(res.data)
+                setTotal(res.total)
+                // setData(res.data);
+                dispatch(setData(res))
+            }).catch((err) => {console.log(err)});
+        }
     };
 
     // Handle table change: sort, filter
@@ -153,6 +157,7 @@ function MainPage() {
     //Handle search 
     function handleSearchServer(keyword){
         setSearchKeyword(keyword)
+        dispatch(setPagination({pagination: {page: 1, pageSize: pagination.pageSize}}))
         // console.log("Fetch after search");
     }
 
@@ -198,15 +203,31 @@ function MainPage() {
     //     });
     // };
 
+    // Handle toggle export
     function toggleExport() {
         setExporting(exporting => !exporting)
     }
+
+
+    // Handle row selected
+    const rowSelection = {
+        onChange: (selectedRowKeys, selectedRows) => {
+            console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+            setExportData(selectedRows)
+        },
+        onSelect: (record, selected, selectedRows) => {
+            console.log(record, selected, selectedRows);
+        },
+        onSelectAll: (selected, selectedRows, changeRows) => {
+            console.log(selected, selectedRows, changeRows);
+        },
+    };
 
     return (
         <React.Fragment>
             <div>
                 <Button onClick={toggleExport} style={{marginBottom: '20px'}}>Export server list</Button>
-                <ExportServer id='export-server' className='export-server' visible = {exporting} csvData={data} fileName='server'></ExportServer>
+                <ExportServer id='export-server' className='export-server' visible={exporting} csvData={exportData} fileName={SERVER_CONSTANTS.SERVER_EXPORT_FILE}></ExportServer>
             </div>
             <Button type="primary" onClick={()=> setEditRequest(SERVER_CONSTANTS.ADD_SERVER_REQUEST)} style={{ background: 'lawngreen', color: 'black'}}>
                 Create new server
@@ -226,6 +247,7 @@ function MainPage() {
             <Table
                 columns={columns}
                 rowKey={(record) => record.Id}
+                rowSelection={rowSelection}
                 dataSource={data}
                 pagination={false}
                 loading={loading}
