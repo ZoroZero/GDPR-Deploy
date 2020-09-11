@@ -176,7 +176,8 @@ function MainPage() {
   }
   function onShowSizeChange(current, pageSize) {
     console.log(current, pageSize);
-    if (pageSize != PageSize) dispatch(setPageNo(Math.ceil(total / pageSize)));
+    if (pageSize != PageSize && current != 1)
+      dispatch(setPageNo(Math.ceil(total / pageSize)));
     dispatch(setPageSize({ PageSize: pageSize }));
   }
   function handleTableChange(pagination, filters, sorter) {
@@ -184,24 +185,10 @@ function MainPage() {
     // console.log("Filter", filters);
     // console.log("Sorter", sorter);
     // console.log(sorter.length != 0);
-    if (sorter.length != 0 && filters.RoleName !== null) {
+    if (sorter.length != 0) {
       dispatch(setSortBy({ SortBy: sorter.field }));
       dispatch(setSortOrder({ SortOrder: sorter.order }));
-      dispatch(setRole({ Role: filters.RoleName.join(",") }));
-      console.log("Order", SortOrder);
-      console.log("By", sorter.field);
-      fetch({
-        PageNo: PageNo,
-        PageSize: PageSize,
-        SearchKey: SearchKey,
-        SortBy: sorter.field,
-        SortOrder: sorter.order,
-        Role: filters.RoleName.join(","),
-      });
-    } else if (sorter.length != 0) {
-      dispatch(setSortBy({ SortBy: sorter.field }));
-      dispatch(setSortOrder({ SortOrder: sorter.order }));
-      console.log("Order", SortOrder);
+      console.log("Order", sorter.order);
       console.log("By", sorter.field);
       fetch({
         PageNo: PageNo,
@@ -211,7 +198,8 @@ function MainPage() {
         SortOrder: sorter.order,
         Role: Role,
       });
-    } else if (filters.RoleName !== null) {
+    }
+    if (filters.RoleName !== null) {
       dispatch(setRole({ Role: filters.RoleName.join(",") }));
       fetch({
         PageNo: PageNo,
@@ -221,18 +209,17 @@ function MainPage() {
         SortOrder: SortOrder,
         Role: filters.RoleName.join(","),
       });
+    } else {
+      dispatch(setRole({ Role: "" }));
+      fetch({
+        PageNo: PageNo,
+        PageSize: PageSize,
+        SearchKey: SearchKey,
+        SortBy: SortBy,
+        SortOrder: SortOrder,
+        Role: "",
+      });
     }
-    // else {
-    //   dispatch(setRole({ Role: "" }));
-    //   fetch({
-    //     PageNo: PageNo,
-    //     PageSize: PageSize,
-    //     SearchKey: SearchKey,
-    //     SortBy: SortBy,
-    //     SortOrder: SortOrder,
-    //     Role: "",
-    //   });
-    // }
   }
 
   const fetch = (params) => {
