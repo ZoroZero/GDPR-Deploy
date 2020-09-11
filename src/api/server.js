@@ -20,11 +20,13 @@ export const getServersApi = (data) => {
     return axios
       .get(`/api/servers`, {
           params: {
-              current: data.current,
+              pageNumber: data.current,
               pageSize: data.pageSize,
               sortColumn: data.sortColumn,
               sortOrder: data.sortOrder,
-              keyword: data.keyword
+              keyword: data.keyword,
+              filterColumn: data.filterColumn,
+              filterKeys: data.filterKeys
           }
       })
       .then((res) => {
@@ -53,4 +55,67 @@ export const createServerApi = (data) => {
         reject(error);
       });
   }); 
+}
+
+
+export const updateServerApi = (data) => {
+  return new Promise((resolve, reject) => {
+    console.log("Send data", data)
+    return axios
+      .put(`/api/servers`, {
+          Id: data.id,
+          Name: data.serverName,
+          IpAddress: data.ipAddress,
+          StartDate: data.startDate,
+          EndDate: data.endDate,
+          IsActive: data.status
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });  
+
+}
+
+export const deleteServerApi = (data) => {
+  return new Promise((resolve, reject) => {
+    console.log("Delete data", data)
+    return axios
+      .delete(`/api/servers`, {
+          params: {
+              id: data.id
+          }
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+
+export const exportServerListApi = (data) => {
+  return new Promise((resolve, reject) => {
+    console.log("Data for export", data);
+    return axios
+      .get(`/api/servers/export`, {
+          params: {
+            serverName: data.serverName,
+            serverIp: data.ipAddress,
+            startDate: data.startDate,
+            endDate: data.endDate
+          }
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
 }
