@@ -30,6 +30,16 @@ const ManageUser = React.lazy(() =>
   })
 );
 
+const UserSetting = React.lazy(() =>
+  import("features/UserSetting").then(async (module) => {
+    const reducer = await import("features/UserSetting/slice").then(
+      (slide) => slide.default
+    );
+    store.injectReducer("userSetting", reducer);
+    return module;
+  })
+);
+
 const ManageRequest = React.lazy(() =>
   import("features/ManageRequest").then(async (module) => {
     const reducer = await import("features/ManageRequest/slice").then(
@@ -127,6 +137,8 @@ function App(props) {
                     component={ManageUser}
                   />
                 )}
+                {<PrivateRoute path="/user-setting" component={UserSetting} />}
+
                 {ability.can("access", "manage-request") && (
                   <PrivateRoute
                     path="/request-management"
