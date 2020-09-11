@@ -19,10 +19,9 @@ function EditCustomerModal(props) {
     const [contactPoints, setContactPoints] = useState([]);
     const contactPointId = props.record.ContactPointId;
     const contactPointEmail = props.record.ContactPointEmail;
-    const [modalVisible, setModalVisible] = useState(false)
+
     useEffect(() => {
-
-
+        console.log("useEffect props", props)
         form.setFieldsValue({
             FirstName: props.record.FirstName, LastName: props.record.LastName,
             ContactPointId: contactPointId,
@@ -34,7 +33,7 @@ function EditCustomerModal(props) {
 
 
 
-    }, [props]);
+    }, [props.record]);
 
     // const onReset = () => {
     //   form.resetFields();
@@ -42,11 +41,12 @@ function EditCustomerModal(props) {
 
 
     const onFinish = (values) => {
+        console.log("@@@@@@@@@@@@@@@@@@@", values)
         return updateCustomerApi(values, props.record.Id)
             .then((res) => {
                 props.setRefresh(!props.refresh);
                 openNotification("Sucessfully update customer");
-                setModalVisible(false);
+                props.setModalVisible(false);
                 form.resetFields();
             })
             .catch((err) => console.log(err));
@@ -75,31 +75,30 @@ function EditCustomerModal(props) {
 
     return (
         <div>
-            <Button type="primary" onClick={() => {
-                setModalVisible(true);
-            }}>
-                Update
-            </Button>
+
             <Modal
                 title="Update new Customer"
                 centered
-                visible={modalVisible}
+                visible={props.modalVisible}
                 forceRender={true}
                 footer={[
-                    <Button form="myFormEdit" key="submit" type="primary" htmlType="submit" onClick={() => setModalVisible(false)}>
+                    <Button form="myFormEdit" key="submit" type="primary" htmlType="submit" onClick={() => props.setModalVisible(false)}>
                         Submit
         </Button>,
                     <Button
                         key="cancel"
                         onClick={() => {
-                            setModalVisible(false);
+                            props.setModalVisible(false);
                         }}
                     >
                         Cancel
         </Button>,
                 ]}
             >
-                <Form form={form} onFinish={onFinish} id="myFormEdit" layout="vertical">
+                <Form
+
+
+                    form={form} onFinish={onFinish} name="myFormEdit" layout="vertical">
                     <Form.Item
                         label="First name"
                         name="FirstName"
@@ -137,7 +136,6 @@ function EditCustomerModal(props) {
                                     .indexOf(input.toLowerCase()) >= 1
                             }
                         >
-                            {" "}
                             <Option value={contactPointId}>  {contactPointEmail} </Option>
                             {contactPoints.filter(item => item.Id != contactPointId).map((item) => (
                                 <Option value={item.Id}> {item.Email} </Option>
@@ -190,12 +188,12 @@ function EditCustomerModal(props) {
                         <Switch
                             checkedChildren="Active"
                             unCheckedChildren="InActive"
-                            defaultChecked
+                            defaultChecked={props.record.IsActive}
                         ></Switch>
                     </Form.Item>
                 </Form>
             </Modal>
-        </div>
+        </div >
     );
 }
 

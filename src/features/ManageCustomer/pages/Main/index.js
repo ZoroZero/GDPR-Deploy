@@ -39,9 +39,19 @@ function MainPage() {
   const [total, setTotal] = useState();
   const [page, setPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalCreateVisible, setModalCreateVisible] = useState(false);
+  const [modalEditVisible, setModalEditVisible] = useState(false);
   const [refresh, setRefresh] = useState(false)
-
+  const [dataEdit, setDataEdit] = useState({
+    FirstName: "",
+    LastName: "",
+    ContactPointId: null,
+    ContactPointEmail: null,
+    ContractBeginDate: null,
+    ContractEndDate: null,
+    Description: "",
+    IsActive: true,
+  });
   const columns = [
     {
       title: "Customer Name",
@@ -106,12 +116,11 @@ function MainPage() {
       render: (record) => (
         <Space size="middle">
 
-          {/* <Button type="primary" onClick={() => {
-            setModalVisible(true);
+          <Button type="primary" onClick={() => {
+            setDataEdit(record); setModalEditVisible(true); console.log("DATA EDIT ", dataEdit);
           }}>
             Update
-            </Button> */}
-          <EditCustomerModal record={record} refresh={refresh} setPage={setPage} setRefresh={setRefresh}></EditCustomerModal>
+            </Button>
 
 
 
@@ -192,11 +201,12 @@ function MainPage() {
       <Row>
         <Col span={8}>
 
-          <Button type="primary" onClick={() => { setModalVisible(true) }}>
+          <Button type="primary" onClick={() => { setModalCreateVisible(true) }}>
             Create new Customer
             </Button>
-          <AddCustomerModal refresh={refresh} setPage={setPage} setRefresh={setRefresh} modalVisible={modalVisible} setModalVisible={setModalVisible}>  </AddCustomerModal>
+          <AddCustomerModal refresh={refresh} setPage={setPage} setRefresh={setRefresh} modalVisible={modalCreateVisible} setModalVisible={setModalCreateVisible}>  </AddCustomerModal>
 
+          <EditCustomerModal record={dataEdit} refresh={refresh} setPage={setPage} setRefresh={setRefresh} modalVisible={modalEditVisible} setModalVisible={setModalEditVisible}  ></EditCustomerModal>
         </Col>
         <Col span={8} offset={8}>
           <Search

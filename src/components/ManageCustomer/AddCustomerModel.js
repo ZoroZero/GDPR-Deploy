@@ -139,7 +139,6 @@ function AddCustomerModal(props) {
                 .indexOf(input.toLowerCase()) >= 1
             }
           >
-            {" "}
             {contactPoints.map((item) => (
               <Option key={item.Id}> {item.Email} </Option>
             ))}
@@ -191,7 +190,7 @@ function AddCustomerModal(props) {
           <Switch
             checkedChildren="Active"
             unCheckedChildren="InActive"
-            defaultChecked
+            defaultChecked="Active"
           ></Switch>
         </Form.Item>
       </Form>
