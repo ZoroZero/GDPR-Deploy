@@ -12,20 +12,25 @@ import {
   Select,
   Switch,
 } from "antd";
-import { updateCustomerApi } from 'api/customer'
 import { createCustomerApi } from "api/customer";
 import { getContactPointsApi } from "api/customer";
 
-function AddEditCustomerModal(props) {
+function AddCustomerModal(props) {
   const { Option } = Select;
   const { TextArea } = Input;
   const [form] = Form.useForm();
   const [contactPoints, setContactPoints] = useState([]);
 
   useEffect(() => {
-    console.log(props)
-
-    form.setFieldsValue(props.dataForm);
+    form.setFieldsValue({
+      FirstName: "",
+      LastName: "",
+      ContactPointId: null,
+      ContractBeginDate: null,
+      ContractEndDate: null,
+      Description: "",
+      IsActive: true,
+    });
 
 
 
@@ -36,7 +41,7 @@ function AddEditCustomerModal(props) {
   // };
 
   const handleSelectChange = (value) => {
-    console.log(value);
+
   };
   const onFinish = (values) => {
     console.log(values)
@@ -99,6 +104,7 @@ function AddEditCustomerModal(props) {
           rules={[
             {
               required: true,
+              message: "Please enter your first name!"
             },
           ]}
         >
@@ -111,6 +117,8 @@ function AddEditCustomerModal(props) {
           rules={[
             {
               required: true,
+              message: "Please enter your last name!"
+
             },
           ]}
         >
@@ -128,7 +136,7 @@ function AddEditCustomerModal(props) {
               option.children
                 .toString()
                 .toLowerCase()
-                .indexOf(input.toLowerCase()) >= 0
+                .indexOf(input.toLowerCase()) >= 1
             }
           >
             {" "}
@@ -191,4 +199,4 @@ function AddEditCustomerModal(props) {
   );
 }
 
-export default AddEditCustomerModal;
+export default AddCustomerModal;

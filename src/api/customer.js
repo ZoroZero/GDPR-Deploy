@@ -37,7 +37,6 @@ export const createCustomerApi = (data) => {
             .post(
                 String(process.env.REACT_APP_BASE_URL) + "/customers", data)
             .then((res) => {
-                console.log(res)
                 resolve(res.data);
             })
             .catch((error) => {
@@ -77,13 +76,13 @@ export const deleteCustomerApi = (data) => {
     });
 };
 
-export const updateCustomerApi = (data) => {
+export const updateCustomerApi = (newData, id) => {
 
     return new Promise((resolve, reject) => {
         const token = checkToken()
         return axios
             .put(
-                String(process.env.REACT_APP_BASE_URL) + "/customers", data)
+                String(process.env.REACT_APP_BASE_URL) + "/customers" + `?Id=${id}`, newData)
             .then((res) => {
                 resolve(res.data);
             })

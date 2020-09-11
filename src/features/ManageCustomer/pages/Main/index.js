@@ -12,8 +12,8 @@ import {
 } from "antd";
 import { ExclamationCircleOutlined, AudioOutlined } from "@ant-design/icons";
 import "./index.scss";
-import AddEditCustomerModal from "../../../../components/ManageCustomer/AddEditCustomerModel";
-import UpdateUserModal from "../../../../components/ManageUser/UpdateUserModal.js";
+import AddCustomerModal from "../../../../components/ManageCustomer/AddCustomerModel";
+import EditCustomerModal from "../../../../components/ManageCustomer/EditCustomerModel";
 import { getCustomerApi } from "api/customer";
 import { getContactPointsApi } from 'api/customer';
 import { deleteCustomerApi } from 'api/customer'
@@ -39,18 +39,9 @@ function MainPage() {
   const [total, setTotal] = useState();
   const [page, setPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [typeForm, setTypeForm] = useState(true)
   const [modalVisible, setModalVisible] = useState(false);
   const [refresh, setRefresh] = useState(false)
-  const [dataForm, setDataForm] = useState({
-    FirstName: "",
-    LastName: "",
-    ContactPointId: "",
-    ContractBeginDate: null,
-    ContractEndDate: null,
-    Description: "",
-    IsActive: true,
-  })
+
   const columns = [
     {
       title: "Customer Name",
@@ -115,18 +106,13 @@ function MainPage() {
       render: (record) => (
         <Space size="middle">
 
-          <Button type="primary" onClick={() => {
-            setModalVisible(true); setTypeForm(false); setDataForm({
-              FirstName: record.FirstName, LastName: record.LastName,
-              ContactPointId: record.ContactPointId,
-              ContractBeginDate: new Date(record.ContractBeginDate),
-              ContractEndDate: record.ContractEndDate,
-              Description: record.Description,
-              IsActive: record.IsActive,
-            });
+          {/* <Button type="primary" onClick={() => {
+            setModalVisible(true);
           }}>
             Update
-            </Button>
+            </Button> */}
+          <EditCustomerModal record={record} refresh={refresh} setPage={setPage} setRefresh={setRefresh}></EditCustomerModal>
+
 
 
           <Button type="primary" danger onClick={() => { showPromiseConfirm(record.Id) }}>
@@ -160,9 +146,8 @@ function MainPage() {
         "When clicked the OK button, this dialog will be closed after 1 second",
       onOk() {
         deleteCustomerApi({ Id: id })
-        setTimeout(1000);
-        setRefresh(!refresh);
 
+        setRefresh(!refresh);
       },
       onCancel() { },
     });
@@ -175,7 +160,7 @@ function MainPage() {
 
   async function handleSortChange(pagination, filters, sorter) {
     var newSortColumn = sorter.column ? sorter.column.dataIndex : "CreatedDate";
-    var newSortOrder = sorter.order === "descend" ? "descend" : "descend";
+    var newSortOrder = sorter.order === "descend" ? "descend" : "ascend";
     await dispatch(
       setSort({ sortColumn: newSortColumn, sortOrder: newSortOrder })
     );
@@ -197,7 +182,6 @@ function MainPage() {
     }).then((res) => {
       setLoading(false);
       setData(res);
-      console.log(res)
       setTotal(res[0] ? res[0].Total : 0);
     });
 
@@ -208,11 +192,10 @@ function MainPage() {
       <Row>
         <Col span={8}>
 
-          <Button type="primary" onClick={() => { setModalVisible(true); setTypeForm(true) }}>
+          <Button type="primary" onClick={() => { setModalVisible(true) }}>
             Create new Customer
             </Button>
-
-          <AddEditCustomerModal typeForm={typeForm} dataForm={dataForm} refresh={refresh} setPage={setPage} setRefresh={setRefresh} modalVisible={modalVisible} setModalVisible={setModalVisible}>  </AddEditCustomerModal>
+          <AddCustomerModal refresh={refresh} setPage={setPage} setRefresh={setRefresh} modalVisible={modalVisible} setModalVisible={setModalVisible}>  </AddCustomerModal>
 
         </Col>
         <Col span={8} offset={8}>
