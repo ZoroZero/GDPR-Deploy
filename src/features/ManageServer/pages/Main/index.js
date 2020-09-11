@@ -233,7 +233,7 @@ function MainPage() {
             <div>
                 <Button onClick={toggleExport} style={{marginBottom: '20px'}}>Export server list</Button>
                 <ExportServer id='export-server' className='export-server' visible = {exporting} csvData={exportData} 
-                fileName={SERVER_CONSTANTS.SERVER_EXPORT_FILE} setTableData={setTableData} setLoading={setLoading}></ExportServer>
+                fileName={SERVER_CONSTANTS.SERVER_EXPORT_FILE} setExportData={setExportData} setVisible={setExporting}></ExportServer>
             </div>
             <Button type="primary" onClick={()=> setEditRequest(SERVER_CONSTANTS.ADD_SERVER_REQUEST)} style={{ background: 'lawngreen', color: 'black'}}>
                 Create new server
