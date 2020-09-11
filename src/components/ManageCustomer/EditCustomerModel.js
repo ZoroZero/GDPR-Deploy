@@ -188,6 +188,7 @@ function EditCustomerModal(props) {
                         <Switch
                             checkedChildren="Active"
                             unCheckedChildren="InActive"
+                            value={props.record.IsActive}
                         ></Switch>
                     </Form.Item>
                 </Form>
@@ -201,4 +202,5 @@ export default EditCustomerModal;
 - update date => update modal(invalid date (30/09/2020))
 - update date => update end date (12/09/2020) => conflict with check constraint valid_time (start date:11/09/2020) DTO: 2020-11-08 -> 2020-09-11 @..@
 - update date => create -> update : dd <-> mm
+- update : switch default value not work ??/
 */
