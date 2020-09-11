@@ -5,6 +5,9 @@ import {
   createRequestApi,
   getServerOptionsApi,
   approveRequestApi,
+  cancelRequestApi,
+  getRequestDetailApi,
+  updateRequestApi,
 } from "api/requests";
 import { message } from "antd";
 
@@ -18,6 +21,7 @@ export const initialState = {
   sortBy: "",
   showModal: false,
   lstServer: [],
+  requestDetail: {},
 };
 
 const slice = createSlice({
@@ -52,6 +56,9 @@ const slice = createSlice({
     setListServer: (state, action) => {
       state.lstServer = action.payload.lstServer;
     },
+    setRequestDetail: (state, action) => {
+      state.requestDetail = action.payload.requestDetail;
+    },
   },
 });
 
@@ -64,12 +71,12 @@ export const {
   setPageSize,
   setModal,
   setListServer,
+  setRequestDetail,
 } = slice.actions;
 export default slice.reducer;
 
 export const getListRequests = (params = {}) => (dispatch) => {
   return new Promise((resolve, reject) => {
-    dispatch(loading());
     return getListRequestApi(params)
       .then((res) => {
         console.log(res);
@@ -86,14 +93,12 @@ export const getListRequests = (params = {}) => (dispatch) => {
       .catch((error) => {
         console.log(error);
         reject(error);
-      })
-      .finally(() => {
-        dispatch(stopLoading());
       });
   });
 };
 
 export const onCreateNewRequest = (data = {}) => (dispatch) => {
+  console.log("hello");
   return new Promise((resolve, reject) => {
     dispatch(loading());
     return createRequestApi(data)
@@ -137,14 +142,72 @@ export const getListServerOptions = () => (dispatch) => {
 
 export const approveRequest = (value) => (dispatch) => {
   return new Promise((resolve, reject) => {
+    dispatch(loading());
     return approveRequestApi(value)
       .then((res) => {
-        console.log(res);
+        message.success("success");
+        dispatch(getRequestDetail(value.requestId));
         resolve();
       })
       .catch((error) => {
         console.log(error);
         reject(error);
+      })
+      .finally(() => {
+        dispatch(stopLoading());
+      });
+  });
+};
+
+export const cancelRequest = (value) => (dispatch) => {
+  return new Promise((resolve, reject) => {
+    dispatch(loading());
+    return cancelRequestApi(value)
+      .then((res) => {
+        message.success("success");
+        dispatch(getRequestDetail(value.requestId));
+        resolve();
+      })
+      .catch((error) => {
+        console.log(error);
+        reject(error);
+      })
+      .finally(() => {
+        dispatch(stopLoading());
+      });
+  });
+};
+
+export const getRequestDetail = (value) => (dispatch) => {
+  return new Promise((resolve, reject) => {
+    return getRequestDetailApi(value)
+      .then((res) => {
+        console.log(res);
+        if (res.data && res.data.length > 0)
+          dispatch(setRequestDetail({ requestDetail: res.data[0] }));
+        resolve();
+      })
+      .catch((error) => {
+        console.log(error);
+        reject(error);
+      });
+  });
+};
+
+export const onUpdateRequest = (value, requestId) => (dispatch) => {
+  return new Promise((resolve, reject) => {
+    dispatch(loading());
+    return updateRequestApi(value, requestId)
+      .then((res) => {
+        dispatch(getRequestDetail(requestId));
+        resolve();
+      })
+      .catch((error) => {
+        console.log(error);
+        reject(error);
+      })
+      .finally(() => {
+        dispatch(stopLoading());
       });
   });
 };

@@ -13,15 +13,16 @@ import Loading from "components/Loading";
 import Search from "antd/lib/input/Search";
 import CreateRequestForm from "components/RequestModal";
 import { Link } from "react-router-dom";
+import moment from "moment";
 
 const columns = [
   {
     title: "Status",
     width: 100,
-    dataIndex: "isOpen",
+    dataIndex: "IsApproved",
     key: "status",
     fixed: "left",
-    render: (data) => (data ? "Open" : "Close"),
+    render: (data) => (data ? "Approved" : "Not approved"),
   },
   {
     title: "Created Date",
@@ -151,7 +152,6 @@ const MainPage = (props) => {
   });
   return (
     <>
-      {loading && <Loading />}
       <Row gutter={[16, 16]} justify="center">
         <Col>
           <Row justify="space-between" gutter={[16, 16]}>

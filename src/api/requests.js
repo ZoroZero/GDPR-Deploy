@@ -43,7 +43,46 @@ export const getServerOptionsApi = () => {
 export const approveRequestApi = (value) => {
   return new Promise((resolve, reject) => {
     return axios
-      .post("/api/approve-requests", value)
+      .put("/api/requests/approve-request", value)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export const cancelRequestApi = (value) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .put("/api/requests/cancel-request", value)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export const updateRequestApi = (value, requestId) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .put(`/api/requests/${requestId}`, value)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export const getRequestDetailApi = (value) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .get(`/api/requests/${value}`)
       .then((res) => {
         resolve(res);
       })

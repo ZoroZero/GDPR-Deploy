@@ -81,7 +81,6 @@ function App(props) {
     <div className="app">
       <Suspense fallback={<div>Loading ...</div>}>
         <Layout>
-          {loading && <Loading />}
           <Sider
             style={{ minHeight: "100vh" }}
             trigger={null}
@@ -120,6 +119,7 @@ function App(props) {
                 minHeight: 280,
               }}
             >
+              {loading && <Loading />}
               <Switch>
                 {ability.can("access", "manage-user") && (
                   <PrivateRoute

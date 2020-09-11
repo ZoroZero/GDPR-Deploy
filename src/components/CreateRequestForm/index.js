@@ -13,7 +13,9 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   onCreateNewRequest,
   getListServerOptions,
+  onUpdateRequest,
 } from "features/ManageRequest/slice";
+import moment from "moment";
 
 const { Option } = Select;
 
@@ -33,14 +35,27 @@ const RequestForm = (props) => {
     dispatch(getListServerOptions());
   }, []);
 
+  useEffect(() => {
+    if (props.request && props.request.Title) {
+      form.setFieldsValue({
+        title: props.request.Title,
+        startDate: moment(props.request.StartDate),
+        endDate: moment(props.request.EndDate),
+        server: props.request.ServerName + "-" + props.request.IpAddress,
+        description: props.request.Description,
+      });
+    }
+  }, [props.request]);
+
   function onSubmitForm(values) {
     const data = {
       ...values,
-      startDate: new Date(values.startDate),
-      endDate: new Date(values.endDate),
+      startDate: values.startDate.format("YYYY-MM-DD hh:mm:ss"),
+      endDate: values.endDate.format("YYYY-MM-DD hh:mm:ss"),
     };
-    console.log(data);
-    dispatch(onCreateNewRequest(data));
+    if (props.type === "update")
+      dispatch(onUpdateRequest(data, props.request.Id));
+    else dispatch(onCreateNewRequest(data));
   }
 
   function onSearchServer(value) {
