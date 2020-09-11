@@ -21,14 +21,7 @@ import UserSetting from "../../../../components/UserSetting/UserSettingForm.js";
 import { getUsersApi, deleteUsersApi, getAccountDetailApi } from "api/user";
 import { useSelector, useDispatch } from "react-redux";
 import { getStore } from "store";
-import {
-  setSearchKey,
-  setPageNo,
-  setPageSize,
-  setSortBy,
-  setSortOrder,
-  setRole,
-} from "../../slice";
+import { setRecord } from "../../slice";
 import { UserOutlined } from "@ant-design/icons";
 
 MainPage.propTypes = {};
@@ -59,22 +52,13 @@ function MainPage() {
   const dispatch = useDispatch();
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
-  const { SearchKey, PageNo, PageSize, SortBy, SortOrder, Role } = useSelector(
-    (state) => state.userSetting
-  );
+  const { record } = useSelector((state) => state.userSetting);
   useEffect(() => {
     refetch();
   }, []);
 
   function refetch() {
-    fetch({
-      PageNo: PageNo,
-      PageSize: PageSize,
-      SearchKey: SearchKey,
-      SortBy: SortBy,
-      SortOrder: SortOrder,
-      Role: Role,
-    });
+    fetch();
   }
   var newdata;
   const fetch = () => {
@@ -82,7 +66,8 @@ function MainPage() {
     return getAccountDetailApi()
       .then((res) => {
         setLoading(false);
-        setData(res.data);
+        setData({ data: res.data });
+        dispatch(setRecord({ record: res.data }));
         console.log("set data: ", res.data);
         newdata = res.data;
         if (res.status === 200) {
@@ -116,7 +101,7 @@ function MainPage() {
         >
           <Meta title="Europe Street beat" description="www.instagram.com" />
         </Card> */}
-      <UserSetting record={newdata} />
+      <UserSetting />
       {/* </Row> */}
     </div>
   );

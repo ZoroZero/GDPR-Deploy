@@ -22,7 +22,9 @@ import {
   InboxOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
-import React, { Component, useState, useEffect } from "react";
+import React, { Component, useState, useEffect, useLayoutEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { setRecord } from "../../features/UserSetting/slice";
 const { Option } = Select;
 const formItemLayout = {
   labelCol: {
@@ -61,11 +63,9 @@ const normFile = (e) => {
   return e && e.fileList;
 };
 
-const UserSetting = (record) => {
-  useEffect(() => {
-    fetch();
-  }, [record]);
-  const fetch = () => {};
+const UserSetting = () => {
+  const dispatch = useDispatch();
+  const { record } = useSelector((state) => state.userSetting);
   const [switchState, setSwitchState] = useState(true);
   function onChange(checked) {
     console.log(`switch to ${checked}`);
@@ -74,20 +74,28 @@ const UserSetting = (record) => {
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
   };
+  useEffect(() => {
+    // fetch();
+
+    console.log("didmount avbc", record);
+  }, [record]);
+  const fetch = () => {};
 
   return (
     <Form
       name="validate_other"
       {...formItemLayout}
       onFinish={onFinish}
-      // initialValues={{
-      //   Email: record.Email,
-      //   FirstName: record.FirstName,
-      //   LastName: record.LastName,
-      //   HashPasswd: record.HashPasswd,
-      //   UserName: record.UserName,
-      //   RoleName: record.RoleName,
-      // }}
+      initialValues={
+        {
+          // Email: record.Email,
+          // FirstName: "fjsdfjakj",
+          // LastName: record.LastName,
+          // HashPasswd: record.HashPasswd,
+          // UserName: record.UserName,
+          // RoleName: record.RoleName,
+        }
+      }
     >
       <Form.Item>
         <Row
@@ -119,9 +127,8 @@ const UserSetting = (record) => {
             message: "Please input Firstname!",
           },
         ]}
-        value={record.FirstName}
       >
-        <Input />
+        <Input value={record.FirstName} />
       </Form.Item>
 
       <Form.Item
@@ -181,7 +188,7 @@ const UserSetting = (record) => {
         <Input.Password />
       </Form.Item>
 
-      <Form.Item
+      {/* <Form.Item
         name="confirm"
         label="Confirm New Password"
         dependencies={["password"]}
@@ -205,7 +212,7 @@ const UserSetting = (record) => {
         ]}
       >
         <Input.Password />
-      </Form.Item>
+      </Form.Item> */}
 
       <Form.Item
         name="UserName"
@@ -219,7 +226,7 @@ const UserSetting = (record) => {
         }
         rules={[
           {
-            required: true,
+            // required: true,
             message: "Please input your username!",
             whitespace: true,
           },
@@ -233,7 +240,7 @@ const UserSetting = (record) => {
         label="Role permission"
         rules={[
           {
-            required: true,
+            // required: true,
             message: "Please input your username!",
             whitespace: true,
           },
@@ -291,7 +298,7 @@ const UserSetting = (record) => {
           offset: 6,
         }}
       >
-        <Button type="primary" htmlType="submit">
+        <Button type="primary" onClick={fetch} htmlType="submit">
           Apply New Change
         </Button>
       </Form.Item>
