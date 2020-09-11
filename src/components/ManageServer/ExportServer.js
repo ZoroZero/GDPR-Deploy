@@ -2,12 +2,16 @@ import React from 'react';
 import { Form, Input, DatePicker, Button } from "antd";
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
-import { setSort, setData, setPagination } from "features/ManageServer/slice";
+import { exportServerListApi } from 'api/server';
+import { useDispatch, useSelector } from "react-redux";
+import { setPagination } from "features/ManageServer/slice";
 
 function ExportServer(props){
     const [form] = Form.useForm();
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     const fileExtension = '.xlsx';
+    const { pagination } = useSelector((state) => state.serverManagement);
+    const dispatch = useDispatch();
 
     function exportToCSV(csvData, fileName)  {
         const ws = XLSX.utils.json_to_sheet(csvData);
@@ -19,12 +23,29 @@ function ExportServer(props){
 
     function onFinish(values) {
         console.log(values);
+        props.setLoading(true);
+        return exportServerListApi(
+            {
+                serverName: values.Servername,
+                ipAddress: values.IpAddress,
+                startDate: values.StartDate,
+                endDate: values.EndDate,
+            }
+        )
+        .then((res) => {
+            console.log(res)
+            props.setLoading(false);
+            props.setTableData(res.data,res.total)
+            dispatch(setPagination({pagination: {page: 1, pageSize: res.total}}))
+        }).catch((err) => {console.log(err)});
+
+
     }
 
     return (
         props.visible?
         <div>
-        <Form  form={form} id="myForm"  onFinish={onFinish} 
+        <Form  form={form} id="exportForm"  onFinish={onFinish} 
             layout="vertical">
             <Form.Item>
                 <Form.Item label="Server name"  style={{ display: 'inline-block', width: 'calc(25% - 16px)', margin: '0 8px' }}
@@ -50,7 +71,7 @@ function ExportServer(props){
             </Form.Item> 
 
             <Form.Item>
-                <Button form="myForm" key="submit" type="primary" htmlType="submit" >Filter</Button>
+                <Button form="exportForm" key="submit" type="primary" htmlType="submit" >Filter</Button>
                 <Button disabled={!props.csvData[0]} variant="warning" onClick={(e) => exportToCSV(props.csvData,props.fileName)}>Export</Button>
             </Form.Item>
         </Form>

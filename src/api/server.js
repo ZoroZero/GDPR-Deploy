@@ -97,3 +97,25 @@ export const deleteServerApi = (data) => {
       });
   });
 }
+
+
+export const exportServerListApi = (data) => {
+  return new Promise((resolve, reject) => {
+    console.log("Data for export", data);
+    return axios
+      .get(`/api/servers/export`, {
+          params: {
+            serverName: data.serverName,
+            serverIp: data.ipAddress,
+            startDate: data.startDate,
+            endDate: data.endDate
+          }
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}

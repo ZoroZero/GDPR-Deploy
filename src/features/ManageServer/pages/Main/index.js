@@ -3,7 +3,7 @@ import { Table, Pagination, Input, Button, Modal, Tag } from "antd";
 import "./index.scss";
 import { getServersApi, deleteServerApi } from "api/server";
 import { useDispatch, useSelector } from "react-redux";
-import { setSort, setData, setPagination } from "features/ManageServer/slice";
+import { setSort, setData, setPagination, setTotal } from "features/ManageServer/slice";
 import AddEditServerModal from "components/ManageServer/AddEditServerModal"; 
 import { SERVER_CONSTANTS } from 'constants/ManageServer/server';
 import { ExclamationCircleOutlined } from "@ant-design/icons";
@@ -18,11 +18,11 @@ const { confirm } = Modal;
 function MainPage() {
     const dispatch = useDispatch()
 
-    const {sortColumn, sortOrder, data, pagination} = useSelector((state) => state.serverManagement)
+    const {sortColumn, sortOrder, data, pagination, total} = useSelector((state) => state.serverManagement)
     // const [data, setData] = useState([]);
 
     const [loading, setLoading] = useState(false);
-    const [total, setTotal ] = useState(0);
+    // const [total, setTotal ] = useState(0);
 
     // const [page, setPage ] = useState(1);
     const [searchKeyword, setSearchKeyword] = useState('');  
@@ -132,13 +132,18 @@ function MainPage() {
                                 filterKeys: filter.filterKeys})
                 .then((res) => {
                 setLoading(false);
-                console.log(res.data)
-                setTotal(res.total)
-                // setData(res.data);
-                dispatch(setData(res))
+                setTableData(res.data, res.total)
             }).catch((err) => {console.log(err)});
         }
     };
+
+    // Set table data
+    function setTableData(data, total){
+        console.log(data)
+        dispatch(setTotal({total: total}))
+        // setData(res.data);
+        dispatch(setData({data: data}))
+    }
 
     // Handle table change: sort, filter
     function handleTableChange(pagination, filters, sorter) {
@@ -227,7 +232,8 @@ function MainPage() {
         <React.Fragment>
             <div>
                 <Button onClick={toggleExport} style={{marginBottom: '20px'}}>Export server list</Button>
-                <ExportServer id='export-server' className='export-server' visible={exporting} csvData={exportData} fileName={SERVER_CONSTANTS.SERVER_EXPORT_FILE}></ExportServer>
+                <ExportServer id='export-server' className='export-server' visible = {exporting} csvData={exportData} 
+                fileName={SERVER_CONSTANTS.SERVER_EXPORT_FILE} setTableData={setTableData} setLoading={setLoading}></ExportServer>
             </div>
             <Button type="primary" onClick={()=> setEditRequest(SERVER_CONSTANTS.ADD_SERVER_REQUEST)} style={{ background: 'lawngreen', color: 'black'}}>
                 Create new server

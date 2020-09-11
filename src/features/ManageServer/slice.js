@@ -9,7 +9,8 @@ export const initialState = {
   pagination: {
     page: 1,
     pageSize: 10
-  }
+  },
+  total: 0
 };
 
 const slice = createSlice({
@@ -32,8 +33,12 @@ const slice = createSlice({
     setPagination:  (state, action) => {
       state.pagination = action.payload.pagination;
     },
+
+    setTotal:  (state, action) => {
+      state.total = action.payload.total;
+    },
   },
 });
 
-export const { setFilter, setSort, setData, setPagination } = slice.actions;
+export const { setFilter, setSort, setData, setPagination, setTotal } = slice.actions;
 export default slice.reducer;
