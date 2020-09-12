@@ -27,6 +27,7 @@ import React, { Component, useState, useEffect, useLayoutEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setRecord } from "../../features/UserSetting/slice";
 import { updateAccountApi } from "../../api/user";
+import UploadAvatar from "../../components/UserSetting/UploadAvatar.js";
 const { Option } = Select;
 const formItemLayout = {
   labelCol: {
@@ -142,14 +143,18 @@ const UserSetting = (pros) => {
           align="middle"
           // style={{ minHeight: "100vh" }}
         >
-          <Avatar
+          <Col span={8}></Col>
+          <Col span={8}><Avatar
             size={150}
-            style={{ padding: 15 }}
+            style={{ padding: 0 }}
             src="https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
-          />
-          <Upload name="logo" action="/upload.do" listType="picture">
+          /></Col>
+          <Col span={8}><UploadAvatar/></Col>
+          
+          {/* <Upload name="logo" action="/upload.do" listType="picture">
             <Button icon={<UploadOutlined />}>Click to upload</Button>
-          </Upload>
+          </Upload> */}
+          
         </Row>
       </Form.Item>
 

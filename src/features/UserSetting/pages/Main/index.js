@@ -18,6 +18,7 @@ import "./index.scss";
 import CreateUserModal from "../../../../components/ManageUser/CreateUserModal.js";
 import UpdateUserModal from "../../../../components/ManageUser/UpdateUserModal.js";
 import UserSetting from "../../../../components/UserSetting/UserSettingForm.js";
+import UploadAvatar from "../../../../components/UserSetting/UploadAvatar.js";
 import { getUsersApi, deleteUsersApi, getAccountDetailApi } from "api/user";
 import { useSelector, useDispatch } from "react-redux";
 import { getStore } from "store";
