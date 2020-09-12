@@ -64,7 +64,9 @@ const normFile = (e) => {
 };
 
 const UserSetting = () => {
+  const [form] = Form.useForm();
   const dispatch = useDispatch();
+  const [data, setData]=useState({});
   const { record } = useSelector((state) => state.userSetting);
   const [switchState, setSwitchState] = useState(true);
   function onChange(checked) {
@@ -78,24 +80,26 @@ const UserSetting = () => {
     // fetch();
 
     console.log("didmount avbc", record);
+    setData(record);
+    form.setFieldsValue(record);
   }, [record]);
   const fetch = () => {};
-
   return (
     <Form
+    form={form}
       name="validate_other"
       {...formItemLayout}
       onFinish={onFinish}
-      initialValues={
-        {
-          // Email: record.Email,
-          // FirstName: "fjsdfjakj",
-          // LastName: record.LastName,
-          // HashPasswd: record.HashPasswd,
-          // UserName: record.UserName,
-          // RoleName: record.RoleName,
-        }
-      }
+      // initialValues={
+      //   {
+      //     // Email: record.Email,
+      //     // FirstName: data.FirstName,
+      //     // LastName: record.LastName,
+      //     // HashPasswd: record.HashPasswd,
+      //     // UserName: record.UserName,
+      //     // RoleName: record.RoleName,
+      //   }
+      // }
     >
       <Form.Item>
         <Row
@@ -127,8 +131,9 @@ const UserSetting = () => {
             message: "Please input Firstname!",
           },
         ]}
+        noStyle
       >
-        <Input value={record.FirstName} />
+        <Input />
       </Form.Item>
 
       <Form.Item
