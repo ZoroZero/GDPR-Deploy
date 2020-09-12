@@ -37,6 +37,12 @@ function MainMenu(props) {
           <Link to="/customer-management" />
         </Menu.Item>
       )}
+      {
+        <Menu.Item key="/user-setting" icon={<UserOutlined />}>
+          User Setting
+          <Link to="/user-setting" />
+        </Menu.Item>
+      }
     </Menu>
   );
 }

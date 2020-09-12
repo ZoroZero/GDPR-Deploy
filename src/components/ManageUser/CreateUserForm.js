@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
-import 'antd/dist/antd.css';
+import React, { useState } from "react";
+import ReactDOM from "react-dom";
+import "antd/dist/antd.css";
 import {
   Form,
   Input,
@@ -12,8 +12,8 @@ import {
   Checkbox,
   Button,
   AutoComplete,
-} from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+} from "antd";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
 const AutoCompleteOption = AutoComplete.Option;
@@ -52,23 +52,23 @@ const AutoCompleteOption = AutoComplete.Option;
 //   },
 // ];
 const roles = [
-    {
-      value: 'admin',
-      label: 'admin',
-    },
-    {
-        value: 'normal-user',
-        label: 'normal-user',
-    },
-    {
-        value: 'contact-point',
-        label: 'contact-point',
-      },
-      {
-        value: 'dc-member',
-        label: 'dc-member',
-      },
-  ];
+  {
+    value: "admin",
+    label: "admin",
+  },
+  {
+    value: "normal-user",
+    label: "normal-user",
+  },
+  {
+    value: "contact-point",
+    label: "contact-point",
+  },
+  {
+    value: "dc-member",
+    label: "dc-member",
+  },
+];
 const formItemLayout = {
   labelCol: {
     xs: {
@@ -103,8 +103,8 @@ const tailFormItemLayout = {
 const RegistrationForm = () => {
   const [form] = Form.useForm();
 
-  const onFinish = values => {
-    console.log('Received values of form: ', values);
+  const onFinish = (values) => {
+    console.log("Received values of form: ", values);
   };
 
   const prefixSelector = (
@@ -121,15 +121,17 @@ const RegistrationForm = () => {
   );
   const [autoCompleteResult, setAutoCompleteResult] = useState([]);
 
-  const onWebsiteChange = value => {
+  const onWebsiteChange = (value) => {
     if (!value) {
       setAutoCompleteResult([]);
     } else {
-      setAutoCompleteResult(['.com', '.org', '.net'].map(domain => `${value}${domain}`));
+      setAutoCompleteResult(
+        [".com", ".org", ".net"].map((domain) => `${value}${domain}`)
+      );
     }
   };
 
-  const websiteOptions = autoCompleteResult.map(website => ({
+  const websiteOptions = autoCompleteResult.map((website) => ({
     label: website,
     value: website,
   }));
@@ -140,8 +142,8 @@ const RegistrationForm = () => {
       name="register"
       onFinish={onFinish}
       initialValues={{
-        role: ['admin', 'normal-user', 'contact-point','dc-member'],
-        prefix: '86',
+        role: ["admin", "normal-user", "contact-point", "dc-member"],
+        prefix: "86",
       }}
       scrollToFirstError
     >
@@ -150,12 +152,12 @@ const RegistrationForm = () => {
         label="E-mail"
         rules={[
           {
-            type: 'email',
-            message: 'The input is not valid E-mail!',
+            type: "email",
+            message: "The input is not valid E-mail!",
           },
           {
             required: true,
-            message: 'Please input your E-mail!',
+            message: "Please input your E-mail!",
           },
         ]}
       >
@@ -168,7 +170,7 @@ const RegistrationForm = () => {
         rules={[
           {
             required: true,
-            message: 'Please input your password!',
+            message: "Please input your password!",
           },
         ]}
         hasFeedback
@@ -179,20 +181,22 @@ const RegistrationForm = () => {
       <Form.Item
         name="confirm"
         label="Confirm Password"
-        dependencies={['password']}
+        dependencies={["password"]}
         hasFeedback
         rules={[
           {
             required: true,
-            message: 'Please confirm your password!',
+            message: "Please confirm your password!",
           },
           ({ getFieldValue }) => ({
             validator(rule, value) {
-              if (!value || getFieldValue('password') === value) {
+              if (!value || getFieldValue("password") === value) {
                 return Promise.resolve();
               }
 
-              return Promise.reject('The two passwords that you entered do not match!');
+              return Promise.reject(
+                "The two passwords that you entered do not match!"
+              );
             },
           }),
         ]}
@@ -213,7 +217,7 @@ const RegistrationForm = () => {
         rules={[
           {
             required: true,
-            message: 'Please input your username!',
+            message: "Please input your username!",
             whitespace: true,
           },
         ]}
@@ -221,28 +225,14 @@ const RegistrationForm = () => {
         <Input />
       </Form.Item>
 
-      {/* <Form.Item
-        name="residence"
-        label="Habitual Residence"
-        rules={[
-          {
-            type: 'array',
-            required: true,
-            message: 'Please select your habitual residence!',
-          },
-        ]}
-      >
-        <Cascader options={residences} />
-      </Form.Item> */}
-
       <Form.Item
         name="role"
         label="Role permission"
         rules={[
           {
-            type: 'array',
+            type: "array",
             required: true,
-            message: 'Please select role!',
+            message: "Please select role!",
           },
         ]}
       >
@@ -255,11 +245,15 @@ const RegistrationForm = () => {
         rules={[
           {
             required: true,
-            message: 'Please input Firstname!',
+            message: "Please input Firstname!",
           },
         ]}
       >
-        <AutoComplete options={websiteOptions} onChange={onWebsiteChange} placeholder="website">
+        <AutoComplete
+          options={websiteOptions}
+          onChange={onWebsiteChange}
+          placeholder="website"
+        >
           <Input />
         </AutoComplete>
       </Form.Item>
@@ -270,58 +264,65 @@ const RegistrationForm = () => {
         rules={[
           {
             required: true,
-            message: 'Please input Lastname!',
+            message: "Please input Lastname!",
           },
         ]}
       >
-        <AutoComplete options={websiteOptions} onChange={onWebsiteChange} placeholder="website">
+        <AutoComplete
+          options={websiteOptions}
+          onChange={onWebsiteChange}
+          placeholder="website"
+        >
           <Input />
         </AutoComplete>
       </Form.Item>
-
-      {/* <Form.Item label="Captcha" extra="We must make sure that your are a human.">
-        <Row gutter={8}>
-          <Col span={12}>
-            <Form.Item
-              name="captcha"
-              noStyle
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input the captcha you got!',
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Button>Get captcha</Button>
-          </Col>
-        </Row>
-      </Form.Item>
-
-      <Form.Item
-        name="agreement"
-        valuePropName="checked"
-        rules={[
-          {
-            validator: (_, value) =>
-              value ? Promise.resolve() : Promise.reject('Should accept agreement'),
-          },
-        ]}
-        {...tailFormItemLayout}
-      >
-        <Checkbox>
-          I have read the <a href="">agreement</a>
-        </Checkbox>
-      </Form.Item>
-      <Form.Item {...tailFormItemLayout}>
-        <Button type="primary" htmlType="submit">
-          Register
-        </Button>
-      </Form.Item> */}
     </Form>
   );
 };
 export default RegistrationForm;
+
+// import React from "react";
+// import { Modal, Form, Input, Radio } from "antd";
+
+// const ModalFormComponent = ({ visible, onCancel, onCreate, form }) => {
+//   const { getFieldDecorator } = form;
+//   return (
+//     <Modal
+//       visible={visible}
+//       title="Form within a Modal"
+//       okText="Submit"
+//       onCancel={onCancel}
+//       onOk={onCreate}
+//     >
+//       <Form layout="vertical">
+//         <Form.Item label="Title">
+//           {getFieldDecorator("title", {
+//             rules: [
+//               {
+//                 required: true,
+//                 message: "Please input the title of collection!",
+//               },
+//             ],
+//           })(<Input />)}
+//         </Form.Item>
+//         <Form.Item label="Description">
+//           {getFieldDecorator("description")(<Input type="textarea" />)}
+//         </Form.Item>
+//         <Form.Item className="collection-create-form_last-form-item">
+//           {getFieldDecorator("modifier", {
+//             initialValue: "public",
+//           })(
+//             <Radio.Group>
+//               <Radio value="public">Public</Radio>
+//               <Radio value="private">Private</Radio>
+//             </Radio.Group>
+//           )}
+//         </Form.Item>
+//       </Form>
+//     </Modal>
+//   );
+// };
+
+// const ModalForm = Form.create({ name: "modal_form" })(ModalFormComponent);
+
+// export default ModalForm;

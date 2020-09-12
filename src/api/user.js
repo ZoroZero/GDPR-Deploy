@@ -1,4 +1,5 @@
 import axios from "axios/auth.instance";
+import { checkToken } from "utils/localstorage";
 
 export const listUserApi = () => {
   return new Promise((resolve, reject) => {
@@ -10,22 +11,63 @@ export const listUserApi = () => {
         resolve(res.data);
       })
       .catch((error) => {
-        reject(error);
+        reject(error.response);
       });
   });
 };
 
 export const getUsersApi = (data) => {
   return new Promise((resolve, reject) => {
+    const token = checkToken();
+    console.log("check token get userAPI", token)
     return axios
       .get("/api/users/list", { params: data })
       .then((res) => {
-        // console.log(Request);
-        console.log(res.data);
-        resolve(res.data);
+        resolve(res);
       })
       .catch((error) => {
-        reject(error);
+        reject(error.response);
+      });
+  });
+};
+
+export const deleteUsersApi = (data) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .delete("/api/users/" + data)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error.response);
+      });
+  });
+};
+
+export const insertUsersApi = (data) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .post("/api/users/insert", { ...data })
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error.response);
+      });
+  });
+};
+
+export const updateUsersApi = (id, data) => {
+  return new Promise((resolve, reject) => {
+    console.log("id", id);
+    console.log("data", data);
+    return axios
+      .put(`/api/users/${id}`, { ...data })
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error.response);
       });
   });
 };

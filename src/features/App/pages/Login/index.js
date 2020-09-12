@@ -26,8 +26,8 @@ function LoginPage(props) {
         history.push("/");
       })
       .catch((error) => {
-        // message.error(error[0].title);
-        console.log(error);
+        message.error("login fail");
+        console.log(error.message);
       });
   };
 
@@ -48,7 +48,7 @@ function LoginPage(props) {
           <Form.Item
             label="Username"
             name="username"
-            initialValue="lwadhams1"
+            initialValue="obythelli"
             rules={[{ required: true, message: "Please input your username!" }]}
           >
             <Input />
@@ -56,7 +56,7 @@ function LoginPage(props) {
           <Form.Item
             label="Password"
             name="password"
-            initialValue="dYtb2lAAFbVJ"
+            initialValue="u7Rg2KBu"
             rules={[{ required: true, message: "Please input your password!" }]}
           >
             <Input.Password />

@@ -12,7 +12,7 @@ export const initialState = {
 };
 
 const slice = createSlice({
-  name: "userManagement",
+  name: "userSetting",
   initialState,
   reducers: {
     setFilter: (state, action) => {
