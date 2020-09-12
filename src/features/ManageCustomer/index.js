@@ -13,7 +13,6 @@ Customer.propTypes = {};
 
 function Customer() {
   const ability = useAbility(AbilityContext);
-  console.log(ability.can("access", "manage-customer"));
   const match = useRouteMatch();
   return (
     <Suspense fallback={<div>Loading ...</div>}>
