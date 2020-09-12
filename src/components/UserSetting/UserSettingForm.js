@@ -16,6 +16,7 @@ import {
   Input,
   Cascader,
   Tooltip,
+  message
 } from "antd";
 import {
   UploadOutlined,
@@ -25,6 +26,7 @@ import {
 import React, { Component, useState, useEffect, useLayoutEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setRecord } from "../../features/UserSetting/slice";
+import { updateAccountApi } from "../../api/user";
 const { Option } = Select;
 const formItemLayout = {
   labelCol: {
@@ -63,7 +65,7 @@ const normFile = (e) => {
   return e && e.fileList;
 };
 
-const UserSetting = () => {
+const UserSetting = (pros) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const [data, setData]=useState({});
@@ -75,6 +77,36 @@ const UserSetting = () => {
   }
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
+    if (values.password!==undefined){
+    updateAccountApi(values.UserId, {
+      ...values, PassWord: values.password
+    }).then((res) => {
+      console.log("res from insert", res);
+      if (res.status === 201) {
+        message.success(res.statusText);
+      }
+      pros.onSubmitModal();
+    })
+    .catch((error) => {
+      message.error(error.data.message);
+    });
+  pros.onSubmitModal();
+  }
+  else{
+    updateAccountApi(values.UserId, {
+      ...values, PassWord: values.HashPasswd
+    }).then((res) => {
+      console.log("res from update account", res);
+      if (res.status === 200) {
+        message.success(res.statusText);
+      }
+      pros.onSubmitModal();
+    })
+    .catch((error) => {
+      message.error(error.data.message);
+    });
+  pros.onSubmitModal();
+  }
   };
   useEffect(() => {
     // fetch();
@@ -340,7 +372,7 @@ const UserSetting = () => {
           offset: 6,
         }}
       >
-        <Button type="primary" onClick={fetch} htmlType="submit">
+        <Button type="primary" htmlType="submit">
           Apply New Change
         </Button>
       </Form.Item>

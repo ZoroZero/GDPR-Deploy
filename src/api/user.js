@@ -87,3 +87,18 @@ export const updateUsersApi = (id, data) => {
       });
   });
 };
+
+export const updateAccountApi = (id, data) => {
+  return new Promise((resolve, reject) => {
+    console.log("id", id);
+    console.log("data", data);
+    return axios
+      .put(`/api/users/account/${id}`, { ...data })
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error.response);
+      });
+  });
+};

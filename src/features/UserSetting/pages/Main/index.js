@@ -101,7 +101,7 @@ function MainPage() {
         >
           <Meta title="Europe Street beat" description="www.instagram.com" />
         </Card> */}
-      <UserSetting />
+      <UserSetting onSubmitModal={refetch}/>
       {/* </Row> */}
     </div>
   );
