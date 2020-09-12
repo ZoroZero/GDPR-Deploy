@@ -101,6 +101,8 @@ const UserSetting = () => {
       //   }
       // }
     >
+      
+
       <Form.Item>
         <Row
           type="flex"
@@ -109,8 +111,8 @@ const UserSetting = () => {
           // style={{ minHeight: "100vh" }}
         >
           <Avatar
-            size={250}
-            style={{ padding: 25 }}
+            size={150}
+            style={{ padding: 15 }}
             src="https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
           />
           <Upload name="logo" action="/upload.do" listType="picture">
@@ -122,7 +124,20 @@ const UserSetting = () => {
       {/* <Form.Item name="rate" label="Rate">
         <Rate />
       </Form.Item> */}
-      <Form.Item
+    <Form.Item
+        name="UserId"
+        label="ID"
+        rules={[
+          {
+            // required: true,
+            message: "Please input your ID!",
+            whitespace: true,
+          },
+        ]}
+      >
+        <Input disabled={true} />
+      </Form.Item>
+    <Form.Item
         name="FirstName"
         label="First Name"
         rules={[
@@ -131,7 +146,6 @@ const UserSetting = () => {
             message: "Please input Firstname!",
           },
         ]}
-        noStyle
       >
         <Input />
       </Form.Item>
@@ -167,11 +181,11 @@ const UserSetting = () => {
 
       <Form.Item
         name="HashPasswd"
-        label="Password"
+        label="Old Password"
         rules={[
           {
             required: true,
-            message: "Please input your password!",
+            message: "Please input your old password!",
           },
         ]}
         hasFeedback
@@ -180,15 +194,38 @@ const UserSetting = () => {
       </Form.Item>
 
       <Form.Item
-        name="newpassword"
+        name="password"
         label="New Password"
         rules={[
           {
-            required: true,
-            message: "Please input your password!",
+            // required: true,
+            message: 'Please input your password!',
           },
         ]}
         hasFeedback
+      >
+        <Input.Password />
+      </Form.Item>
+
+      <Form.Item
+        name="confirm"
+        label="Confirm Password"
+        dependencies={['password']}
+        hasFeedback
+        rules={[
+          {
+            // required: true,
+            message: 'Please confirm your password!',
+          },
+          ({ getFieldValue }) => ({
+            validator(rule, value) {
+              if (!value || getFieldValue('password') === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject('The two passwords that you entered do not match!');
+            },
+          }),
+        ]}
       >
         <Input.Password />
       </Form.Item>
@@ -246,7 +283,7 @@ const UserSetting = () => {
         rules={[
           {
             // required: true,
-            message: "Please input your username!",
+            message: "Please input your role name!",
             whitespace: true,
           },
         ]}
