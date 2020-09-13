@@ -79,7 +79,8 @@ function App(props) {
   useEffect(() => {
     const token = checkToken();
     const role = localStorage.getItem("role");
-    if (token) dispatch(login({ token: token, role: role }));
+    const userId = localStorage.getItem("userId");
+    if (token) dispatch(login({ token: token, role: role, userId: userId }));
   });
 
   const handleLogout = () => {
@@ -129,7 +130,6 @@ function App(props) {
                 minHeight: 280,
               }}
             >
-              {loading && <Loading />}
               <Switch>
                 {ability.can("access", "manage-user") && (
                   <PrivateRoute

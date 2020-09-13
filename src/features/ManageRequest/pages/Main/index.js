@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Pagination, Row, Col, Modal } from "antd";
+import { Table, Button, Pagination, Row, Col, Modal, Tag } from "antd";
 import "./index.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -7,22 +7,33 @@ import {
   setSortTable,
   setPageSize,
   setCurrentPage,
-  setModal,
 } from "../../slice";
-import Loading from "components/Loading";
 import Search from "antd/lib/input/Search";
 import CreateRequestForm from "components/RequestModal";
 import { Link } from "react-router-dom";
-import moment from "moment";
 
 const columns = [
   {
+    title: "Number",
+    width: 50,
+    dataIndex: "Number",
+    key: "number",
+    fixed: "left",
+  },
+  {
     title: "Status",
     width: 100,
-    dataIndex: "IsApproved",
+    dataIndex: "Status",
     key: "status",
     fixed: "left",
-    render: (data) => (data ? "Approved" : "Not approved"),
+    render: (data) =>
+      !data.IsApproved && !data.IsClosed ? (
+        <Tag color="blue">Pending</Tag>
+      ) : data.IsClosed ? (
+        <Tag>Closed</Tag>
+      ) : (
+        <Tag color="green">Approved</Tag>
+      ),
   },
   {
     title: "Created Date",
@@ -143,8 +154,13 @@ const MainPage = (props) => {
       Title: val.Title,
       Description: val.Description,
     };
+    let status = {
+      IsApproved: val.IsApproved,
+      IsClosed: val.IsClosed,
+    };
     return {
       ...val,
+      Status: status,
       Title: title,
       key: val.Id,
       link: `/request-management/${val.Id}`,

@@ -5,16 +5,18 @@ import ApproveRequestForm from "components/ApproveRequestForm";
 import { useDispatch, useSelector } from "react-redux";
 import { getRequestDetail } from "features/ManageRequest/slice";
 import RequestForm from "components/CreateRequestForm";
-import moment from "moment";
 import { Can } from "permission/can";
+import ChangeLogBox from "components/ChangeLogBox";
 
 DetailPage.propTypes = {};
 
 function DetailPage(props) {
   const dispatch = useDispatch();
   const requestId = props.match.params.requestId;
-  const { requestDetail } = useSelector((state) => state.requestManagement);
-  const { loading } = useSelector((state) => state.requestManagement);
+  const { requestDetail, requestLogs } = useSelector(
+    (state) => state.requestManagement
+  );
+  const { userId } = useSelector((state) => state.app);
   useEffect(() => {
     fetchData(requestId);
   }, []);
@@ -25,7 +27,7 @@ function DetailPage(props) {
 
   return (
     <>
-      <h2>Request detail page</h2>
+      <h2>Request #{requestDetail.Number}</h2>
       <Row gutter={[16, 16]}>
         <Col span={12}>
           <Can I="approve-cancel" a="request">
@@ -33,10 +35,12 @@ function DetailPage(props) {
               title="Response"
               bordered={true}
               headStyle={{ backgroundColor: "#0066ff", color: "white" }}
+              bodyStyle={{ border: "1px solid #0066ff" }}
             >
               <ApproveRequestForm
                 requestId={requestId}
                 IsApproved={requestDetail.IsApproved}
+                IsClosed={requestDetail.IsClosed}
               />
             </Card>
           </Can>
@@ -44,11 +48,16 @@ function DetailPage(props) {
             title="Update Detail"
             bordered={true}
             headStyle={{ backgroundColor: "#0066ff", color: "white" }}
+            bodyStyle={{ border: "1px solid #0066ff" }}
           >
             <Row>
               <p>
                 <strong>Status: </strong>
-                {requestDetail.IsApproved ? "Approved" : "Not Approved"}
+                {!requestDetail.IsApproved && !requestDetail.IsClosed
+                  ? "Pending"
+                  : requestDetail.IsClosed
+                  ? "Closed"
+                  : "Approved"}
               </p>
             </Row>
             <Row>
@@ -66,7 +75,9 @@ function DetailPage(props) {
             <Row>
               <p>
                 <strong>Updated Date: </strong>
-                {new Date(requestDetail.UpdatedDate).toString()}
+                {requestDetail.UpdatedDate
+                  ? new Date(requestDetail.UpdatedDate).toString()
+                  : ""}
               </p>
             </Row>
             <Row>
@@ -75,7 +86,15 @@ function DetailPage(props) {
                 {requestDetail.UpdatedBy}
               </p>
             </Row>
-            <RequestForm request={requestDetail} type="update" />
+            <RequestForm
+              request={requestDetail}
+              type="update"
+              disable={
+                requestDetail.OwnerId !== userId ||
+                requestDetail.IsApproved ||
+                requestDetail.IsClosed
+              }
+            />
           </Card>
         </Col>
         <Col span={12}>
@@ -83,14 +102,9 @@ function DetailPage(props) {
             title="Conversation"
             bordered={true}
             headStyle={{ backgroundColor: "#339966", color: "white" }}
-            bodyStyle={{ height: "500px" }}
+            bodyStyle={{ height: "500px", border: "1px solid #339966" }}
           ></Card>
-          <Card
-            title="Change logs"
-            bordered={true}
-            headStyle={{ backgroundColor: "#99ccff", color: "white" }}
-            bodyStyle={{ height: "300px" }}
-          ></Card>
+          <ChangeLogBox logs={requestLogs} />
         </Col>
       </Row>
     </>
