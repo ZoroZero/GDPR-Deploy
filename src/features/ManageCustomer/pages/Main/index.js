@@ -329,8 +329,6 @@ export default MainPage;
 /*TODO:
 - manage server
 - upload file
-- change pagesize pagination
-- fix search
 - check multi customer
 - log / detail
 

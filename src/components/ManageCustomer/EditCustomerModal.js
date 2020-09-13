@@ -39,10 +39,10 @@ function EditCustomerModal(props) {
         // console.log()
         form.setFieldsValue({
           ContractBeginDate: props.record.ContractBeginDate
-            ? moment(props.record.ContractBeginDate, "DD/MM/YYYY hh:mm:ss")
+            ? moment(props.record.ContractBeginDate, "DD/MM/YYYY HH:mm:ss")
             : null,
           ContractEndDate: props.record.ContractEndDate
-            ? moment(props.record.ContractEndDate, "DD/MM/YY hh:mm:ss")
+            ? moment(props.record.ContractEndDate, "DD/MM/YY HH:mm:ss")
             : null,
           FirstName: props.record.FirstName,
           LastName: props.record.LastName,
@@ -53,6 +53,7 @@ function EditCustomerModal(props) {
         });
         dispatch(getContactPointList());
       }
+      setIsActive(props.record.IsActive);
     }
   }, [shouldGetData, props.record]);
 
