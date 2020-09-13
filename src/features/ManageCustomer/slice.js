@@ -94,22 +94,6 @@ export const getCustomerList = (params = {}) => (dispatch) => {
   });
 };
 
-// export const change = (params = {}) => async (dispatch) => {
-//   try {
-//     const data = await getCustomerApi(params);
-//     dispatch(setData(data));
-//     dispatch(
-//       setPagination({
-//         total: res[0] ? res[0].Total : 0,
-//         current: res[0] ? params.current : 0,
-//         pageSize: params.pageSize,
-//       })
-//     );
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-
 export const getContactPointList = () => (dispatch) => {
   console.log("get contactpoint list");
   getContactPointsApi().then((res) => {
@@ -117,30 +101,3 @@ export const getContactPointList = () => (dispatch) => {
     dispatch(setContactPointList(res));
   });
 };
-
-// export const createCustomer = (params = {}) => (dispatch) => {
-//   console.log("params create customer", params);
-//   try {
-//     const res = await createCustomerApi(params);
-//     dispatch(setPagination({
-//       total: total,
-//       pageSize :pageSize,
-//       current : 1,
-//     }));
-//     dispatch(setRefresh(!refresh));
-
-//   } catch (error) {
-//     console.log(error)
-//   }
-
-// }
-
-// const openNotification = (message) => {
-//     notification.open({
-//       message: "Successfully create Customer",
-//       description: message,
-//       onClick: () => {
-//         console.log("Notification Clicked!");
-//       },
-//     });
-//   };

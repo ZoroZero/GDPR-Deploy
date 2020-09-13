@@ -160,6 +160,7 @@ function MainPage() {
   ];
 
   useEffect(() => {
+    console.log("USE EFFECT INDEX");
     fetch(
       pagination.current,
       pagination.pageSize,
@@ -212,24 +213,10 @@ function MainPage() {
     var newSortColumn = sorter.column ? sorter.column.dataIndex : "CreatedDate";
     var newSortOrder = sorter.order === "descend" ? "descend" : "ascend";
     dispatch(setSort({ sortColumn: newSortColumn, sortOrder: newSortOrder }));
-    fetch(
-      pagination.current,
-      pagination.pageSize,
-      newSortColumn,
-      newSortOrder,
-      keyword
-    );
   }
 
   function handlePageChange(pageNumber, pageSize) {
     console.log("handle page change", pageNumber, pageSize);
-    // dispatch(
-    //   setPagination({
-    //     total: pagination.total,
-    //     pageSize: pagination.pageSize,
-    //     current: pageNumber,
-    //   })
-    // );
     fetch(pageNumber, pageSize, sortColumn, sortOrder, keyword);
   }
   function showTotal(total) {
