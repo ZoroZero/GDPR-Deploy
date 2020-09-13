@@ -28,6 +28,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setRecord } from "../../features/UserSetting/slice";
 import { updateAccountApi } from "../../api/user";
 import UploadAvatar from "../../components/UserSetting/UploadAvatar.js";
+import UploadAvatarDynamic from "../../components/UserSetting/UploadAvatarDynamic.js";
 const { Option } = Select;
 const formItemLayout = {
   labelCol: {
@@ -70,6 +71,7 @@ const UserSetting = (pros) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const [data, setData]=useState({});
+  const [imageUrl, setImageUrl]=useState("https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png");
   const { record } = useSelector((state) => state.userSetting);
   const [switchState, setSwitchState] = useState(true);
   function onChange(checked) {
@@ -113,6 +115,12 @@ const UserSetting = (pros) => {
     // fetch();
 
     console.log("didmount avbc", record);
+    if (record.AvatarPath===undefined){
+      setImageUrl("https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png");
+    }
+    else{
+      setImageUrl("http://localhost:5000/api/users/"+record.AvatarPath);
+    }
     setData(record);
     form.setFieldsValue(record);
   }, [record]);
@@ -147,9 +155,10 @@ const UserSetting = (pros) => {
           <Col span={8}><Avatar
             size={150}
             style={{ padding: 0 }}
-            src="https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
+            // src="https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
+            src={imageUrl}
           /></Col>
-          <Col span={8}><UploadAvatar/></Col>
+          <Col span={8}><UploadAvatarDynamic/></Col>
           
           {/* <Upload name="logo" action="/upload.do" listType="picture">
             <Button icon={<UploadOutlined />}>Click to upload</Button>
