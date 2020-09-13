@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Table, Pagination, Input, Button, Modal, Tag } from "antd";
+import { Table, Pagination, Input, Button, Modal, Tag, Upload, Icon } from "antd";
+import { UploadOutlined } from '@ant-design/icons';
 import "./index.scss";
 import { getServersApi, deleteServerApi } from "api/server";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,6 +9,7 @@ import AddEditServerModal from "components/ManageServer/AddEditServerModal";
 import { SERVER_CONSTANTS } from 'constants/ManageServer/server';
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import ExportServer from 'components/ManageServer/ExportServer';
+import ImportServer from "components/ManageServer/ImportServer";
 
 MainPage.propTypes = {};
 
@@ -30,8 +32,8 @@ function MainPage() {
     const [filter, setFilter] = useState({filterColumn: SERVER_CONSTANTS.DEFAULT_FILTER_COLUMN, filterKeys: SERVER_CONSTANTS.DEFAULT_FILTER_KEYS}) 
     const [modalVisible, setModalVisible] = useState(false);
     const [exporting, setExporting] = useState(false);
+    const [importing, setImporting] = useState(false);
     const [editRequest, setEditRequest] = useState(null);
-
     const [refresh, setRefresh] = useState(true);
     const setRefreshPage = useCallback(() => {
         setRefresh(refresh => !refresh);
@@ -77,9 +79,9 @@ function MainPage() {
         },
         {
             title: "Status",
-            dataIndex: "Status",
+            dataIndex: "IsActive",
             width: "10%",
-            render: (val) => val==='1' ? <Tag color="green">Active</Tag> : <Tag color="red">InActive</Tag>,
+            render: (val) => val? <Tag color="green">Active</Tag> : <Tag color="red">InActive</Tag>,
             filters: [
                 { text: 'Active', value: '1' },
                 { text: 'InActive', value: '0' },
@@ -213,6 +215,11 @@ function MainPage() {
         setExporting(exporting => !exporting)
     }
 
+    // Toggle import modal
+    function toggleImport() {
+        setImporting(importing => !importing)
+    }
+
 
     // Handle row selected
     const rowSelection = {
@@ -230,6 +237,30 @@ function MainPage() {
 
     return (
         <React.Fragment>
+            {/* <Upload
+                accept=".txt, .csv"
+                showUploadList={false}
+                beforeUpload={file => {
+                    const reader = new FileReader();
+
+                    reader.onload = e => {
+                        console.log(e.target.result);
+                    };
+                    reader.readAsText(file);
+
+                    // Prevent upload
+                    return false;
+                }}>
+                <Button icon={<UploadOutlined />}>
+                     Click to Upload
+                </Button>
+            </Upload> */}
+
+            <div>
+                <Button onClick={toggleImport}>Import server list</Button>
+                <ImportServer visible={importing} setVisible={setImporting}></ImportServer>
+            </div>
+
             <div>
                 <Button onClick={toggleExport} style={{marginBottom: '20px'}}>Export server list</Button>
                 <ExportServer id='export-server' className='export-server' visible = {exporting} csvData={exportData} 
@@ -253,7 +284,7 @@ function MainPage() {
             <Table
                 columns={columns}
                 rowKey={(record) => record.Id}
-                rowSelection={rowSelection}
+                // rowSelection={rowSelection}
                 dataSource={data}
                 pagination={false}
                 loading={loading}

@@ -26,8 +26,8 @@ function ExportServer(props){
             {
                 serverName: values.ServerName,
                 ipAddress: values.IpAddress,
-                startDate: values.FromDate.format("YYYY-MM-DD hh:mm:ss"),
-                endDate: values.ToDate.format("YYYY-MM-DD hh:mm:ss")
+                startDate: values.FromDate? values.FromDate.format("YYYY-MM-DD hh:mm:ss"): undefined,
+                endDate: values.ToDate? values.ToDate.format("YYYY-MM-DD hh:mm:ss"): undefined
             }
         )
         .then((res) => {
