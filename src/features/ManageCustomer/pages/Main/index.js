@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Modal,
   Table,
@@ -12,36 +12,38 @@ import {
 } from "antd";
 import { ExclamationCircleOutlined, AudioOutlined } from "@ant-design/icons";
 import "./index.scss";
-import AddCustomerModal from "../../../../components/ManageCustomer/AddCustomerModel";
-import EditCustomerModal from "../../../../components/ManageCustomer/EditCustomerModel";
-import { getCustomerApi } from "api/customer";
-import { getContactPointsApi } from 'api/customer';
-import { deleteCustomerApi } from 'api/customer'
-import { setSort } from "features/ManageCustomer/slice";
+import AddCustomerModal from "../../../../components/ManageCustomer/AddCustomerModal";
+import EditCustomerModal from "../../../../components/ManageCustomer/EditCustomerModal";
+import { deleteCustomerApi } from "api/customer";
+import {
+  setData,
+  setPagination,
+  setSort,
+  setSearch,
+  setRefresh,
+  getCustomerList,
+  setLoading,
+} from "features/ManageCustomer/slice";
 import { useDispatch, useSelector } from "react-redux";
 
 MainPage.propTypes = {};
 const { confirm } = Modal;
-const pageSize = 10;
 const { Search } = Input;
 
-
-
-
 function MainPage() {
-  const [contactPoints, setContactPoints] = useState([]);
-  const [data, setData] = useState([]);
   const dispatch = useDispatch();
-  const { sortColumn, sortOrder } = useSelector(
-    (state) => state.customerManagement
-  );
-  const [loading, setLoading] = useState(false);
-  const [total, setTotal] = useState();
-  const [page, setPage] = useState(1);
-  const [searchKeyword, setSearchKeyword] = useState("");
+  const {
+    data,
+    pagination,
+    sortColumn,
+    sortOrder,
+    keyword,
+    refresh,
+    loading,
+  } = useSelector((state) => state.customerManagement);
+
   const [modalCreateVisible, setModalCreateVisible] = useState(false);
   const [modalEditVisible, setModalEditVisible] = useState(false);
-  const [refresh, setRefresh] = useState(false)
   const [dataEdit, setDataEdit] = useState({
     FirstName: "",
     LastName: "",
@@ -52,12 +54,21 @@ function MainPage() {
     Description: "",
     IsActive: true,
   });
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const searchBox = useRef(null);
+  const pageOptions = [10, 20, 50, 100];
+
   const columns = [
     {
       title: "Customer Name",
       dataIndex: "FirstName",
       sorter: true,
-      render: (text, record) => <p> {text} {record.LastName}</p>
+      render: (text, record) => (
+        <p>
+          {" "}
+          {text} {record.LastName}
+        </p>
+      ),
     },
     {
       title: "Contact Point",
@@ -90,7 +101,7 @@ function MainPage() {
     },
     {
       title: "Description",
-      dataIndex: "Description"
+      dataIndex: "Description",
     },
     {
       title: "Status",
@@ -115,18 +126,25 @@ function MainPage() {
       key: "action",
       render: (record) => (
         <Space size="middle">
-
-          <Button type="primary" onClick={() => {
-            setDataEdit(record); setModalEditVisible(true); console.log("DATA EDIT ", dataEdit);
-          }}>
+          <Button
+            type="primary"
+            onClick={() => {
+              setDataEdit(record);
+              setModalEditVisible(true);
+            }}
+          >
             Update
-            </Button>
+          </Button>
 
-
-
-          <Button type="primary" danger onClick={() => { showPromiseConfirm(record.Id) }}>
+          <Button
+            type="primary"
+            danger
+            onClick={() => {
+              showPromiseConfirm(record.Id);
+            }}
+          >
             Delete
-        </Button>
+          </Button>
           {/* <a className="ant-dropdown-link">
           More actions <DownOutlined />
         </a> */}
@@ -141,11 +159,30 @@ function MainPage() {
     },
   ];
 
-
   useEffect(() => {
+    fetch(
+      pagination.current,
+      pagination.pageSize,
+      sortColumn,
+      sortOrder,
+      keyword
+    );
+  }, [refresh, sortColumn, sortOrder]);
 
-    fetch(page, sortColumn, sortOrder, searchKeyword);
-  }, [refresh, sortColumn, sortOrder, searchKeyword]);
+  async function fetch(current, pageSize, sortColumn, sortOrder, keyword) {
+    console.log("FETCH DATA INDEX");
+    dispatch(setLoading(true));
+    await dispatch(
+      getCustomerList({
+        current: current,
+        pageSize: pageSize,
+        sortColumn: sortColumn,
+        sortOrder: sortOrder,
+        keyword: keyword,
+      })
+    );
+    dispatch(setLoading(false));
+  }
 
   function showPromiseConfirm(id) {
     confirm({
@@ -154,96 +191,135 @@ function MainPage() {
       content:
         "When clicked the OK button, this dialog will be closed after 1 second",
       onOk() {
-        deleteCustomerApi({ Id: id })
-
-        setRefresh(!refresh);
+        deleteCustomerApi({ Id: id });
+        dispatch(setRefresh(!refresh));
       },
-      onCancel() { },
+      onCancel() {},
     });
   }
 
-  function handleSearchCustomer(keyword) {
-    keyword ? setSearchKeyword(keyword) : setSearchKeyword('');
-    fetch(1, sortColumn, sortOrder, keyword);
+  async function handleSearchChange(newKeyword) {
+    searchBox.current.state.value = "";
+    (await newKeyword)
+      ? dispatch(setSearch(newKeyword))
+      : dispatch(setSearch(""));
+    await dispatch(setPagination({ ...pagination, current: 1 }));
+    await dispatch(setRefresh(!refresh));
+    dispatch(setSearch(""));
   }
 
-  async function handleSortChange(pagination, filters, sorter) {
+  function handleSortChange(pagination, filters, sorter) {
     var newSortColumn = sorter.column ? sorter.column.dataIndex : "CreatedDate";
     var newSortOrder = sorter.order === "descend" ? "descend" : "ascend";
-    await dispatch(
-      setSort({ sortColumn: newSortColumn, sortOrder: newSortOrder })
+    dispatch(setSort({ sortColumn: newSortColumn, sortOrder: newSortOrder }));
+    fetch(
+      pagination.current,
+      pagination.pageSize,
+      newSortColumn,
+      newSortOrder,
+      keyword
     );
-    fetch(page, newSortColumn, newSortOrder, searchKeyword);
-  }
-  function onPageChange(pageNumber) {
-    setPage(pageNumber);
-    fetch(pageNumber, sortColumn, sortOrder, searchKeyword);
   }
 
-  const fetch = (pageNumber, sortColumn, sortOrder, keyword) => {
-    setLoading(true);
-    getCustomerApi({
-      current: pageNumber,
-      pageSize: pageSize,
-      sortColumn: sortColumn,
-      sortOrder: sortOrder,
-      keyword: keyword,
-    }).then((res) => {
-      setLoading(false);
-      setData(res);
-      setTotal(res[0] ? res[0].Total : 0);
-    });
+  function handlePageChange(pageNumber, pageSize) {
+    console.log("handle page change", pageNumber, pageSize);
+    // dispatch(
+    //   setPagination({
+    //     total: pagination.total,
+    //     pageSize: pagination.pageSize,
+    //     current: pageNumber,
+    //   })
+    // );
+    fetch(pageNumber, pageSize, sortColumn, sortOrder, keyword);
+  }
+  function showTotal(total) {
+    return `${data.length} of ${total} items`;
+  }
 
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys) => {
+      console.log("selectedRowKeys changed: ", newSelectedRowKeys);
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+  };
+  const hasSelected = selectedRowKeys.length > 0;
+
+  const start = () => {
+    console.log(selectedRowKeys);
   };
 
   return (
     <div>
       <Row>
         <Col span={8}>
-
-          <Button type="primary" onClick={() => { setModalCreateVisible(true) }}>
+          <Button
+            type="primary"
+            onClick={() => {
+              setModalCreateVisible(true);
+            }}
+          >
             Create new Customer
-            </Button>
-          <AddCustomerModal refresh={refresh} setPage={setPage} setRefresh={setRefresh} modalVisible={modalCreateVisible} setModalVisible={setModalCreateVisible}>  </AddCustomerModal>
+          </Button>
+          <AddCustomerModal
+            modalVisible={modalCreateVisible}
+            setModalVisible={setModalCreateVisible}
+          >
+            {" "}
+          </AddCustomerModal>
 
-          <EditCustomerModal record={dataEdit} refresh={refresh} setPage={setPage} setRefresh={setRefresh} modalVisible={modalEditVisible} setModalVisible={setModalEditVisible}  ></EditCustomerModal>
+          <EditCustomerModal
+            record={dataEdit}
+            modalVisible={modalEditVisible}
+            setModalVisible={setModalEditVisible}
+          ></EditCustomerModal>
         </Col>
         <Col span={8} offset={8}>
           <Search
             className="search-bar"
+            name="search-content"
             placeholder="input search text"
             enterButton="Search"
             size="large"
-            onSearch={(value) => handleSearchCustomer(value)}
+            onSearch={(value) => {
+              handleSearchChange(value);
+            }}
+            ref={searchBox}
+            autoFocus
           />
         </Col>
       </Row>
-
+      <Button type="primary" onClick={start} disabled={!hasSelected}>
+        Action
+      </Button>
       <br />
       <br />
       <Table
         columns={columns}
         rowKey={(record) => record.Id}
         dataSource={data}
-        pagination={false}
         loading={loading}
+        pagination={false}
         onChange={handleSortChange}
+        rowSelection={rowSelection}
+        // checkbox
       />
       <br />
       <Row>
         <Col span={12} offset={6}>
           <Pagination
+            pageSizeOptions={pageOptions}
+            showTotal={(total) => showTotal(total)}
+            showSizeChanger={true}
             showQuickJumper
             defaultCurrent={1}
-            current={page}
-            defaultPageSize={10}
-            total={total}
-            onChange={onPageChange}
+            current={pagination.current}
+            defaultPageSize={pagination.pageSize}
+            total={pagination.total}
+            onChange={handlePageChange}
           />
         </Col>
       </Row>
-      <button onClick={() => console.log(refresh)}></button>
-
       <br />
     </div>
   );

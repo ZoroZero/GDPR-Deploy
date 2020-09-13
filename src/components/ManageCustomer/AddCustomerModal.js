@@ -13,59 +13,59 @@ import {
   Switch,
 } from "antd";
 import { createCustomerApi } from "api/customer";
-import { getContactPointsApi } from "api/customer";
+import {
+  getContactPointList,
+  setPagination,
+  setRefresh,
+} from "features/ManageCustomer/slice";
+import { useSelector, useDispatch } from "react-redux";
+
+const { Option } = Select;
+const { TextArea } = Input;
 
 function AddCustomerModal(props) {
-  const { Option } = Select;
-  const { TextArea } = Input;
+  const dispatch = useDispatch();
+  const { refresh, pagination, keyword, contactPoints } = useSelector(
+    (state) => state.customerManagement
+  );
   const [form] = Form.useForm();
-  const [contactPoints, setContactPoints] = useState([]);
+
+  const shouldGetData = props.modalVisible !== false;
 
   useEffect(() => {
-    form.setFieldsValue({
-      FirstName: "",
-      LastName: "",
-      ContactPointId: null,
-      ContractBeginDate: null,
-      ContractEndDate: null,
-      Description: "",
-      IsActive: true,
-    });
+    if (shouldGetData) {
+      form.setFieldsValue({
+        FirstName: "",
+        LastName: "",
+        ContactPointId: null,
+        ContractBeginDate: null,
+        ContractEndDate: null,
+        Description: "",
+        IsActive: true,
+      });
+      dispatch(getContactPointList());
+    }
+  }, [shouldGetData]);
 
-
-
-  }, [props]);
-
-  // const onReset = () => {
-  //   form.resetFields();
-  // };
-
-  const handleSelectChange = (value) => {
-
-  };
-  const onFinish = (values) => {
-    console.log(values)
-    return createCustomerApi(values)
-      .then((res) => {
-        props.setPage(1);
-        props.setRefresh(!props.refresh);
-        openNotification("Sucessfully add new customer");
-        props.setModalVisible(false);
-        form.resetFields();
-      })
-      .catch((err) => console.log(err));
-
-
+  const handleOk = () => {
+    props.setModalVisible(false);
+    form.submit();
   };
 
-
-  const fetchContactPoints = () => {
-    getContactPointsApi().then((res) => {
-      setContactPoints(res);
-      console.log(res);
-    });
+  const handleCancel = () => {
+    props.setModalVisible(false);
   };
-
+  async function onFinish(values) {
+    console.log(values);
+    try {
+      await createCustomerApi(values);
+      await dispatch(setPagination({ ...pagination, current: 1 }));
+      dispatch(setRefresh(!refresh));
+      openNotification("Sucessfully add new customer");
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const openNotification = (message) => {
     notification.open({
@@ -83,28 +83,30 @@ function AddCustomerModal(props) {
       centered
       visible={props.modalVisible}
       forceRender={true}
-      footer={[
-        <Button form="myForm" key="submit" type="primary" htmlType="submit">
-          Submit
-        </Button>,
-        <Button
-          key="cancel"
-          onClick={() => {
-            props.setModalVisible(false);
-          }}
-        >
-          Cancel
-        </Button>,
-      ]}
+      onOk={handleOk}
+      onCancel={handleCancel}
+      // footer={[
+      //   <Button form="myForm" key="submit" type="primary" htmlType="submit">
+      //     Submit
+      //   </Button>,
+      //   <Button
+      //     key="cancel"
+      //     onClick={() => {
+      //       props.setModalVisible(false);
+      //     }}
+      //   >
+      //     Cancel
+      //   </Button>,
+      // ]}
     >
-      <Form form={form} onFinish={onFinish} id="myForm" layout="vertical">
+      <Form form={form} onFinish={onFinish} name="myForm" layout="vertical">
         <Form.Item
           label="First name"
           name="FirstName"
           rules={[
             {
               required: true,
-              message: "Please enter your first name!"
+              message: "Please enter your first name!",
             },
           ]}
         >
@@ -117,8 +119,7 @@ function AddCustomerModal(props) {
           rules={[
             {
               required: true,
-              message: "Please enter your last name!"
-
+              message: "Please enter your last name!",
             },
           ]}
         >
@@ -130,8 +131,6 @@ function AddCustomerModal(props) {
             showSearch
             placeholder="Select a contact point"
             optionFilterProp="children"
-            onChange={handleSelectChange}
-            onFocus={fetchContactPoints}
             filterOption={(input, option) =>
               option.children
                 .toString()
@@ -139,9 +138,10 @@ function AddCustomerModal(props) {
                 .indexOf(input.toLowerCase()) >= 1
             }
           >
-            {contactPoints.map((item) => (
-              <Option key={item.Id}> {item.Email} </Option>
-            ))}
+            {contactPoints.length > 0 &&
+              contactPoints.map((item) => (
+                <Option key={item.Id}> {item.Email} </Option>
+              ))}
           </Select>
         </Form.Item>
         <Form.Item>
