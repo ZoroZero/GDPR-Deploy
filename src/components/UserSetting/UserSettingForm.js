@@ -115,11 +115,11 @@ const UserSetting = (pros) => {
     // fetch();
 
     console.log("didmount avbc", record);
-    if (record.AvatarPath===undefined){
-      setImageUrl("https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png");
+    if (record.AvatarPath){
+      setImageUrl("http://localhost:5000/api/users/"+record.AvatarPath); 
     }
     else{
-      setImageUrl("http://localhost:5000/api/users/"+record.AvatarPath);
+      setImageUrl("https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png");
     }
     setData(record);
     form.setFieldsValue(record);
