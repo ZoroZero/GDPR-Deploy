@@ -5,6 +5,7 @@ import { loading, stopLoading } from "features/App/slice";
 export const initialState = {
   blockIds: null,
   data: [],
+  dataServers: [],
   pagination: {
     total: 0,
     current: 1,

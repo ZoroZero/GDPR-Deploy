@@ -25,6 +25,8 @@ import {
   setLoading,
 } from "features/ManageCustomer/slice";
 import { useDispatch, useSelector } from "react-redux";
+import { Menu, Dropdown } from "antd";
+import { DownOutlined } from "@ant-design/icons";
 
 MainPage.propTypes = {};
 const { confirm } = Modal;
@@ -155,9 +157,22 @@ function MainPage() {
       title: "Machines Owner",
       dataIndex: "servers",
       sorter: true,
-      render: (text) => <Tag color="cyan"> Manage {text ? text : 0} </Tag>,
+      render: (text) => (
+        <Button color="cyan"> Manage {text ? text : 0} </Button>
+      ),
     },
   ];
+
+  const handleMenuClick = (value) => {
+    console.log("handle menu click", value);
+  };
+  const menu = (
+    <Menu onClick={handleMenuClick}>
+      <Menu.Item key="delete">delete</Menu.Item>
+      <Menu.Item key="active">active</Menu.Item>
+      <Menu.Item key="deactive">deactive</Menu.Item>
+    </Menu>
+  );
 
   useEffect(() => {
     console.log("USE EFFECT INDEX");
@@ -237,7 +252,7 @@ function MainPage() {
   };
 
   return (
-    <div>
+    <>
       <Row>
         <Col span={8}>
           <Button
@@ -254,12 +269,14 @@ function MainPage() {
           >
             {" "}
           </AddCustomerModal>
-
           <EditCustomerModal
             record={dataEdit}
             modalVisible={modalEditVisible}
             setModalVisible={setModalEditVisible}
           ></EditCustomerModal>
+        <ManageServersModal>
+
+        </ManageServersModal>
         </Col>
         <Col span={8} offset={8}>
           <Search
@@ -276,9 +293,16 @@ function MainPage() {
           />
         </Col>
       </Row>
-      <Button type="primary" onClick={start} disabled={!hasSelected}>
-        Action
-      </Button>
+      <Dropdown
+        overlay={menu}
+        type="primary"
+        onClick={start}
+        disabled={!hasSelected}
+      >
+        <Button>
+          Actions <DownOutlined />
+        </Button>
+      </Dropdown>
       <br />
       <br />
       <Table
@@ -308,7 +332,7 @@ function MainPage() {
         </Col>
       </Row>
       <br />
-    </div>
+    </>
   );
 }
 
@@ -318,5 +342,7 @@ export default MainPage;
 - upload file
 - check multi customer
 - log / detail
+- constraint time select
+- AFFIX name column
 
 */
