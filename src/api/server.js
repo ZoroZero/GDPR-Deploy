@@ -1,4 +1,5 @@
 import axios from "axios/auth.instance";
+const FormData = require('form-data');
 
 export const listServerApi = () => {
   return new Promise((resolve, reject) => {
@@ -118,4 +119,25 @@ export const exportServerListApi = (data) => {
         reject(error);
       });
   });
+}
+
+export const importServerListApi = (data) => {
+  console.log(data);
+  const formData = new FormData();
+  formData.append('file', data.file);
+  const config= {
+    "headers": {
+      "content-type": 'multipart/form-data; boundary=----WebKitFormBoundaryqTqJIxvkWFYqvP5s'
+    }
+  }
+  return new Promise((resolve, reject) => {
+    return axios
+      .post(`/api/servers/import`, formData, config)
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  }); 
 }

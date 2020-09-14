@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { Form, Input, DatePicker, Button, Modal, Upload, message} from "antd";
 import { InboxOutlined } from '@ant-design/icons';
 import { checkToken } from "utils/localstorage";
+import { importServerListApi } from 'api/server';
 const { Dragger } = Upload;
 
 function ImportServer(props){
     const [fileList, setFileList] = useState([]);
-    const [importFile, setImportFile] = useState('');
+    const [importFile, setImportFile] = useState(null);
     const handleChange = info => {
       let fileList = [...info.fileList];
   
@@ -15,17 +16,17 @@ function ImportServer(props){
       fileList = fileList.slice(-1);
   
       // 2. Read from response and show file link
-      fileList = fileList.map(file => {
-        if (file.response) {
-          // Component will show file.url as link
-          file.url = file.response.url;
-          setImportFile(file.response.filename)
-        }
-        return file;
-      });
+      // fileList = fileList.map(file => {
+      //   if (file.response) {
+      //     // Component will show file.url as link
+      //     file.url = file.response.url;
+      //     setImportFile(file.response.filename)
+      //   }
+      //   return file;
+      // });
       // console.log("File list", fileList);
       setFileList( fileList );
-      
+      setImportFile(fileList[0]?fileList[0]: null);
     };
 
     const uploadProps = {
@@ -42,16 +43,31 @@ function ImportServer(props){
       //     }
       // },
       onChange: handleChange,
-      action:'http://localhost:5000/api/servers/import',
+      // action:'http://localhost:5000/api/servers/import',
       multiple: false,
-      headers: {
-        authorization: 'Bearer ' + checkToken(),
-      },
-
+      // headers: {
+      //   authorization: 'Bearer ' + checkToken(),
+      // },
+      beforeUpload: () => { return false },
+      accept:".xlsx, .csv"
     }
 
     const handleUpload = () => {
-      
+        console.log(importFile)
+        if(importFile){
+          return importServerListApi(
+            {
+                file: importFile.originFileObj
+            })
+          .then((res) => {
+              console.log(res)
+              //props.setExportData(res.data)
+              // props.setLoading(false);
+              // props.setTableData(res.data,res.total)
+              // dispatch(setPagination({pagination: {page: 1, pageSize: res.total}}))
+          }).catch((err) => {console.log(err)});
+        }
+        message.error(`No file chosen`);
     }
 
     return (
@@ -65,11 +81,11 @@ function ImportServer(props){
             forceRender={true} 
             width={'70vw'}
             footer={[
-              <Button key="submit" type="primary" onClick={handleUpload}>
+              <Button key="submit" type="primary" onClick={handleUpload} disabled={!importFile}>
                   Import
               </Button>
               ,
-              <Button key="cancel" onClick={()=>{props.setVisible(false)}}>
+              <Button key="cancel" onClick={()=>{props.setVisible(false); setImportFile(null); setFileList([])}}>
                   Cancel
               </Button>
             ]}

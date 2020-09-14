@@ -41,6 +41,11 @@ function ExportServer(props){
 
     }
 
+    const handleExport = () => {
+        exportToCSV(props.csvData,props.fileName);
+        // props.setVisible(false);
+    }
+
     return (
         <Modal
             title= {"Export server list"}
@@ -79,7 +84,7 @@ function ExportServer(props){
 
                 <Form.Item>
                     <Button form="exportForm" key="submit" type="primary" htmlType="submit" >Filter</Button>
-                    <Button disabled={!props.csvData[0]} variant="warning" onClick={(e) => exportToCSV(props.csvData,props.fileName)}>Export</Button>
+                    <Button disabled={!props.csvData[0]} variant="warning" onClick={handleExport}>Export</Button>
                 </Form.Item>
             </Form>
         </Modal>
