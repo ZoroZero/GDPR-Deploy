@@ -1,29 +1,19 @@
 import {
   Form,
-  Select,
-  InputNumber,
   Switch,
-  Radio,
-  Slider,
   Button,
-  Upload,
-  Rate,
-  Checkbox,
   Row,
   Col,
   Avatar,
-  Card,
   Input,
-  Cascader,
   Tooltip,
+  message,
 } from "antd";
-import {
-  UploadOutlined,
-  InboxOutlined,
-  QuestionCircleOutlined,
-} from "@ant-design/icons";
-import React, { Component, useState } from "react";
-const { Option } = Select;
+import { QuestionCircleOutlined } from "@ant-design/icons";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { updateAccountApi } from "../../api/user";
+import UploadAvatarDynamic from "../../components/UserSetting/UploadAvatarDynamic.js";
 const formItemLayout = {
   labelCol: {
     span: 6,
@@ -32,36 +22,15 @@ const formItemLayout = {
     span: 14,
   },
 };
-const roles = [
-  {
-    value: "admin",
-    label: "admin",
-  },
-  {
-    value: "normal-user",
-    label: "normal-user",
-  },
-  {
-    value: "contact-point",
-    label: "contact-point",
-  },
-  {
-    value: "dc-member",
-    label: "dc-member",
-  },
-];
 
-const normFile = (e) => {
-  console.log("Upload event:", e);
-
-  if (Array.isArray(e)) {
-    return e;
-  }
-
-  return e && e.fileList;
-};
-
-const UserSetting = () => {
+const UserSetting = (pros) => {
+  const [form] = Form.useForm();
+  const dispatch = useDispatch();
+  const [data, setData] = useState({});
+  const [imageUrl, setImageUrl] = useState(
+    "https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
+  );
+  const { record } = useSelector((state) => state.userSetting);
   const [switchState, setSwitchState] = useState(true);
   function onChange(checked) {
     console.log(`switch to ${checked}`);
@@ -69,18 +38,72 @@ const UserSetting = () => {
   }
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
+    if (values.password !== undefined) {
+      updateAccountApi(values.UserId, {
+        ...values,
+        PassWord: values.password,
+      })
+        .then((res) => {
+          console.log("res from insert", res);
+          if (res.status === 201) {
+            message.success(res.statusText);
+            // form.resetFields();
+          }
+          pros.onSubmitModal();
+        })
+        .catch((error) => {
+          message.error(error.data.message);
+        });
+      pros.onSubmitModal();
+    } else {
+      updateAccountApi(values.UserId, {
+        ...values,
+        PassWord: values.HashPasswd,
+      })
+        .then((res) => {
+          console.log("res from update account", res);
+          if (res.status === 200) {
+            message.success(res.statusText);
+          }
+          pros.onSubmitModal();
+        })
+        .catch((error) => {
+          message.error(error.data.message);
+        });
+      pros.onSubmitModal();
+    }
   };
+  useEffect(() => {
+    // fetch();
 
+    console.log("didmount avbc", record);
+    if (record.AvatarPath) {
+      setImageUrl("http://localhost:5000/api/users/" + record.AvatarPath);
+    } else {
+      setImageUrl(
+        "https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
+      );
+    }
+    setData(record);
+    form.setFieldsValue(record);
+  }, [record]);
+  const fetch = () => {};
   return (
     <Form
+      form={form}
       name="validate_other"
       {...formItemLayout}
       onFinish={onFinish}
-      initialValues={{
-        "input-number": 3,
-        "checkbox-group": ["A", "B"],
-        rate: 3.5,
-      }}
+      // initialValues={
+      //   {
+      //     // Email: record.Email,
+      //     // FirstName: data.FirstName,
+      //     // LastName: record.LastName,
+      //     // HashPasswd: record.HashPasswd,
+      //     // UserName: record.UserName,
+      //     // RoleName: record.RoleName,
+      //   }
+      // }
     >
       <Form.Item>
         <Row
@@ -89,14 +112,22 @@ const UserSetting = () => {
           align="middle"
           // style={{ minHeight: "100vh" }}
         >
-          <Avatar
-            size={250}
-            style={{ padding: 25 }}
-            src="https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
-          />
-          <Upload name="logo" action="/upload.do" listType="picture">
+          <Col span={8}></Col>
+          <Col span={8}>
+            <Avatar
+              size={150}
+              style={{ padding: 0 }}
+              // src="https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
+              src={imageUrl}
+            />
+          </Col>
+          <Col span={8}>
+            <UploadAvatarDynamic onsub={pros.onSubmitModal} />
+          </Col>
+
+          {/* <Upload name="logo" action="/upload.do" listType="picture">
             <Button icon={<UploadOutlined />}>Click to upload</Button>
-          </Upload>
+          </Upload> */}
         </Row>
       </Form.Item>
 
@@ -104,7 +135,20 @@ const UserSetting = () => {
         <Rate />
       </Form.Item> */}
       <Form.Item
-        name="firstname"
+        name="UserId"
+        label="ID"
+        rules={[
+          {
+            // required: true,
+            message: "Please input your ID!",
+            whitespace: true,
+          },
+        ]}
+      >
+        <Input disabled={true} />
+      </Form.Item>
+      <Form.Item
+        name="FirstName"
         label="First Name"
         rules={[
           {
@@ -117,7 +161,7 @@ const UserSetting = () => {
       </Form.Item>
 
       <Form.Item
-        name="lastname"
+        name="LastName"
         label="Last Name"
         rules={[
           {
@@ -129,7 +173,7 @@ const UserSetting = () => {
         <Input />
       </Form.Item>
       <Form.Item
-        name="email"
+        name="Email"
         label="E-mail"
         rules={[
           {
@@ -146,12 +190,12 @@ const UserSetting = () => {
       </Form.Item>
 
       <Form.Item
-        name="password"
-        label="Password"
+        name="HashPasswd"
+        label="Old Password"
         rules={[
           {
             required: true,
-            message: "Please input your password!",
+            message: "Please input your old password!",
           },
         ]}
         hasFeedback
@@ -160,11 +204,11 @@ const UserSetting = () => {
       </Form.Item>
 
       <Form.Item
-        name="newpassword"
+        name="password"
         label="New Password"
         rules={[
           {
-            required: true,
+            // required: true,
             message: "Please input your password!",
           },
         ]}
@@ -174,6 +218,31 @@ const UserSetting = () => {
       </Form.Item>
 
       <Form.Item
+        name="confirm"
+        label="Confirm Password"
+        dependencies={["password"]}
+        hasFeedback
+        rules={[
+          {
+            // required: true,
+            message: "Please confirm your password!",
+          },
+          ({ getFieldValue }) => ({
+            validator(rule, value) {
+              if (!value || getFieldValue("password") === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject(
+                "The two passwords that you entered do not match!"
+              );
+            },
+          }),
+        ]}
+      >
+        <Input.Password />
+      </Form.Item>
+
+      {/* <Form.Item
         name="confirm"
         label="Confirm New Password"
         dependencies={["password"]}
@@ -197,10 +266,10 @@ const UserSetting = () => {
         ]}
       >
         <Input.Password />
-      </Form.Item>
+      </Form.Item> */}
 
       <Form.Item
-        name="username"
+        name="UserName"
         label={
           <span>
             Username&nbsp;
@@ -211,7 +280,7 @@ const UserSetting = () => {
         }
         rules={[
           {
-            required: true,
+            // required: true,
             message: "Please input your username!",
             whitespace: true,
           },
@@ -221,12 +290,12 @@ const UserSetting = () => {
       </Form.Item>
 
       <Form.Item
-        name="role"
+        name="RoleName"
         label="Role permission"
         rules={[
           {
-            required: true,
-            message: "Please input your username!",
+            // required: true,
+            message: "Please input your role name!",
             whitespace: true,
           },
         ]}
@@ -234,7 +303,7 @@ const UserSetting = () => {
         <Input disabled={true} />
       </Form.Item>
 
-      <Form.Item name="isactive" label="Status">
+      <Form.Item name="IsActive" label="Status">
         <Switch
           disabled={true}
           checkedChildren="Active"

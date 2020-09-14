@@ -11,13 +11,12 @@ import {
   Tag,
   message,
 } from "antd";
-import { ExclamationCircleOutlined, AudioOutlined } from "@ant-design/icons";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import "./index.scss";
 import CreateUserModal from "../../../../components/ManageUser/CreateUserModal.js";
 import UpdateUserModal from "../../../../components/ManageUser/UpdateUserModal.js";
 import { getUsersApi, deleteUsersApi } from "api/user";
 import { useSelector, useDispatch } from "react-redux";
-import { getStore } from "store";
 import {
   setSearchKey,
   setPageNo,
@@ -85,11 +84,11 @@ function MainPage() {
         { text: "contact-point", value: "contact-point" },
       ],
       render: (val) =>
-        val == "admin" ? (
+        val === "admin" ? (
           <Tag color="green">ADMIN</Tag>
-        ) : val == "normal-user" ? (
+        ) : val === "normal-user" ? (
           <Tag color="blue">NORMAL USER</Tag>
-        ) : val == "dc-member" ? (
+        ) : val === "dc-member" ? (
           <Tag color="red">DC-MEMBER</Tag>
         ) : (
           <Tag color="orange">CONTACT POINT</Tag>
@@ -132,18 +131,11 @@ function MainPage() {
 
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
-  const [total, setTotal] = useState([]);
-  const [pagination, setPagination] = useState({ PageNo: 1, PageSize: 7 });
+  const [total, setTotal] = useState();
   const [loading, setLoading] = useState(false);
-  const {
-    startDate,
-    SearchKey,
-    PageNo,
-    PageSize,
-    SortBy,
-    SortOrder,
-    Role,
-  } = useSelector((state) => state.userManagement);
+  const { SearchKey, PageNo, PageSize, SortBy, SortOrder, Role } = useSelector(
+    (state) => state.userManagement
+  );
   useEffect(() => {
     fetch({
       PageNo: PageNo,
@@ -153,9 +145,17 @@ function MainPage() {
       SortOrder: SortOrder,
       Role: Role,
     });
-  }, [SearchKey, PageNo, PageSize, SortBy, SortOrder, Role]);
+  }, [PageNo, PageSize]);
   function onChange(pageNumber) {
     dispatch(setPageNo({ PageNo: pageNumber }));
+    fetch({
+      PageNo: pageNumber,
+      PageSize: PageSize,
+      SearchKey: SearchKey,
+      SortBy: SortBy,
+      SortOrder: SortOrder,
+      Role: Role,
+    });
   }
   function refetch() {
     fetch({
@@ -170,21 +170,53 @@ function MainPage() {
   function showTotal(total) {
     return `Total ${total} items`;
   }
-  function search(SearchKey) {
-    dispatch(setSearchKey({ SearchKey: SearchKey }));
+  function search(SearchKeyw) {
+    dispatch(setSearchKey({ SearchKey: SearchKeyw }));
     dispatch(setPageNo({ PageNo: 1 }));
+    fetch({
+      PageNo: 1,
+      PageSize: PageSize,
+      SearchKey: SearchKeyw,
+      SortBy: SortBy,
+      SortOrder: SortOrder,
+      Role: Role,
+    });
   }
   function onShowSizeChange(current, pageSize) {
     console.log(current, pageSize);
-    if (pageSize != PageSize) dispatch(setPageNo(Math.ceil(total / pageSize)));
-    dispatch(setPageSize({ PageSize: pageSize }));
+    console.log(PageSize);
+    console.log("Total", total);
+    if (pageSize !== PageSize && PageNo > Math.ceil(total / pageSize)) {
+      console.log("Total1", total);
+      dispatch(setPageNo(Math.ceil(total / pageSize)));
+      dispatch(setPageSize({ PageSize: pageSize }));
+      // fetch({
+      //   PageNo: Math.ceil(total / pageSize),
+      //   PageSize: pageSize,
+      //   SearchKey: SearchKey,
+      //   SortBy: SortBy,
+      //   SortOrder: SortOrder,
+      //   Role: Role,
+      // });
+    } else {
+      console.log("Total2", total);
+      dispatch(setPageSize({ PageSize: pageSize }));
+      // fetch({
+      //   PageNo: current,
+      //   PageSize: pageSize,
+      //   SearchKey: SearchKey,
+      //   SortBy: SortBy,
+      //   SortOrder: SortOrder,
+      //   Role: Role,
+      // });
+    }
   }
   function handleTableChange(pagination, filters, sorter) {
     // console.log("Various parameters", pagination, filters, sorter);
-    // console.log("Filter", filters);
-    // console.log("Sorter", sorter);
+    console.log("Filter", filters);
+    console.log("Sorter", sorter);
     // console.log(sorter.length != 0);
-    if (sorter.length != 0) {
+    if (sorter.length !== 0) {
       dispatch(setSortBy({ SortBy: sorter.field }));
       dispatch(setSortOrder({ SortOrder: sorter.order }));
       console.log("Order", SortOrder);
@@ -200,8 +232,24 @@ function MainPage() {
     }
     if (filters.RoleName !== null) {
       dispatch(setRole({ Role: filters.RoleName.join(",") }));
+      fetch({
+        PageNo: PageNo,
+        PageSize: PageSize,
+        SearchKey: SearchKey,
+        SortBy: sorter.field,
+        SortOrder: sorter.order,
+        Role: filters.RoleName.join(","),
+      });
     } else {
       dispatch(setRole({ Role: "" }));
+      fetch({
+        PageNo: PageNo,
+        PageSize: PageSize,
+        SearchKey: SearchKey,
+        SortBy: sorter.field,
+        SortOrder: sorter.order,
+        Role: "",
+      });
     }
   }
 
@@ -216,12 +264,12 @@ function MainPage() {
         } else {
           message.error(res.statusText);
         }
-        if (res.data.length != 0) setTotal(res.data[0].TotalItem);
+        if (res.data.length !== 0) setTotal(res.data[0].TotalItem);
         else setTotal(0);
         showTotal({ total });
-        setPagination({
-          ...params.pagination,
-        });
+        // setPagination({
+        //   ...params.pagination,
+        // });
       })
       .catch((error) => {
         message.error(error.data.message);
@@ -261,10 +309,12 @@ function MainPage() {
             showQuickJumper
             showSizeChanger
             onShowSizeChange={onShowSizeChange}
-            defaultCurrent={1}
+            // defaultCurrent={1}
+            current={PageNo}
             total={total}
             showTotal={showTotal}
-            defaultPageSize={10}
+            // defaultPageSize={10}
+            pageSize={PageSize}
             onChange={onChange}
           />
         </Col>
