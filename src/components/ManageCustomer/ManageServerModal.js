@@ -20,6 +20,8 @@ const ManageServerModal = (props) => {
     const [option, setOption] = useState({
         status: 'available'
     })
+    // const [loading,setLoading] = useState(false);
+    // const [hasMore,setHasMore] = useState(true);
     useEffect(() => {
         if (shouldGetData) {
             console.log("USE EFFECT MANAGE SERVER", props);
@@ -27,6 +29,7 @@ const ManageServerModal = (props) => {
             dispatch(getOtherServers(option, props.record.Id));
         }
     }, [shouldGetData, props.record]);
+
 
     const handleOk = () => {
         props.setModalVisible(false);
@@ -166,7 +169,8 @@ const ManageServerModal = (props) => {
                             columns={columnsOther}
 
                             dataSource={otherServers}
-                            pagination={false}
+                            pagination={true}
+
                             scroll={{ y: 500 }}
                         />
                     </Col>
