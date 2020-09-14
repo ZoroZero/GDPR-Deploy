@@ -125,3 +125,24 @@ export const getOtherServersApi = (option, id) => {
     })
 }
 
+export const exportCustomerListApi = (data) => {
+    return new Promise((resolve, reject) => {
+        console.log("Data for export", data);
+        return axios
+          .get(`/customers/export`, {
+              params: {
+                CustomerName: data.customerName,
+                ContactPointEmail: data.contactPointEmail,
+                ContractBeginDate: data.startDate,
+                ContractEndDate: data.endDate,
+                IsActive: data.status
+              }
+          })
+          .then((res) => {
+            resolve(res.data);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+}
