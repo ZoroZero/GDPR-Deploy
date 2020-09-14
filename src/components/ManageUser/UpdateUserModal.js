@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { updateUsersApi } from "../../api/user";
-import CreateUserForm from "./CreateUserForm";
 import "antd/dist/antd.css";
 import {
   Form,
@@ -8,12 +7,8 @@ import {
   Tooltip,
   Cascader,
   Select,
-  Row,
-  Col,
-  Checkbox,
   Button,
   AutoComplete,
-  Radio,
   Modal,
   Switch,
   message,

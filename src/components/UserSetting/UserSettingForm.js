@@ -1,35 +1,22 @@
 import {
   Form,
-  Select,
-  InputNumber,
   Switch,
-  Radio,
-  Slider,
   Button,
-  Upload,
-  Rate,
-  Checkbox,
   Row,
   Col,
   Avatar,
-  Card,
   Input,
-  Cascader,
   Tooltip,
   message
 } from "antd";
 import {
-  UploadOutlined,
-  InboxOutlined,
+
   QuestionCircleOutlined,
 } from "@ant-design/icons";
-import React, { Component, useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { setRecord } from "../../features/UserSetting/slice";
 import { updateAccountApi } from "../../api/user";
-import UploadAvatar from "../../components/UserSetting/UploadAvatar.js";
 import UploadAvatarDynamic from "../../components/UserSetting/UploadAvatarDynamic.js";
-const { Option } = Select;
 const formItemLayout = {
   labelCol: {
     span: 6,
@@ -38,34 +25,7 @@ const formItemLayout = {
     span: 14,
   },
 };
-const roles = [
-  {
-    value: "admin",
-    label: "admin",
-  },
-  {
-    value: "normal-user",
-    label: "normal-user",
-  },
-  {
-    value: "contact-point",
-    label: "contact-point",
-  },
-  {
-    value: "dc-member",
-    label: "dc-member",
-  },
-];
 
-const normFile = (e) => {
-  console.log("Upload event:", e);
-
-  if (Array.isArray(e)) {
-    return e;
-  }
-
-  return e && e.fileList;
-};
 
 const UserSetting = (pros) => {
   const [form] = Form.useForm();

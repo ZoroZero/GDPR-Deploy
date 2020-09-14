@@ -11,13 +11,12 @@ import {
   Tag,
   message,
 } from "antd";
-import { ExclamationCircleOutlined, AudioOutlined } from "@ant-design/icons";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import "./index.scss";
 import CreateUserModal from "../../../../components/ManageUser/CreateUserModal.js";
 import UpdateUserModal from "../../../../components/ManageUser/UpdateUserModal.js";
 import { getUsersApi, deleteUsersApi } from "api/user";
 import { useSelector, useDispatch } from "react-redux";
-import { getStore } from "store";
 import {
   setSearchKey,
   setPageNo,
@@ -85,11 +84,11 @@ function MainPage() {
         { text: "contact-point", value: "contact-point" },
       ],
       render: (val) =>
-        val == "admin" ? (
+        val === "admin" ? (
           <Tag color="green">ADMIN</Tag>
-        ) : val == "normal-user" ? (
+        ) : val === "normal-user" ? (
           <Tag color="blue">NORMAL USER</Tag>
-        ) : val == "dc-member" ? (
+        ) : val === "dc-member" ? (
           <Tag color="red">DC-MEMBER</Tag>
         ) : (
           <Tag color="orange">CONTACT POINT</Tag>
@@ -133,17 +132,10 @@ function MainPage() {
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
   const [total, setTotal] = useState([]);
-  const [pagination, setPagination] = useState({ PageNo: 1, PageSize: 7 });
   const [loading, setLoading] = useState(false);
-  const {
-    startDate,
-    SearchKey,
-    PageNo,
-    PageSize,
-    SortBy,
-    SortOrder,
-    Role,
-  } = useSelector((state) => state.userManagement);
+  const { SearchKey, PageNo, PageSize, SortBy, SortOrder, Role } = useSelector(
+    (state) => state.userManagement
+  );
   useEffect(() => {
     fetch({
       PageNo: PageNo,
@@ -192,7 +184,7 @@ function MainPage() {
   }
   function onShowSizeChange(current, pageSize) {
     console.log(current, pageSize);
-    if (pageSize != PageSize){
+    if (pageSize !== PageSize) {
       dispatch(setPageNo(Math.ceil(total / pageSize)));
       fetch({
         PageNo: Math.ceil(total / pageSize),
@@ -202,25 +194,24 @@ function MainPage() {
         SortOrder: SortOrder,
         Role: Role,
       });
+    } else {
+      dispatch(setPageSize({ PageSize: pageSize }));
+      fetch({
+        PageNo: current,
+        PageSize: pageSize,
+        SearchKey: SearchKey,
+        SortBy: SortBy,
+        SortOrder: SortOrder,
+        Role: Role,
+      });
     }
-    else{
-    dispatch(setPageSize({ PageSize: pageSize }));
-    fetch({
-      PageNo: current,
-      PageSize: pageSize,
-      SearchKey: SearchKey,
-      SortBy: SortBy,
-      SortOrder: SortOrder,
-      Role: Role,
-    });
-  }
   }
   function handleTableChange(pagination, filters, sorter) {
     // console.log("Various parameters", pagination, filters, sorter);
     console.log("Filter", filters);
     console.log("Sorter", sorter);
     // console.log(sorter.length != 0);
-    if (sorter.length != 0) {
+    if (sorter.length !== 0) {
       dispatch(setSortBy({ SortBy: sorter.field }));
       dispatch(setSortOrder({ SortOrder: sorter.order }));
       console.log("Order", SortOrder);
@@ -268,12 +259,12 @@ function MainPage() {
         } else {
           message.error(res.statusText);
         }
-        if (res.data.length != 0) setTotal(res.data[0].TotalItem);
+        if (res.data.length !== 0) setTotal(res.data[0].TotalItem);
         else setTotal(0);
         showTotal({ total });
-        setPagination({
-          ...params.pagination,
-        });
+        // setPagination({
+        //   ...params.pagination,
+        // });
       })
       .catch((error) => {
         message.error(error.data.message);
@@ -301,7 +292,6 @@ function MainPage() {
         rowKey={(record) => record.Id}
         dataSource={data}
         pagination={false}
-
         loading={loading}
         onChange={handleTableChange}
         // onChange={onChangeTable}
