@@ -7,6 +7,7 @@ import { getRequestDetail } from "features/ManageRequest/slice";
 import RequestForm from "components/CreateRequestForm";
 import { Can } from "permission/can";
 import ChangeLogBox from "components/ChangeLogBox";
+import ConversationBox from "components/Conversation";
 
 DetailPage.propTypes = {};
 
@@ -98,12 +99,7 @@ function DetailPage(props) {
           </Card>
         </Col>
         <Col span={12}>
-          <Card
-            title="Conversation"
-            bordered={true}
-            headStyle={{ backgroundColor: "#339966", color: "white" }}
-            bodyStyle={{ height: "500px", border: "1px solid #339966" }}
-          ></Card>
+          <ConversationBox />
           <ChangeLogBox logs={requestLogs} />
         </Col>
       </Row>
