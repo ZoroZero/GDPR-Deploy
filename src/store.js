@@ -10,6 +10,7 @@ function createReducer(asyncReducers) {
 
 const store = configureStore({
   reducer: createReducer(),
+  devTools: true,
 });
 
 export function configureAppStore() {

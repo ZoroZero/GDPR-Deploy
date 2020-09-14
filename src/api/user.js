@@ -19,7 +19,7 @@ export const listUserApi = () => {
 export const getUsersApi = (data) => {
   return new Promise((resolve, reject) => {
     const token = checkToken();
-    console.log("check token get userAPI", token)
+    console.log("check token get userAPI", token);
     return axios
       .get("/api/users/list", { params: data })
       .then((res) => {

@@ -249,7 +249,6 @@ function MainPage() {
         rowKey={(record) => record.Id}
         dataSource={data}
         pagination={false}
-
         loading={loading}
         onChange={handleTableChange}
         // onChange={onChangeTable}
