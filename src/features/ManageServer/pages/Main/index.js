@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Table, Pagination, Input, Button, Modal, Tag, Upload, Icon } from "antd";
+import { Table, Pagination, Input, Button, Modal, Tag, Upload, Icon, message } from "antd";
 // import { UploadOutlined } from '@ant-design/icons';
 import "./index.scss";
-import { getServersApi, deleteServerApi } from "api/server";
+import { getServersApi, deleteServerApi, updateMultipleStatusApi } from "api/server";
 import { useDispatch, useSelector } from "react-redux";
 import { setSort, setData, setPagination, setTotal } from "features/ManageServer/slice";
 import AddEditServerModal from "components/ManageServer/AddEditServerModal"; 
@@ -38,6 +38,7 @@ function MainPage() {
     const setRefreshPage = useCallback(() => {
         setRefresh(refresh => !refresh);
     }, []);
+    const [checkingRows, setCheckingRows] = useState([])
     
 
     useEffect(() => {
@@ -139,7 +140,7 @@ function MainPage() {
     };
 
     // Set table data
-    function setTableData(data, total){
+    const setTableData = (data, total) => {
         console.log(data)
         dispatch(setTotal({total: total}))
         // setData(res.data);
@@ -147,7 +148,7 @@ function MainPage() {
     }
 
     // Handle table change: sort, filter
-    function handleTableChange(pagination, filters, sorter) {
+    const handleTableChange = (pagination, filters, sorter) => {
         // console.log('params', sorter);
         console.log('Filters; ',filters);
         var newSortColumn = sorter.column? sorter.column.dataIndex: 'Name'
@@ -161,21 +162,21 @@ function MainPage() {
     }
 
     //Handle search 
-    function handleSearchServer(keyword) {
+    const handleSearchServer = (keyword) => {
         setSearchKeyword(keyword)
         dispatch(setPagination({pagination: {page: 1, pageSize: pagination.pageSize}}))
         // console.log("Fetch after search");
     }
 
     // Handle on edit click
-    function handleModalActivate(){
+    const handleModalActivate = () => {
         if(editRequest){
             setModalVisible(true)
         }
     }
 
     // Show delete modal
-    function showDeleteModal(record) {
+    const showDeleteModal = (record) => {
         confirm({
           title: "Do you want to delete server " + record.Name,
           icon: <ExclamationCircleOutlined />,
@@ -188,7 +189,7 @@ function MainPage() {
     }
 
     // Handle delete server
-    function handleDeleteServer(id) {
+    const handleDeleteServer = (id) => {
         return deleteServerApi({id: id})
         .then((res) => {
             console.log("Delete response", res)
@@ -196,55 +197,61 @@ function MainPage() {
         })
         .catch(() => console.log("Oops errors!"));    
     }
-    
-    // Open notifcation
-    // const openNotification = (message) => {
-    //     notification.open({
-    //       message: message,
-    //       description:
-    //         message,
-    //       onClick: () => {
-    //         console.log('Notification Clicked!');
-    //       },
-    //     });
-    // };
 
     // Handle toggle export
-    function toggleExport() {
+    const toggleExport = () => {
         setExporting(exporting => !exporting)
     }
 
     // Toggle import modal
-    function toggleImport() {
+    const toggleImport = () => {
         setImporting(importing => !importing)
     }
 
-
     // Handle row selected
     const rowSelection = {
+        checkingRows,
         onChange: (selectedRowKeys, selectedRows) => {
             console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-            
+            setCheckingRows(selectedRows);
         },
         onSelect: (record, selected, selectedRows) => {
-            console.log(record, selected, selectedRows);
+            // console.log(record, selected, selectedRows);
         },
         onSelectAll: (selected, selectedRows, changeRows) => {
-            console.log(selected, selectedRows, changeRows);
+            // console.log(selected, selectedRows, changeRows);
         },
     };
 
 
     // Show total record
-    function showTotal(total) {
+    const showTotal = (total) => {
         return `Total ${total} items`;
-      }
+    }
+
+    // Handle set status of checking rows
+    const handleSetStatus = (status) => {
+        return updateMultipleStatusApi({
+            listServer: checkingRows,
+            status: status
+        })
+        .then(res => {
+            console.log("Multiple update", res);
+            message.success('Successfully change status of servers')
+            setCheckingRows([])
+            setRefreshPage();
+        })
+        .catch(err =>{
+            console.log("Activate all err", err);
+            message.error('Something went wrong')
+        })
+    }
 
     return (
         <React.Fragment>
             <div>
                 <Button className="action-button" onClick={toggleImport}>Import server list</Button>
-                <ImportServer visible={importing} setVisible={setImporting}></ImportServer>
+                <ImportServer visible={importing} setVisible={setImporting} setRefreshPage={setRefreshPage}></ImportServer>
             </div>
 
             <div>
@@ -259,23 +266,22 @@ function MainPage() {
             <AddEditServerModal request={editRequest} modalVisible={modalVisible} 
             setModalVisible={setModalVisible} setEditRequest={setEditRequest} setRefreshPage={setRefreshPage}></AddEditServerModal>
 
-
+            <Button disabled={checkingRows.length===0} type="primary" style={{margin: '0px 4px 0px 8px'}} onClick={()=>{handleSetStatus(true)}} >Activate all</Button>
+            <Button disabled={checkingRows.length===0} type="primary" style={{ margin: '0px 4px 0px 4px'}}  onClick={()=>{handleSetStatus(false)}} >Deactivate all</Button>
             <Search className="search-bar"
-                placeholder="input search text"
+                placeholder="Input search text"
                 enterButton="Search"
                 size="large"
-                onSearch={value => handleSearchServer(value.trim())}
-            />
+                onSearch={value => handleSearchServer(value.trim())}/>
 
             <Table
                 columns={columns}
                 rowKey={(record) => record.Id}
-                // rowSelection={rowSelection}
+                rowSelection={rowSelection}
                 dataSource={data}
                 pagination={false}
                 loading={loading}
-                onChange={handleTableChange}
-            />
+                onChange={handleTableChange}/>
 
             <Pagination
                 showQuickJumper 
@@ -284,8 +290,7 @@ function MainPage() {
                 pageSize={pagination.pageSize}
                 onChange = {handlePageChange}
                 showTotal={showTotal}
-                style={{margin:'8px 8px'}}
-            />
+                style={{margin:'8px 8px'}}/>
         </React.Fragment>
     );
 }

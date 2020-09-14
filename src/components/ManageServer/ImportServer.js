@@ -8,7 +8,7 @@ function ImportServer(props){
     const [fileList, setFileList] = useState([]);
     const [importFile, setImportFile] = useState(null);
 
-    
+    // Handle upload file change
     const handleChange = info => {
       let fileList = [...info.fileList];
       fileList = fileList.slice(-1);
@@ -16,6 +16,7 @@ function ImportServer(props){
       setImportFile(fileList[0]?fileList[0]: null);
     };
 
+    // Upload properties
     const uploadProps = {
       name:'file',
       onChange: handleChange,
@@ -24,7 +25,8 @@ function ImportServer(props){
       accept:".xlsx, .csv"
     }
 
-    const handleUpload = () => {
+    // Handle import  
+    const handleImport = () => {
         console.log(importFile)
         if(importFile){
           return importServerListApi(
@@ -33,11 +35,12 @@ function ImportServer(props){
             })
           .then((res) => {
               console.log(res)
-              //props.setExportData(res.data)
-              // props.setLoading(false);
-              // props.setTableData(res.data,res.total)
-              // dispatch(setPagination({pagination: {page: 1, pageSize: res.total}}))
-          }).catch((err) => {console.log(err)});
+              message.success("Successfully import server list")
+              props.setRefreshPage(true)
+          }).catch((err) => {
+            console.log("Import error", err)
+            message.error("Something went wrong. Please check your file again")
+          });
         }
         message.error(`No file chosen`);
     }
@@ -53,7 +56,7 @@ function ImportServer(props){
             forceRender={true} 
             width={'70vw'}
             footer={[
-              <Button key="submit" type="primary" onClick={handleUpload} disabled={!importFile}>
+              <Button key="submit" type="primary" onClick={handleImport} disabled={!importFile}>
                   Import
               </Button>
               ,

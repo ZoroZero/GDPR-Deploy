@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, DatePicker, Button, notification, Switch } from "antd";
+import { Modal, Form, Input, DatePicker, Button, notification, Switch, message } from "antd";
 import { createServerApi, updateServerApi } from 'api/server';
 import { SERVER_CONSTANTS } from "constants/ManageServer/server";
 import { GLOBAL_CONSTANTS } from 'constants/global'
@@ -34,8 +34,13 @@ function AddEditServerModal(props) {
             EndDate: moment(props.request.data.EndDate, GLOBAL_CONSTANTS.TIME_FORMAT)
         });
 
-        setActive(props.request.data.Status === '1')
+        setActive(props.request.data.IsActive)
     };
+
+    const handleClose = () => {
+        props.setModalVisible(false);
+        props.setEditRequest(null);
+    }
 
     const onFinish = values => {
         console.log(values);
@@ -48,15 +53,19 @@ function AddEditServerModal(props) {
                 })
                 .then((res) => {
                     console.log("Sucessfully add new server", res)
-                    openNotification(`Sucessfully add new server at ${res.createAt}`)
+                    message.success("Sucessfully add new server")
+                    // openNotification(`Sucessfully add new server at ${res.createAt}`)
                     props.setModalVisible(false)
-                    form.resetFields();
-                })
-                .catch((err) => console.log(err)) 
-                .finally(() => {
-                    props.setEditRequest(null);
+                    form.resetFields()
                     props.setRefreshPage(true);
-                })    
+                })
+                .catch((err) => {
+                    console.log("Add error", err); 
+                    message.error("Something went wrong")
+                }) 
+                // .finally(() => {
+                   
+                // })    
         }
         else if(props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE){
             const id = props.request.data.Id
@@ -71,35 +80,36 @@ function AddEditServerModal(props) {
             })
             .then((res) => {
                 console.log("Sucessfully update server information", res)
-                openNotification(`Sucessfully update server information at ${res.updateAt}`)
+                // openNotification(`Sucessfully update server information at ${res.updateAt}`)
+                message.success("Successfully update server information")
                 props.setModalVisible(false)
                 form.resetFields();
-            })
-            .catch((err) => console.log(err))
-            .finally(() => {
-                props.setEditRequest(null);
                 props.setRefreshPage(true);
-                }
-            ) 
+            })
+            .catch((err) => {
+                console.log("Update error", err); 
+                message.error("Something went wrong")
+            })
+            // .finally(() => {
+            //     props.setRefreshPage(true);
+            // }) 
         }
-        
     };
 
-    const openNotification = (message) => {
-        notification.open({
-          message: message,
-          description: null,
-          onClick: () => {
-            console.log('Notification Clicked!');
-          },
-        });
-    };
+    // const openNotification = (message) => {
+    //     notification.open({
+    //       message: message,
+    //       description: null,
+    //       onClick: () => {
+    //         console.log('Notification Clicked!');
+    //       },
+    //     });
+    // };
     
     return (    
         <Modal
             title= {title}
             centered
-            
             visible={props.modalVisible}
             onCancel={()=>{props.setModalVisible(false)}}
             okButtonProps={{ style: { display: 'none' } }}
@@ -108,15 +118,13 @@ function AddEditServerModal(props) {
             footer={[
                 <Button form="myForm" key="submit" type="primary" htmlType="submit">
                     Submit
-                </Button>
-                ,
-                <Button key="cancel" onClick={()=>{props.setModalVisible(false)}}>
+                </Button>,
+                <Button key="cancel" onClick={handleClose}>
                     Cancel
                 </Button>
             ]}>
                 <Form  form={form} onFinish={onFinish} id="myForm"
                     layout="vertical">
-
                     <Form.Item label="Server name"
                             name='ServerName'
                             rules={[{
@@ -162,7 +170,6 @@ function AddEditServerModal(props) {
                         </Form.Item>
                     }
                 </Form>
-
         </Modal>)
 }
 

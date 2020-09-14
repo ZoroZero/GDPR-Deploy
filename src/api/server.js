@@ -78,7 +78,6 @@ export const updateServerApi = (data) => {
         reject(error);
       });
   });  
-
 }
 
 export const deleteServerApi = (data) => {
@@ -97,6 +96,23 @@ export const deleteServerApi = (data) => {
         reject(error);
       });
   });
+}
+
+export const updateMultipleStatusApi = (data) => {
+  return new Promise((resolve, reject) => {
+    console.log("Send data", data)
+    return axios
+      .put(`/api/servers/multi`, {
+          status: data.status,
+          listServer: data.listServer
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });  
 }
 
 
