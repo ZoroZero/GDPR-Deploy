@@ -4,14 +4,13 @@ import { DownOutlined } from '@ant-design/icons';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import { exportServerListApi } from 'api/server';
-import { CSVLink } from "react-csv";
 import { SERVER_CONSTANTS } from 'constants/ManageServer/server';
-
+import { VerticalAlignBottomOutlined } from '@ant-design/icons'
 // import { useDispatch, useSelector } from "react-redux";
 function ExportServer(props){
     const [form] = Form.useForm();
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-    const fileExtension = '.xlsx';
+    // const fileExtension = '.xlsx';
     const [csvData, setCSVData] = useState([])
     const fileName= SERVER_CONSTANTS.SERVER_EXPORT_FILE 
 
@@ -61,10 +60,10 @@ function ExportServer(props){
             <CSVLink data={csvData} filename={fileName + '.csv'}>.CSV</CSVLink>
           </Menu.Item> */}
             <Menu.Item key="csv">
-                .CSV
+                <VerticalAlignBottomOutlined /> .CSV 
             </Menu.Item>
             <Menu.Item key="xlsx">
-                .XLSX
+                <VerticalAlignBottomOutlined /> .XLSX
             </Menu.Item>
         </Menu>
     );
@@ -109,7 +108,7 @@ function ExportServer(props){
                     {/* <Button disabled={!props.csvData[0]} variant="warning" onClick={handleExport}>Export</Button> */}
                     <Dropdown overlay={menu} disabled={!csvData[0]} style={{margin: '0px 8px'}}>
                         <Button>
-                            Export <DownOutlined />
+                            <VerticalAlignBottomOutlined /> Export <DownOutlined />
                         </Button>
                     </Dropdown>
                 </Form.Item>

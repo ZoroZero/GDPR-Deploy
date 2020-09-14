@@ -243,12 +243,12 @@ function MainPage() {
     return (
         <React.Fragment>
             <div>
-                <Button onClick={toggleImport}>Import server list</Button>
+                <Button className="action-button" onClick={toggleImport}>Import server list</Button>
                 <ImportServer visible={importing} setVisible={setImporting}></ImportServer>
             </div>
 
             <div>
-                <Button onClick={toggleExport} style={{marginBottom: '20px'}}>Export server list</Button>
+                <Button className="action-button" onClick={toggleExport} style={{marginBottom: '20px'}}>Export server list</Button>
                 <ExportServer id='export-server' className='export-server' visible={exporting} setVisible={setExporting}></ExportServer>
             </div>
 

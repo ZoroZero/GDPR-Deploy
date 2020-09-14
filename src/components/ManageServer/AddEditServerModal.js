@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Form, Input, DatePicker, Button, notification, Switch } from "antd";
 import { createServerApi, updateServerApi } from 'api/server';
 import { SERVER_CONSTANTS } from "constants/ManageServer/server";
+import { GLOBAL_CONSTANTS } from 'constants/global'
 import moment from 'moment';
 
 function AddEditServerModal(props) {
@@ -29,8 +30,8 @@ function AddEditServerModal(props) {
         form.setFieldsValue({
             ServerName: props.request.data.Name,
             IpAddress: props.request.data.IpAddress,
-            StartDate: moment(props.request.data.StartDate),
-            EndDate: moment(props.request.data.EndDate)
+            StartDate: moment(props.request.data.StartDate, GLOBAL_CONSTANTS.TIME_FORMAT),
+            EndDate: moment(props.request.data.EndDate, GLOBAL_CONSTANTS.TIME_FORMAT)
         });
 
         setActive(props.request.data.Status === '1')
@@ -42,8 +43,8 @@ function AddEditServerModal(props) {
             return createServerApi({
                     serverName: values.ServerName,
                     ipAddress: values.IpAddress,
-                    startDate: values.StartDate.format("YYYY-MM-DD hh:mm:ss"),
-                    endDate: values.EndDate.format("YYYY-MM-DD hh:mm:ss")
+                    startDate: values.StartDate.format(GLOBAL_CONSTANTS.TIME_FORMAT),
+                    endDate: values.EndDate.format(GLOBAL_CONSTANTS.TIME_FORMAT)
                 })
                 .then((res) => {
                     console.log("Sucessfully add new server", res)
@@ -64,8 +65,8 @@ function AddEditServerModal(props) {
                 id: id,
                 serverName: values.ServerName,
                 ipAddress: values.IpAddress,
-                startDate: values.StartDate.format("YYYY-MM-DD hh:mm:ss"),
-                endDate: values.EndDate.format("YYYY-MM-DD hh:mm:ss"),
+                startDate: values.StartDate.format(GLOBAL_CONSTANTS.TIME_FORMAT),
+                endDate: values.EndDate.format(GLOBAL_CONSTANTS.TIME_FORMAT),
                 status: active
             })
             .then((res) => {
