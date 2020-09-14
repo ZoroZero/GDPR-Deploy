@@ -16,6 +16,7 @@ import { getStore } from "store";
 import { login, onLogout } from "./slice";
 import { AbilityContext } from "permission/can";
 import { useAbility } from "@casl/react";
+import { VerifyAcc } from "./pages/VerifyScreen";
 
 const store = getStore();
 const { Header, Content, Sider } = Layout;
@@ -176,6 +177,7 @@ function Router(props) {
       <BrowserRouter>
         <Switch>
           <Route exact path="/login" component={LoginPage} />
+          <Route path="/confirm/:verifyToken" component={VerifyAcc} />
           <PrivateRoute path="/" component={App} />
           <Route component={NotFound} />
         </Switch>

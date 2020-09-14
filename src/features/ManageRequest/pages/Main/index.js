@@ -12,6 +12,7 @@ import Search from "antd/lib/input/Search";
 import CreateRequestForm from "components/RequestModal";
 import { Link } from "react-router-dom";
 import ExportRequestForm from "components/ExportRequestForm";
+import { Can } from "permission/can";
 
 const columns = [
   {
@@ -171,11 +172,13 @@ const MainPage = (props) => {
     <>
       <Row gutter={[16, 16]} justify="center">
         <Col>
-          <Row>
-            <Col span={24}>
-              <ExportRequestForm />
-            </Col>
-          </Row>
+          <Can I="export" a="request">
+            <Row>
+              <Col span={24}>
+                <ExportRequestForm />
+              </Col>
+            </Row>
+          </Can>
           <Row justify="space-between" gutter={[16, 16]}>
             <Col span={6}>
               <CreateRequestForm />
