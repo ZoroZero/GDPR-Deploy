@@ -314,7 +314,7 @@ function MainPage() {
             total={total}
             showTotal={showTotal}
             // defaultPageSize={10}
-            PageSize={PageSize}
+            pageSize={PageSize}
             onChange={onChange}
           />
         </Col>
