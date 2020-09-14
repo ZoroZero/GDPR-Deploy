@@ -1,8 +1,10 @@
 import React from 'react';
-import { Form, Input, DatePicker, Button, Modal } from "antd";
+import { Form, Input, DatePicker, Button, Modal,  Menu, Dropdown, message } from "antd";
+import { DownOutlined, UserOutlined } from '@ant-design/icons';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import { exportServerListApi } from 'api/server';
+
 // import { useDispatch, useSelector } from "react-redux";
 import moment from 'moment';
 
@@ -11,7 +13,7 @@ function ExportServer(props){
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     const fileExtension = '.xlsx';
 
-    function exportToCSV(csvData, fileName)  {
+    function exportToCSV(csvData, fileName, type)  {
         const ws = XLSX.utils.json_to_sheet(csvData);
         const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
@@ -45,6 +47,22 @@ function ExportServer(props){
         exportToCSV(props.csvData,props.fileName);
         // props.setVisible(false);
     }
+
+    const handleMenuClick = (e) => {
+        message.info('Click on menu item.');
+        console.log('click', e);
+    }
+
+    const menu = (
+        <Menu onClick={handleMenuClick}>
+          <Menu.Item key="csv">
+            .CSV
+          </Menu.Item>
+          <Menu.Item key="xlsx">
+            .XLSX
+          </Menu.Item>
+        </Menu>
+    );
 
     return (
         <Modal
@@ -83,8 +101,13 @@ function ExportServer(props){
                 </Form.Item> 
 
                 <Form.Item>
-                    <Button form="exportForm" key="submit" type="primary" htmlType="submit" >Filter</Button>
-                    <Button disabled={!props.csvData[0]} variant="warning" onClick={handleExport}>Export</Button>
+                    <Button form="exportForm" key="submit" type="primary" htmlType="submit" style={{margin: '0 8px'}}>Filter</Button>
+                    {/* <Button disabled={!props.csvData[0]} variant="warning" onClick={handleExport}>Export</Button> */}
+                    <Dropdown overlay={menu} disabled={!props.csvData[0]} style={{margin: '0 8px'}}>
+                        <Button>
+                            Export <DownOutlined />
+                        </Button>
+                    </Dropdown>
                 </Form.Item>
             </Form>
         </Modal>
