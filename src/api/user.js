@@ -19,10 +19,27 @@ export const listUserApi = () => {
 export const getUsersApi = (data) => {
   return new Promise((resolve, reject) => {
     const token = checkToken();
-    console.log("check token get userAPI", token)
+    console.log("data: ", data);
+    console.log("check token get userAPI", token);
     return axios
       .get("/api/users/list", { params: data })
       .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error.response);
+      });
+  });
+};
+
+export const getAccountDetailApi = () => {
+  return new Promise((resolve, reject) => {
+    const token = checkToken();
+    console.log("check token get userAPI", token);
+    return axios
+      .get("/api/users/profile")
+      .then((res) => {
+        console.log("res", res);
         resolve(res);
       })
       .catch((error) => {
@@ -63,6 +80,21 @@ export const updateUsersApi = (id, data) => {
     console.log("data", data);
     return axios
       .put(`/api/users/${id}`, { ...data })
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error.response);
+      });
+  });
+};
+
+export const updateAccountApi = (id, data) => {
+  return new Promise((resolve, reject) => {
+    console.log("id", id);
+    console.log("data", data);
+    return axios
+      .put(`/api/users/account/${id}`, { ...data })
       .then((res) => {
         resolve(res);
       })

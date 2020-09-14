@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { updateUsersApi } from "../../api/user";
-import CreateUserForm from "./CreateUserForm";
 import "antd/dist/antd.css";
 import {
   Form,
@@ -8,12 +7,8 @@ import {
   Tooltip,
   Cascader,
   Select,
-  Row,
-  Col,
-  Checkbox,
   Button,
   AutoComplete,
-  Radio,
   Modal,
   Switch,
   message,
@@ -99,16 +94,6 @@ const CollectionCreateForm = ({
     </Form.Item>
   );
   const [autoCompleteResult, setAutoCompleteResult] = useState([]);
-
-  const onWebsiteChange = (value) => {
-    if (!value) {
-      setAutoCompleteResult([]);
-    } else {
-      setAutoCompleteResult(
-        [".com", ".org", ".net"].map((domain) => `${value}${domain}`)
-      );
-    }
-  };
 
   function onChange(checked) {
     console.log(`switch to ${checked}`);
