@@ -103,3 +103,16 @@ export const updateAccountApi = (id, data) => {
       });
   });
 };
+
+export const forgotPasswordApi = (email) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .get(`/api/users/forgot/${email}`)
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};

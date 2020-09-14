@@ -2,8 +2,7 @@ import React from "react";
 import { Form, Input, Button, message, Checkbox } from "antd";
 import "./index.scss";
 import PropTypes from "prop-types";
-import { onLogin } from "features/App/slice";
-import { useDispatch } from "react-redux";
+import { forgotPasswordApi } from "../../../../api/user";
 import { useHistory } from "react-router-dom";
 
 const layout = {
@@ -14,19 +13,23 @@ const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
 };
 
-LoginPage.propTypes = {};
-
-function LoginPage(props) {
-  const dispatch = useDispatch();
+function ForgotPasswordPage() {
   const history = useHistory();
   const onFinish = (values) => {
-    dispatch(onLogin(values.username, values.password))
+    forgotPasswordApi(values.email)
       .then(() => {
-        message.success("login successfully");
+        message.success(
+          "Successfully! Check your email for more information!",
+          9
+        );
         history.push("/");
       })
       .catch((error) => {
-        message.error("login fail");
+        message.error("Error!");
+        message.error(
+          "Tips: Please make sure that you have entered the correct email one!"
+        );
+        // message.error(error.data.message);
         console.log(error.message);
       });
   };
@@ -46,33 +49,24 @@ function LoginPage(props) {
           onFinishFailed={onFinishFailed}
         >
           <Form.Item
-            label="Username"
-            name="username"
-            initialValue="obythelli"
-            rules={[{ required: true, message: "Please input your username!" }]}
+            name="email"
+            label="E-mail"
+            rules={[
+              {
+                type: "email",
+                message: "The input is not valid E-mail!",
+              },
+              {
+                required: true,
+                message: "Please input your E-mail!",
+              },
+            ]}
           >
             <Input />
           </Form.Item>
-          <Form.Item
-            label="Password"
-            name="password"
-            initialValue="u7Rg2KBu"
-            rules={[{ required: true, message: "Please input your password!" }]}
-          >
-            <Input.Password />
-          </Form.Item>
-
           <Form.Item {...tailLayout}>
             <Button type="primary" htmlType="submit">
               Submit
-            </Button>
-            <Button
-              className="login-form-forgot"
-              onClick={() => {
-                history.push("/forgotpassword");
-              }}
-            >
-              Forgot password
             </Button>
           </Form.Item>
         </Form>
@@ -81,10 +75,4 @@ function LoginPage(props) {
   );
 }
 
-LoginPage.propTypes = {
-  account: PropTypes.object,
-  emailMessages: PropTypes.object,
-  error: PropTypes.string,
-  idToken: PropTypes.string,
-};
-export default LoginPage;
+export default ForgotPasswordPage;
