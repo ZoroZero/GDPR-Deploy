@@ -7,12 +7,13 @@ import {
 } from "api/customer";
 import { loading, stopLoading } from "features/App/slice";
 import { act } from "react-dom/test-utils";
+import { useSelector } from "react-redux";
 
 export const initialState = {
   blockIds: null,
   data: [],
   servers: [],
-  otherServers: [],
+  otherServers: { data: [], loading: false, hasMore: true },
   pagination: {
     total: 0,
     current: 1,
@@ -131,11 +132,18 @@ export const getServersCustomer = (id) => (dispatch) => {
   });
 };
 
-export const getOtherServers = (option, id) => (dispatch) => {
+export const getOtherServers = (option, id, page) => (dispatch, getState) => {
   return new Promise((resolve, reject) => {
-    return getOtherServersApi(option, id)
+    return getOtherServersApi(option, id, page)
       .then((res) => {
-        dispatch(setOtherServers(res));
+        dispatch(
+          setOtherServers({
+            data: getState().customerManagement.otherServers.data.concat(res),
+            hasMore: res !== [],
+            loading: false,
+          })
+        );
+
         resolve();
       })
       .catch((error) => {
