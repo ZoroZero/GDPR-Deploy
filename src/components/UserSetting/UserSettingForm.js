@@ -7,12 +7,9 @@ import {
   Avatar,
   Input,
   Tooltip,
-  message
+  message,
 } from "antd";
-import {
-
-  QuestionCircleOutlined,
-} from "@ant-design/icons";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateAccountApi } from "../../api/user";
@@ -26,12 +23,13 @@ const formItemLayout = {
   },
 };
 
-
 const UserSetting = (pros) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const [data, setData]=useState({});
-  const [imageUrl, setImageUrl]=useState("https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png");
+  const [data, setData] = useState({});
+  const [imageUrl, setImageUrl] = useState(
+    "https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
+  );
   const { record } = useSelector((state) => state.userSetting);
   const [switchState, setSwitchState] = useState(true);
   function onChange(checked) {
@@ -40,46 +38,51 @@ const UserSetting = (pros) => {
   }
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
-    if (values.password!==undefined){
-    updateAccountApi(values.UserId, {
-      ...values, PassWord: values.password
-    }).then((res) => {
-      console.log("res from insert", res);
-      if (res.status === 201) {
-        message.success(res.statusText);
-      }
+    if (values.password !== undefined) {
+      updateAccountApi(values.UserId, {
+        ...values,
+        PassWord: values.password,
+      })
+        .then((res) => {
+          console.log("res from insert", res);
+          if (res.status === 201) {
+            message.success(res.statusText);
+            // form.resetFields();
+          }
+          pros.onSubmitModal();
+        })
+        .catch((error) => {
+          message.error(error.data.message);
+        });
       pros.onSubmitModal();
-    })
-    .catch((error) => {
-      message.error(error.data.message);
-    });
-  pros.onSubmitModal();
-  }
-  else{
-    updateAccountApi(values.UserId, {
-      ...values, PassWord: values.HashPasswd
-    }).then((res) => {
-      console.log("res from update account", res);
-      if (res.status === 200) {
-        message.success(res.statusText);
-      }
+    } else {
+      updateAccountApi(values.UserId, {
+        ...values,
+        PassWord: values.HashPasswd,
+      })
+        .then((res) => {
+          console.log("res from update account", res);
+          if (res.status === 200) {
+            message.success(res.statusText);
+          }
+          pros.onSubmitModal();
+        })
+        .catch((error) => {
+          message.error(error.data.message);
+        });
       pros.onSubmitModal();
-    })
-    .catch((error) => {
-      message.error(error.data.message);
-    });
-  pros.onSubmitModal();
-  }
+    }
   };
   useEffect(() => {
     // fetch();
 
     console.log("didmount avbc", record);
-    if (record.AvatarPath){
-      setImageUrl("http://localhost:5000/api/users/"+record.AvatarPath); 
-    }
-    else{
-      setImageUrl("https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png");
+    if (record.AvatarPath) {
+      setImageUrl("http://localhost:5000/api/users/" + record.AvatarPath);
+    } else {
+      setImageUrl(
+        "https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
+      );
     }
     setData(record);
     form.setFieldsValue(record);
@@ -87,7 +90,7 @@ const UserSetting = (pros) => {
   const fetch = () => {};
   return (
     <Form
-    form={form}
+      form={form}
       name="validate_other"
       {...formItemLayout}
       onFinish={onFinish}
@@ -102,8 +105,6 @@ const UserSetting = (pros) => {
       //   }
       // }
     >
-      
-
       <Form.Item>
         <Row
           type="flex"
@@ -112,25 +113,28 @@ const UserSetting = (pros) => {
           // style={{ minHeight: "100vh" }}
         >
           <Col span={8}></Col>
-          <Col span={8}><Avatar
-            size={150}
-            style={{ padding: 0 }}
-            // src="https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
-            src={imageUrl}
-          /></Col>
-          <Col span={8}><UploadAvatarDynamic/></Col>
-          
+          <Col span={8}>
+            <Avatar
+              size={150}
+              style={{ padding: 0 }}
+              // src="https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
+              src={imageUrl}
+            />
+          </Col>
+          <Col span={8}>
+            <UploadAvatarDynamic onsub={pros.onSubmitModal} />
+          </Col>
+
           {/* <Upload name="logo" action="/upload.do" listType="picture">
             <Button icon={<UploadOutlined />}>Click to upload</Button>
           </Upload> */}
-          
         </Row>
       </Form.Item>
 
       {/* <Form.Item name="rate" label="Rate">
         <Rate />
       </Form.Item> */}
-    <Form.Item
+      <Form.Item
         name="UserId"
         label="ID"
         rules={[
@@ -143,7 +147,7 @@ const UserSetting = (pros) => {
       >
         <Input disabled={true} />
       </Form.Item>
-    <Form.Item
+      <Form.Item
         name="FirstName"
         label="First Name"
         rules={[
@@ -205,7 +209,7 @@ const UserSetting = (pros) => {
         rules={[
           {
             // required: true,
-            message: 'Please input your password!',
+            message: "Please input your password!",
           },
         ]}
         hasFeedback
@@ -216,19 +220,21 @@ const UserSetting = (pros) => {
       <Form.Item
         name="confirm"
         label="Confirm Password"
-        dependencies={['password']}
+        dependencies={["password"]}
         hasFeedback
         rules={[
           {
             // required: true,
-            message: 'Please confirm your password!',
+            message: "Please confirm your password!",
           },
           ({ getFieldValue }) => ({
             validator(rule, value) {
-              if (!value || getFieldValue('password') === value) {
+              if (!value || getFieldValue("password") === value) {
                 return Promise.resolve();
               }
-              return Promise.reject('The two passwords that you entered do not match!');
+              return Promise.reject(
+                "The two passwords that you entered do not match!"
+              );
             },
           }),
         ]}
