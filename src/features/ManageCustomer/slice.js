@@ -1,10 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getContactPointsApi, getCustomerApi } from "api/customer";
+import { getContactPointsApi, getCustomerApi, getServersCustomerApi } from "api/customer";
 import { loading, stopLoading } from "features/App/slice";
 
 export const initialState = {
   blockIds: null,
   data: [],
+  servers: [],
   pagination: {
     total: 0,
     current: 1,
@@ -54,6 +55,10 @@ const slice = createSlice({
       state.contactPoints = action.payload;
     },
 
+    setServers: (state, action) => {
+      state.servers = action.payload;
+    },
+
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
@@ -68,6 +73,7 @@ export const {
   setSearch,
   setRefresh,
   setContactPointList,
+  setServers,
   setLoading,
 } = slice.actions;
 export default slice.reducer;
@@ -99,5 +105,19 @@ export const getContactPointList = () => (dispatch) => {
   getContactPointsApi().then((res) => {
     console.log(res);
     dispatch(setContactPointList(res));
+  });
+};
+
+export const getServersCustomer = (id) => (dispatch) => {
+  return new Promise((resolve, reject) => {
+    return getServersCustomerApi(id)
+      .then((res) => {
+        console.log(res);
+        dispatch(setServers(res));
+        resolve();
+      }).catch((error) => {
+        console.log(error);
+        reject();
+      });
   });
 };

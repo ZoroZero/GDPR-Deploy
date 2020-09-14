@@ -91,10 +91,22 @@ export const updateCustomerApi = (newData, id) => {
             });
     });
 };
-/* TODO:
-- sort date
+
+export const getServersCustomerApi = (id) => {
+    return new Promise((resolve, reject) => {
+        console.log(id)
+        const token = checkToken();
+        return axios
+            .get(
+                String(process.env.REACT_APP_BASE_URL) + "/customers/servers", { params: { Id: id } }
+            ).then((res) => {
+                console.log(res.data)
+                resolve(res.data);
+            })
+            .catch((error) => {
+                reject(error);
+            })
+    })
+}
 
 
-
-
-*/

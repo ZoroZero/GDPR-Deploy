@@ -85,19 +85,7 @@ function AddCustomerModal(props) {
       forceRender={true}
       onOk={handleOk}
       onCancel={handleCancel}
-      // footer={[
-      //   <Button form="myForm" key="submit" type="primary" htmlType="submit">
-      //     Submit
-      //   </Button>,
-      //   <Button
-      //     key="cancel"
-      //     onClick={() => {
-      //       props.setModalVisible(false);
-      //     }}
-      //   >
-      //     Cancel
-      //   </Button>,
-      // ]}
+
     >
       <Form form={form} onFinish={onFinish} name="myForm" layout="vertical">
         <Form.Item
