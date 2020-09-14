@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Table, Pagination, Input, Button, Modal, Tag, Upload, Icon } from "antd";
-import { UploadOutlined } from '@ant-design/icons';
+// import { UploadOutlined } from '@ant-design/icons';
 import "./index.scss";
 import { getServersApi, deleteServerApi } from "api/server";
 import { useDispatch, useSelector } from "react-redux";
@@ -39,7 +39,6 @@ function MainPage() {
         setRefresh(refresh => !refresh);
     }, []);
     
-    const [exportData, setExportData] = useState([])
 
     useEffect(() => {
         fetch(pagination, sortColumn, sortOrder, searchKeyword, filter);
@@ -225,7 +224,7 @@ function MainPage() {
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
             console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-            setExportData(selectedRows)
+            
         },
         onSelect: (record, selected, selectedRows) => {
             console.log(record, selected, selectedRows);
@@ -235,27 +234,14 @@ function MainPage() {
         },
     };
 
+
+    // Show total record
+    function showTotal(total) {
+        return `Total ${total} items`;
+      }
+
     return (
         <React.Fragment>
-            {/* <Upload
-                accept=".txt, .csv"
-                showUploadList={false}
-                beforeUpload={file => {
-                    const reader = new FileReader();
-
-                    reader.onload = e => {
-                        console.log(e.target.result);
-                    };
-                    reader.readAsText(file);
-
-                    // Prevent upload
-                    return false;
-                }}>
-                <Button icon={<UploadOutlined />}>
-                     Click to Upload
-                </Button>
-            </Upload> */}
-
             <div>
                 <Button onClick={toggleImport}>Import server list</Button>
                 <ImportServer visible={importing} setVisible={setImporting}></ImportServer>
@@ -263,9 +249,9 @@ function MainPage() {
 
             <div>
                 <Button onClick={toggleExport} style={{marginBottom: '20px'}}>Export server list</Button>
-                <ExportServer id='export-server' className='export-server' visible = {exporting} csvData={exportData} 
-                fileName={SERVER_CONSTANTS.SERVER_EXPORT_FILE} setExportData={setExportData} setVisible={setExporting}></ExportServer>
+                <ExportServer id='export-server' className='export-server' visible={exporting} setVisible={setExporting}></ExportServer>
             </div>
+
             <Button type="primary" onClick={()=> setEditRequest(SERVER_CONSTANTS.ADD_SERVER_REQUEST)} style={{ background: 'lawngreen', color: 'black'}}>
                 Create new server
             </Button>
@@ -297,6 +283,8 @@ function MainPage() {
                 current ={pagination.page}
                 pageSize={pagination.pageSize}
                 onChange = {handlePageChange}
+                showTotal={showTotal}
+                style={{margin:'8px 8px'}}
             />
         </React.Fragment>
     );
