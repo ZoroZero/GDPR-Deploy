@@ -95,16 +95,6 @@ const CollectionCreateForm = ({
   );
   const [autoCompleteResult, setAutoCompleteResult] = useState([]);
 
-  const onWebsiteChange = (value) => {
-    if (!value) {
-      setAutoCompleteResult([]);
-    } else {
-      setAutoCompleteResult(
-        [".com", ".org", ".net"].map((domain) => `${value}${domain}`)
-      );
-    }
-  };
-
   function onChange(checked) {
     console.log(`switch to ${checked}`);
     setSwitchState(checked);

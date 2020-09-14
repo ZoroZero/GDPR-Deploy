@@ -131,7 +131,7 @@ function MainPage() {
 
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
-  const [total, setTotal] = useState([]);
+  const [total, setTotal] = useState();
   const [loading, setLoading] = useState(false);
   const { SearchKey, PageNo, PageSize, SortBy, SortOrder, Role } = useSelector(
     (state) => state.userManagement
@@ -184,7 +184,10 @@ function MainPage() {
   }
   function onShowSizeChange(current, pageSize) {
     console.log(current, pageSize);
-    if (pageSize !== PageSize) {
+    console.log(PageSize);
+    console.log("Total", total);
+    if (pageSize !== PageSize && PageNo >= Math.ceil(total / pageSize)) {
+      console.log("Total1", total);
       dispatch(setPageNo(Math.ceil(total / pageSize)));
       fetch({
         PageNo: Math.ceil(total / pageSize),
@@ -195,6 +198,7 @@ function MainPage() {
         Role: Role,
       });
     } else {
+      console.log("Total2", total);
       dispatch(setPageSize({ PageSize: pageSize }));
       fetch({
         PageNo: current,
@@ -304,10 +308,12 @@ function MainPage() {
             showQuickJumper
             showSizeChanger
             onShowSizeChange={onShowSizeChange}
-            defaultCurrent={1}
+            // defaultCurrent={1}
+            current={PageNo}
             total={total}
             showTotal={showTotal}
-            defaultPageSize={10}
+            // defaultPageSize={10}
+            PageSize={PageSize}
             onChange={onChange}
           />
         </Col>
