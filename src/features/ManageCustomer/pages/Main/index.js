@@ -14,6 +14,7 @@ import { ExclamationCircleOutlined, AudioOutlined } from "@ant-design/icons";
 import "./index.scss";
 import AddCustomerModal from "../../../../components/ManageCustomer/AddCustomerModal";
 import EditCustomerModal from "../../../../components/ManageCustomer/EditCustomerModal";
+import ManageServerModal from "../../../../components/ManageCustomer/ManageServerModal";
 import { deleteCustomerApi } from "api/customer";
 import {
   setData,
@@ -46,6 +47,7 @@ function MainPage() {
 
   const [modalCreateVisible, setModalCreateVisible] = useState(false);
   const [modalEditVisible, setModalEditVisible] = useState(false);
+  const [modalManageVisible, setModalManageVisible] = useState(false);
   const [dataEdit, setDataEdit] = useState({
     FirstName: "",
     LastName: "",
@@ -57,6 +59,7 @@ function MainPage() {
     IsActive: true,
   });
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [dataManage, setDataManage] = useState({ Id: "" });
   const searchBox = useRef(null);
   const pageOptions = [10, 20, 50, 100];
 
@@ -147,9 +150,6 @@ function MainPage() {
           >
             Delete
           </Button>
-          {/* <a className="ant-dropdown-link">
-          More actions <DownOutlined />
-        </a> */}
         </Space>
       ),
     },
@@ -157,8 +157,19 @@ function MainPage() {
       title: "Machines Owner",
       dataIndex: "servers",
       sorter: true,
-      render: (text) => (
-        <Button color="cyan"> Manage {text ? text : 0} </Button>
+      render: (text, record) => (
+        <Button
+          onClick={() => {
+            setDataManage({
+              Id: record.Id,
+              FirstName: record.FirstName,
+              LastName: record.LastName,
+            });
+            setModalManageVisible(true);
+          }}
+        >
+          Manage {text ? text : 0}
+        </Button>
       ),
     },
   ];
@@ -266,17 +277,19 @@ function MainPage() {
           <AddCustomerModal
             modalVisible={modalCreateVisible}
             setModalVisible={setModalCreateVisible}
-          >
-            {" "}
-          </AddCustomerModal>
+          ></AddCustomerModal>
           <EditCustomerModal
             record={dataEdit}
             modalVisible={modalEditVisible}
             setModalVisible={setModalEditVisible}
           ></EditCustomerModal>
-        <ManageServersModal>
-
-        </ManageServersModal>
+          <ManageServerModal
+            record={dataManage}
+            modalVisible={modalManageVisible}
+            setModalVisible={setModalManageVisible}
+          >
+            {" "}
+          </ManageServerModal>
         </Col>
         <Col span={8} offset={8}>
           <Search

@@ -27,16 +27,12 @@ function EditCustomerModal(props) {
 
   const [form] = Form.useForm();
   const contactPointId = props.record.ContactPointId;
-
+  const contactPointEmail = props.record.contactPointEmail;
   const shouldGetData = props.modalVisible !== false;
   useEffect(() => {
     if (shouldGetData) {
       {
         console.log("USE EFFECT", props);
-        console.log(
-          moment(props.record.ContracsActiveate, "DD/MM/YYYY hh:mm:ss")
-        );
-        // console.log()
         form.setFieldsValue({
           ContractBeginDate: props.record.ContractBeginDate
             ? moment(props.record.ContractBeginDate, "DD/MM/YYYY HH:mm:ss")
