@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button, Checkbox, message } from "antd";
 import "./index.scss";
 import PropTypes from "prop-types";
 import { onLogin } from "features/App/slice";
@@ -60,6 +60,15 @@ function LoginPage(props) {
             rules={[{ required: true, message: "Please input your password!" }]}
           >
             <Input.Password />
+          </Form.Item>
+          <Form.Item>
+            <Form.Item name="remember" valuePropName="checked" noStyle>
+              <Checkbox>Remember me</Checkbox>
+            </Form.Item>
+
+            <a className="login-form-forgot" href="">
+              Forgot password
+            </a>
           </Form.Item>
           <Form.Item {...tailLayout}>
             <Button type="primary" htmlType="submit">
