@@ -1,11 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getContactPointsApi, getCustomerApi, getServersCustomerApi } from "api/customer";
+import { getContactPointsApi, getCustomerApi, getServersCustomerApi, getOtherServersApi } from "api/customer";
 import { loading, stopLoading } from "features/App/slice";
+import { act } from "react-dom/test-utils";
 
 export const initialState = {
   blockIds: null,
   data: [],
   servers: [],
+  otherServers: [],
   pagination: {
     total: 0,
     current: 1,
@@ -59,6 +61,10 @@ const slice = createSlice({
       state.servers = action.payload;
     },
 
+    setOtherServers: (state, action) => {
+      state.otherServers = action.payload;
+    },
+
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
@@ -74,6 +80,7 @@ export const {
   setRefresh,
   setContactPointList,
   setServers,
+  setOtherServers,
   setLoading,
 } = slice.actions;
 export default slice.reducer;
@@ -82,7 +89,6 @@ export const getCustomerList = (params = {}) => (dispatch) => {
   return new Promise((resolve, reject) => {
     return getCustomerApi(params)
       .then((res) => {
-        console.log("Customer List", res);
         dispatch(setData(res));
         dispatch(
           setPagination({
@@ -101,9 +107,7 @@ export const getCustomerList = (params = {}) => (dispatch) => {
 };
 
 export const getContactPointList = () => (dispatch) => {
-  console.log("get contactpoint list");
   getContactPointsApi().then((res) => {
-    console.log(res);
     dispatch(setContactPointList(res));
   });
 };
@@ -112,8 +116,20 @@ export const getServersCustomer = (id) => (dispatch) => {
   return new Promise((resolve, reject) => {
     return getServersCustomerApi(id)
       .then((res) => {
-        console.log(res);
         dispatch(setServers(res));
+        resolve();
+      }).catch((error) => {
+        console.log(error);
+        reject();
+      });
+  });
+};
+
+export const getOtherServers = (option, id) => (dispatch) => {
+  return new Promise((resolve, reject) => {
+    return getOtherServersApi(option, id)
+      .then((res) => {
+        dispatch(setOtherServers(res));
         resolve();
       }).catch((error) => {
         console.log(error);

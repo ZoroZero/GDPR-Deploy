@@ -100,7 +100,6 @@ export const getServersCustomerApi = (id) => {
             .get(
                 String(process.env.REACT_APP_BASE_URL) + "/customers/servers", { params: { Id: id } }
             ).then((res) => {
-                console.log(res.data)
                 resolve(res.data);
             })
             .catch((error) => {
@@ -109,4 +108,20 @@ export const getServersCustomerApi = (id) => {
     })
 }
 
+
+export const getOtherServersApi = (option, id) => {
+    return new Promise((resolve, reject) => {
+        console.log("option", option)
+        const token = checkToken();
+        return axios
+            .get(
+                String(process.env.REACT_APP_BASE_URL) + "/customers/other-servers", { params: { ...option, id: id } }
+            ).then((res) => {
+                resolve(res.data);
+            })
+            .catch((error) => {
+                reject(error);
+            })
+    })
+}
 
