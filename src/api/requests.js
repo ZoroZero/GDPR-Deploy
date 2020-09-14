@@ -91,3 +91,29 @@ export const getRequestDetailApi = (value) => {
       });
   });
 };
+
+export const getListUserOptionsApi = () => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .get("/api/users/listall")
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export const exportRequestApi = (val) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .post("/api/requests/export-request", val)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};

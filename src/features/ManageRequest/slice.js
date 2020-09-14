@@ -8,6 +8,8 @@ import {
   cancelRequestApi,
   getRequestDetailApi,
   updateRequestApi,
+  getListUserOptionsApi,
+  exportRequestApi,
 } from "api/requests";
 import { message } from "antd";
 
@@ -144,6 +146,20 @@ export const getListServerOptions = () => (dispatch) => {
   });
 };
 
+export const getListUserOptions = () => {
+  return new Promise((resolve, reject) => {
+    return getListUserOptionsApi()
+      .then((res) => {
+        console.log(res);
+        resolve(res);
+      })
+      .catch((error) => {
+        console.log(error);
+        reject(error);
+      });
+  });
+};
+
 export const approveRequest = (value) => (dispatch) => {
   return new Promise((resolve, reject) => {
     dispatch(loading());
@@ -219,6 +235,21 @@ export const onUpdateRequest = (value, requestId) => (dispatch) => {
       })
       .finally(() => {
         dispatch(stopLoading());
+      });
+  });
+};
+
+export const exportRequestByServer = (val) => (dispatch) => {
+  return new Promise((resolve, reject) => {
+    return exportRequestApi(val)
+      .then((res) => {
+        console.log(res);
+        message.success("success");
+        resolve(res);
+      })
+      .catch((error) => {
+        message.error("fail");
+        console.log(error);
       });
   });
 };
