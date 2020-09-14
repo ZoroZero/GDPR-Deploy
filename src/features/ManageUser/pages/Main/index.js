@@ -145,7 +145,7 @@ function MainPage() {
       SortOrder: SortOrder,
       Role: Role,
     });
-  }, []);
+  }, [PageNo, PageSize]);
   function onChange(pageNumber) {
     dispatch(setPageNo({ PageNo: pageNumber }));
     fetch({
@@ -186,28 +186,29 @@ function MainPage() {
     console.log(current, pageSize);
     console.log(PageSize);
     console.log("Total", total);
-    if (pageSize !== PageSize && PageNo >= Math.ceil(total / pageSize)) {
+    if (pageSize !== PageSize && PageNo > Math.ceil(total / pageSize)) {
       console.log("Total1", total);
       dispatch(setPageNo(Math.ceil(total / pageSize)));
-      fetch({
-        PageNo: Math.ceil(total / pageSize),
-        PageSize: pageSize,
-        SearchKey: SearchKey,
-        SortBy: SortBy,
-        SortOrder: SortOrder,
-        Role: Role,
-      });
+      dispatch(setPageSize({ PageSize: pageSize }));
+      // fetch({
+      //   PageNo: Math.ceil(total / pageSize),
+      //   PageSize: pageSize,
+      //   SearchKey: SearchKey,
+      //   SortBy: SortBy,
+      //   SortOrder: SortOrder,
+      //   Role: Role,
+      // });
     } else {
       console.log("Total2", total);
       dispatch(setPageSize({ PageSize: pageSize }));
-      fetch({
-        PageNo: current,
-        PageSize: pageSize,
-        SearchKey: SearchKey,
-        SortBy: SortBy,
-        SortOrder: SortOrder,
-        Role: Role,
-      });
+      // fetch({
+      //   PageNo: current,
+      //   PageSize: pageSize,
+      //   SearchKey: SearchKey,
+      //   SortBy: SortBy,
+      //   SortOrder: SortOrder,
+      //   Role: Role,
+      // });
     }
   }
   function handleTableChange(pagination, filters, sorter) {
