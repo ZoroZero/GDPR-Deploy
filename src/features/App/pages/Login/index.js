@@ -61,7 +61,6 @@ function LoginPage(props) {
           >
             <Input.Password />
           </Form.Item>
-
           <Form.Item {...tailLayout}>
             <Row>
               <Col span={8}>
