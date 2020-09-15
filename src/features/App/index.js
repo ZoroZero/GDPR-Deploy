@@ -81,7 +81,8 @@ function App(props) {
     const token = checkToken();
     const role = localStorage.getItem("role");
     const userId = localStorage.getItem("userId");
-    if (token) dispatch(login({ token: token, role: role, userId: userId }));
+    if (token)
+      dispatch(login({ access_token: token, role: role, userId: userId }));
   });
 
   const handleLogout = () => {

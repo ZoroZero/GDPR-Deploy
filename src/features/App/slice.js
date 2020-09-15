@@ -8,7 +8,6 @@ import { loginApi } from "api/authentication";
 
 const initialState = {
   userInfo: {
-    accessToken: null,
     exp: null,
     fullName: null,
     email: null,
@@ -57,7 +56,9 @@ export const onLogin = (username, password) => (dispatch) => {
     return loginApi(username, password)
       .then((res) => {
         const { access_token, role, userId } = res;
-        dispatch(login({ access_token, role, userId }));
+        dispatch(
+          login({ access_token: access_token, role: role, userId: userId })
+        );
         setAccessToken(access_token);
         setLocalStorageItem("role", role);
         setLocalStorageItem("userId", userId);
