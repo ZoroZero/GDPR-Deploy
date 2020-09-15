@@ -1,19 +1,40 @@
-import React, { useState } from 'react';
-import { Form, Input, DatePicker, Button, Modal,  Menu, Dropdown, message } from "antd";
+import React, { useState, useEffect } from 'react';
+import { Form, Input, DatePicker, Button, Modal,  Menu, Dropdown, message, Select } from "antd";
 import { DownOutlined } from '@ant-design/icons';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import { exportServerListApi } from 'api/server';
 import { SERVER_CONSTANTS } from 'constants/ManageServer/server';
 import { VerticalAlignBottomOutlined } from '@ant-design/icons'
-// import { useDispatch, useSelector } from "react-redux";
-function ExportServer(props){
+import { getListServerOptions } from "features/ManageRequest/slice";
+import { useDispatch, useSelector } from "react-redux";
+const { Option } = Select;
+
+function ExportServer(props){ 
+    
+    const dispatch = useDispatch()
     const [form] = Form.useForm();
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     // const fileExtension = '.xlsx';
     const [csvData, setCSVData] = useState([])
-    const fileName= SERVER_CONSTANTS.SERVER_EXPORT_FILE 
+    const [keyword, setkeyword] = useState("");
+    const fileName = SERVER_CONSTANTS.SERVER_EXPORT_FILE; 
+    // const { lstServer } = useSelector(
+    //     (state) => state.serverManagement
+    // );
+    useEffect(() => {
+        dispatch(getListServerOptions());
+      }, []);
 
+
+    // const options = lstServer.filter((value) => value.Server.includes(keyword))
+    //     .map((value, index) => {
+    //     return (
+    //         <Option value={value.Server} key={value.Server}>
+    //         {value.Server}
+    //         </Option>
+    //     );
+    // });
 
     function exportToXLSX(csvData, fileName, type)  {
         const ws = XLSX.utils.json_to_sheet(csvData);
@@ -68,6 +89,11 @@ function ExportServer(props){
         </Menu>
     );
 
+    
+    function onSearchServer(value) {
+        setkeyword(value);
+    }
+
     return (
         <Modal
             title= {"Export server list"}
@@ -88,7 +114,10 @@ function ExportServer(props){
 
                     <Form.Item label="IP Address"  style={{ display: 'inline-block', width: 'calc(25% - 16px)', margin: '0 8px' }}
                                 name='IpAddress'>
-                        <Input />
+                        {/* <Select showSearch onSearch={onSearchServer}>
+                            {options}
+                        </Select> */}
+                        <Input></Input>
                     </Form.Item>
 
                     <Form.Item label="From date" style={{ display: 'inline-block', width: 'calc(25% - 16px)', margin: '0 8px'  }} 

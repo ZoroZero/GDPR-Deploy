@@ -11,7 +11,8 @@ export const initialState = {
     pageSize: 10
   },
   total: 0,
-  refresh: false
+  refresh: false,
+  lstServer: []
 };
 
 const slice = createSlice({
