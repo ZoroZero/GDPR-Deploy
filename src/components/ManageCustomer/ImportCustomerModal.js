@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Button, Modal, Upload, message} from "antd";
 import { InboxOutlined } from '@ant-design/icons';
-import { importServerListApi } from 'api/server';
 import { setRefresh } from 'features/ManageCustomer/slice';
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { importCustomerListApi } from 'api/customer';
 import * as XLSX from 'xlsx';
 
@@ -12,10 +11,7 @@ const { Dragger } = Upload;
 function ImportCustomerModal(props){
     const [fileList, setFileList] = useState([]);
     const [importFile, setImportFile] = useState(null);
-    const [importData, setImportData] = useState([]);
     const dispatch = useDispatch();
-    const { refresh } = useSelector((state) => state.customerManagement);
-  
     // Handle upload file change
     const handleChange = info => {
       let fileList = [...info.fileList];
@@ -36,7 +32,6 @@ function ImportCustomerModal(props){
     // Handle import  
     const handleImport = () => {
         console.log(importFile)
-        var importData = []
         if(importFile){
             // Read file
             var file = importFile.originFileObj
@@ -52,7 +47,7 @@ function ImportCustomerModal(props){
                 // call 'xlsx' to read the file
                 var workbook = XLSX.read(binary, {type: 'binary', cellDates:true, cellStyles:true});
                 var sheet_name_list = workbook.SheetNames;
-                importData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]], {dateNF:'yyyy/mm/dd HH:mm:ss'});
+                var importData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]], {dateNF:'yyyy/mm/dd HH:mm:ss'});
 
                 importCustomerListApi({
                     data: importData
