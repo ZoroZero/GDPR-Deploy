@@ -7,6 +7,7 @@ import "./index.scss";
 import { checkToken } from "utils/localstorage";
 import PropTypes from "prop-types";
 import LoginPage from "features/App/pages/Login";
+import ForgotPasswordPage from "features/App/pages/ForgotPassword";
 import HomePage from "features/App/pages/Home";
 import NotFound from "components/NotFound";
 import PrivateRoute from "components/PrivateRoute";
@@ -176,7 +177,9 @@ function Router(props) {
       <BrowserRouter>
         <Switch>
           <Route exact path="/login" component={LoginPage} />
+          <Route exact path="/forgotpassword" component={ForgotPasswordPage} />
           <PrivateRoute path="/" component={App} />
+
           <Route component={NotFound} />
         </Switch>
       </BrowserRouter>

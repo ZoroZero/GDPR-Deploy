@@ -39,7 +39,7 @@ function MainMenu(props) {
       )}
       {
         <Menu.Item key="/user-setting" icon={<UserOutlined />}>
-          User Setting
+          Account Setting
           <Link to="/user-setting" />
         </Menu.Item>
       }
