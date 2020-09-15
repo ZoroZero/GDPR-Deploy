@@ -154,7 +154,7 @@ const CollectionCreateForm = ({
             },
           ]}
         >
-          <Input />
+          <Input disabled={true} />
         </Form.Item>
 
         <Form.Item

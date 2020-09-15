@@ -150,6 +150,22 @@ const UserSetting = (pros) => {
         <Input disabled={true} />
       </Form.Item>
       <Form.Item
+        name="Email"
+        label="E-mail"
+        rules={[
+          {
+            type: "email",
+            message: "The input is not valid E-mail!",
+          },
+          {
+            required: true,
+            message: "Please input your E-mail!",
+          },
+        ]}
+      >
+        <Input disabled={true} />
+      </Form.Item>
+      <Form.Item
         name="FirstName"
         label="First Name"
         rules={[
@@ -169,22 +185,6 @@ const UserSetting = (pros) => {
           {
             required: true,
             message: "Please input Lastname!",
-          },
-        ]}
-      >
-        <Input />
-      </Form.Item>
-      <Form.Item
-        name="Email"
-        label="E-mail"
-        rules={[
-          {
-            type: "email",
-            message: "The input is not valid E-mail!",
-          },
-          {
-            required: true,
-            message: "Please input your E-mail!",
           },
         ]}
       >
