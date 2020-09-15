@@ -29,12 +29,14 @@ function defineRulesFor(auth) {
     can("access", "manage-server");
     can("access", "manage-customer");
     can("approve-cancel", "request");
+    can("export", "request");
   } else if (auth === "normal-user") {
     can("access", "manage-request");
   } else if (auth === "dc-member") {
     can("access", "manage-request");
     can("access", "manage-server");
     can("approve-cancel", "request");
+    can("export", "request");
   } else if (auth === "contact-point") {
     can("access", "manage-customer");
     can("access", "manage-request");

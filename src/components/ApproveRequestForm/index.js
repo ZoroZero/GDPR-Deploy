@@ -23,22 +23,31 @@ const ApproveRequestForm = (props) => {
           <Input.TextArea
             autoSize={{ minRows: 3, maxRows: 5 }}
             placeholder="Type the description..."
+            disabled={props.IsClosed}
           />
         </Form.Item>
         <Row>
-          {!props.IsApproved ? (
+          {!props.IsApproved && !props.IsClosed ? (
             <Col span={4}>
               <Form.Item>
                 <Button type="primary" onClick={onApprove}>
-                  Approve
+                  Approve Request
+                </Button>
+              </Form.Item>
+            </Col>
+          ) : !props.IsClosed ? (
+            <Col span={4}>
+              <Form.Item>
+                <Button type="danger" onClick={onCancel}>
+                  Cancel Request
                 </Button>
               </Form.Item>
             </Col>
           ) : (
             <Col span={4}>
               <Form.Item>
-                <Button type="danger" onClick={onCancel}>
-                  Cancel
+                <Button type="ghost" disabled>
+                  Closed
                 </Button>
               </Form.Item>
             </Col>
