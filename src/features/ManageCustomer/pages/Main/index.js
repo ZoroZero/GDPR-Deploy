@@ -348,11 +348,10 @@ function MainPage() {
 
 export default MainPage;
 /*TODO:
-- manage server
-- upload file
 - check multi customer
 - log / detail
 - constraint time select
-- AFFIX name column
+- delete customer -> delete customerserver
+
 
 */
