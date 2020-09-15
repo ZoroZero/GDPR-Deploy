@@ -27,7 +27,7 @@ import {
 } from "features/ManageCustomer/slice";
 import { useDispatch, useSelector } from "react-redux";
 import ExportCustomerModal from "components/ManageCustomer/ExportCustomerModal";
-
+import ImportCustomerModal from "components/ManageCustomer/ImportCustomerModal";
 MainPage.propTypes = {};
 const { confirm } = Modal;
 const { Search } = Input;
@@ -60,6 +60,7 @@ function MainPage() {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [dataManage, setDataManage] = useState({ Id: "" });
   const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
   const searchBox = useRef(null);
   const pageOptions = [10, 20, 50, 100];
 
@@ -255,6 +256,12 @@ function MainPage() {
     <div>
       <Row>
         <Col span={8}>
+          <div>
+            <Button className="action-button" onClick={() => setImporting(exporting => !exporting)}>Import customer list</Button>
+            <ImportCustomerModal visible={importing} setVisible={setImporting}></ImportCustomerModal>
+          </div>
+
+
           <div>
             <Button onClick={() => setExporting(exporting => !exporting)} style={{marginBottom: '20px'}}>Export customer list</Button>
             <ExportCustomerModal id='export-server' className='export-server' visible={exporting} setVisible={setExporting}></ExportCustomerModal>

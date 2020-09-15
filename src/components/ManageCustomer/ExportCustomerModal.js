@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input, DatePicker, Button, Modal,  Menu, Dropdown, message, Select, Checkbox } from "antd";
 import { DownOutlined } from '@ant-design/icons';
 import * as FileSaver from 'file-saver';
@@ -6,30 +6,57 @@ import * as XLSX from 'xlsx';
 import { SERVER_CONSTANTS } from 'constants/ManageServer/server';
 import { VerticalAlignBottomOutlined } from '@ant-design/icons'
 import { exportCustomerListApi } from 'api/customer';
+import { useSelector, useDispatch } from "react-redux";
+import { getContactPointList } from "features/ManageCustomer/slice";
+import { GLOBAL_CONSTANTS } from 'constants/global';
 // import { useDispatch, useSelector } from "react-redux";
+
+const { Option } = Select;
+
 function ExportCustomerModal(props){
     const [form] = Form.useForm();
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     // const fileExtension = '.xlsx';
-    const [csvData, setCSVData] = useState([])
-    const fileName= SERVER_CONSTANTS.SERVER_EXPORT_FILE 
+    const [csvData, setCSVData] = useState(null)
+    const fileName= GLOBAL_CONSTANTS.CUSTOMER_EXPORT_FILE 
+    const dispatch = useDispatch();
+    const { contactPoints } = useSelector(
+        (state) => state.customerManagement
+    );
 
+    useEffect(() => {
+        if (props.visible) {
+          form.setFieldsValue({
+            Name: "",
+            ContractBeginDate: null,
+            ContractEndDate: null,
+            Status: ['1']
+          });
+          dispatch(getContactPointList());
+        }
+      }, [props.visible]);
 
     function exportToXLSX(csvData, fileName, type)  {
-        const ws = XLSX.utils.json_to_sheet(csvData);
-        const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
-        const excelBuffer = XLSX.write(wb, { bookType: type, type: 'array' });
-        const data = new Blob([excelBuffer], {type: fileType});
-        FileSaver.saveAs(data, fileName + '.' + type);
+        if(csvData){
+            const ws = XLSX.utils.json_to_sheet(csvData);
+            const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+            const excelBuffer = XLSX.write(wb, { bookType: type, type: 'array' });
+            const data = new Blob([excelBuffer], {type: fileType});
+            FileSaver.saveAs(data, fileName + '.' + type);
+        }
     }
 
     function onFinish(values) {
         console.log(values);
         // props.setLoading(true);
+        if(values.Status.length === 0){
+            message.error("Please select a status")
+            return
+        }
         return exportCustomerListApi(
             {
                 customerName: values.Name,
-                contactPointEmail: values.ContactPoint,
+                contactPoint: values.ContactPoint,
                 startDate: values.StartDate? values.StartDate.format("YYYY-MM-DD hh:mm:ss"): undefined,
                 endDate: values.EndDate? values.EndDate.format("YYYY-MM-DD hh:mm:ss"): undefined,
                 status: values.Status.join(',')
@@ -84,7 +111,7 @@ function ExportCustomerModal(props){
             title= {"Export server list"}
             centered     
             visible={props.visible}
-            onCancel={()=>{props.setVisible(false);}}
+            onCancel={()=>{props.setVisible(false); setCSVData(null)}}
             okButtonProps={{ style: { display: 'none' } }}
             cancelButtonProps={{ style: { display: 'none' } }}
             forceRender={true} 
@@ -99,7 +126,21 @@ function ExportCustomerModal(props){
 
                     <Form.Item label="Contact point"  style={{ display: 'inline-block', width: 'calc(50% - 16px)', margin: '0 8px' }}
                         name='ContactPoint'>
-                        <Input />
+                         <Select
+                            showSearch
+                            placeholder="Select a contact point"
+                            optionFilterProp="children"
+                            filterOption={(input, option) =>
+                            option.children
+                                .toString()
+                                .toLowerCase()
+                                .indexOf(input.toLowerCase()) >= 1
+                            }>
+                            {contactPoints.length > 0 &&
+                            contactPoints.map((item) => (
+                                <Option key={item.Id}> {item.Email} </Option>
+                            ))}
+                        </Select>
                     </Form.Item>
                 </Form.Item> 
 
@@ -117,7 +158,7 @@ function ExportCustomerModal(props){
 
                 <Form.Item label="Status" style={{ display: 'inline-block', margin: '0px 8px 8px 8px' }}
                                 name='Status'>
-                        <Checkbox.Group options={statusOptions} defaultValue={['Active']} onChange={onChange}/>
+                        <Checkbox.Group options={statusOptions} defaultValue={['1']} onChange={onChange}/>
                 </Form.Item>
                 
                 <Form.Item>

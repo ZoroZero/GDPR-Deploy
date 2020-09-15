@@ -132,7 +132,7 @@ export const exportCustomerListApi = (data) => {
           .get(`/customers/export`, {
               params: {
                 CustomerName: data.customerName,
-                ContactPointEmail: data.contactPointEmail,
+                ContactPoint: data.contactPoint,
                 ContractBeginDate: data.startDate,
                 ContractEndDate: data.endDate,
                 IsActive: data.status
@@ -145,4 +145,21 @@ export const exportCustomerListApi = (data) => {
             reject(error);
           });
       });
+}
+
+export const importCustomerListApi = ( data ) => {
+    console.log('Data for import', data);
+    
+    return new Promise((resolve, reject) => {
+        return axios
+        .post(`/customers/import`, {
+            CustomerList: data.data
+        })
+        .then((res) => {
+            resolve(res.data);
+        })
+        .catch((error) => {
+            reject(error);
+        });
+    }); 
 }
