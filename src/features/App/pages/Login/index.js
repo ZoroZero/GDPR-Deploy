@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button, message, Checkbox, Row, Col } from "antd";
 import "./index.scss";
 import PropTypes from "prop-types";
 import { onLogin } from "features/App/slice";
@@ -62,9 +62,24 @@ function LoginPage(props) {
             <Input.Password />
           </Form.Item>
           <Form.Item {...tailLayout}>
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
+            <Row>
+              <Col span={8}>
+                <Button type="primary" htmlType="submit">
+                  Submit
+                </Button>
+              </Col>
+              <Col span={8}></Col>
+              <Col span={8}>
+                <Button
+                  className="login-form-forgot"
+                  onClick={() => {
+                    history.push("/forgotpassword");
+                  }}
+                >
+                  Forgot password
+                </Button>
+              </Col>
+            </Row>
           </Form.Item>
         </Form>
       </div>
