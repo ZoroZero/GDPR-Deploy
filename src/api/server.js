@@ -139,16 +139,11 @@ export const exportServerListApi = (data) => {
 
 export const importServerListApi = (data) => {
   console.log(data);
-  const formData = new FormData();
-  formData.append('file', data.file);
-  const config= {
-    "headers": {
-      "content-type": 'multipart/form-data; boundary=----WebKitFormBoundaryqTqJIxvkWFYqvP5s'
-    }
-  }
   return new Promise((resolve, reject) => {
     return axios
-      .post(`/api/servers/import`, formData, config)
+      .post(`/api/servers/import`, {
+        listServer : data.data
+      })
       .then((res) => {
         resolve(res.data);
       })

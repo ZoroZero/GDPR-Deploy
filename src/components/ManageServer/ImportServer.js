@@ -2,9 +2,14 @@ import React, { useState } from 'react';
 import { Button, Modal, Upload, message} from "antd";
 import { InboxOutlined } from '@ant-design/icons';
 import { importServerListApi } from 'api/server';
+import * as XLSX from 'xlsx';
+import { setRefresh } from 'features/ManageServer/slice';
+import { useDispatch } from 'react-redux';
+
 const { Dragger } = Upload;
 
 function ImportServer(props){
+    const dispatch = useDispatch()
     const [fileList, setFileList] = useState([]);
     const [importFile, setImportFile] = useState(null);
 
@@ -29,20 +34,38 @@ function ImportServer(props){
     const handleImport = () => {
         console.log(importFile)
         if(importFile){
-          return importServerListApi(
-            {
-                file: importFile.originFileObj
-            })
-          .then((res) => {
-              console.log(res)
-              message.success("Successfully import server list")
-              props.setRefreshPage(true)
-          }).catch((err) => {
-            console.log("Import error", err)
-            message.error("Something went wrong. Please check your file again")
-          });
+          var file = importFile.originFileObj
+            var fileReader = new FileReader();
+            fileReader.onload = function (e) {
+                // pre-process data
+                var binary = "";
+                var bytes = new Uint8Array(e.target.result);
+                var length = bytes.byteLength;
+                for (var i = 0; i < length; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                // call 'xlsx' to read the file
+                var workbook = XLSX.read(binary, {type: 'binary', cellDates:true, cellStyles:true});
+                var sheet_name_list = workbook.SheetNames;
+                var importData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]], {dateNF:'yyyy/mm/dd HH:mm:ss'});
+
+                importServerListApi({
+                    data: importData
+                })
+                .then((res) => {
+                    console.log('Import customer res',res)
+                    message.success("Successfully import server list")
+                    dispatch(setRefresh())
+                }).catch((err) => {
+                    console.log("Import error", err)
+                    message.error("Something went wrong. Please check your file again")
+                });
+            };
+            fileReader.readAsArrayBuffer(file);
         }
-        message.error(`No file chosen`);
+        else{
+          message.error(`No file chosen`);
+        }
     }
 
     return (

@@ -10,7 +10,8 @@ export const initialState = {
     page: 1,
     pageSize: 10
   },
-  total: 0
+  total: 0,
+  refresh: false
 };
 
 const slice = createSlice({
@@ -37,8 +38,12 @@ const slice = createSlice({
     setTotal:  (state, action) => {
       state.total = action.payload.total;
     },
+
+    setRefresh: (state, action) => {
+      state.refresh = action.payload
+    }
   },
 });
 
-export const { setFilter, setSort, setData, setPagination, setTotal } = slice.actions;
+export const { setFilter, setSort, setData, setPagination, setTotal, setRefresh } = slice.actions;
 export default slice.reducer;

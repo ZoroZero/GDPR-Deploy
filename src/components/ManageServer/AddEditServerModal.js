@@ -4,9 +4,12 @@ import { createServerApi, updateServerApi } from 'api/server';
 import { SERVER_CONSTANTS } from "constants/ManageServer/server";
 import { GLOBAL_CONSTANTS } from 'constants/global'
 import moment from 'moment';
+import { useDispatch } from "react-redux";
+import { setRefresh } from 'features/ManageServer/slice';
+
 
 function AddEditServerModal(props) {
-
+    const dispatch = useDispatch()
     const [form] = Form.useForm();
     const [title, setTitle] = useState('Create new server');
     const [active, setActive] = useState(true);
@@ -57,7 +60,7 @@ function AddEditServerModal(props) {
                     // openNotification(`Sucessfully add new server at ${res.createAt}`)
                     props.setModalVisible(false)
                     form.resetFields()
-                    props.setRefreshPage(true);
+                    dispatch(setRefresh());
                 })
                 .catch((err) => {
                     console.log("Add error", err); 
@@ -84,27 +87,14 @@ function AddEditServerModal(props) {
                 message.success("Successfully update server information")
                 props.setModalVisible(false)
                 form.resetFields();
-                props.setRefreshPage(true);
+                dispatch(setRefresh());
             })
             .catch((err) => {
                 console.log("Update error", err); 
                 message.error("Something went wrong")
             })
-            // .finally(() => {
-            //     props.setRefreshPage(true);
-            // }) 
         }
     };
-
-    // const openNotification = (message) => {
-    //     notification.open({
-    //       message: message,
-    //       description: null,
-    //       onClick: () => {
-    //         console.log('Notification Clicked!');
-    //       },
-    //     });
-    // };
     
     return (    
         <Modal

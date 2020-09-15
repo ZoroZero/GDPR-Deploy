@@ -4,7 +4,7 @@ import { Table, Pagination, Input, Button, Modal, Tag, Upload, Icon, message } f
 import "./index.scss";
 import { getServersApi, deleteServerApi, updateMultipleStatusApi } from "api/server";
 import { useDispatch, useSelector } from "react-redux";
-import { setSort, setData, setPagination, setTotal } from "features/ManageServer/slice";
+import { setSort, setData, setPagination, setTotal, setRefresh } from "features/ManageServer/slice";
 import AddEditServerModal from "components/ManageServer/AddEditServerModal"; 
 import { SERVER_CONSTANTS } from 'constants/ManageServer/server';
 import { ExclamationCircleOutlined } from "@ant-design/icons";
@@ -20,7 +20,7 @@ const { confirm } = Modal;
 function MainPage() {
     const dispatch = useDispatch()
 
-    const {sortColumn, sortOrder, data, pagination, total} = useSelector((state) => state.serverManagement)
+    const {sortColumn, sortOrder, data, pagination, total, refresh} = useSelector((state) => state.serverManagement)
     // const [data, setData] = useState([]);
 
     const [loading, setLoading] = useState(false);
@@ -34,10 +34,10 @@ function MainPage() {
     const [exporting, setExporting] = useState(false);
     const [importing, setImporting] = useState(false);
     const [editRequest, setEditRequest] = useState(null);
-    const [refresh, setRefresh] = useState(true);
-    const setRefreshPage = useCallback(() => {
-        setRefresh(refresh => !refresh);
-    }, []);
+    // const [refresh, setRefresh] = useState(true);
+    // const dispatch(setRefresh()) = useCallback(() => {
+    //     setRefresh(refresh => !refresh);
+    // }, []);
     const [checkingRows, setCheckingRows] = useState([])
     
 
@@ -193,7 +193,7 @@ function MainPage() {
         return deleteServerApi({id: id})
         .then((res) => {
             console.log("Delete response", res)
-            setRefreshPage();
+            dispatch(setRefresh());
         })
         .catch(() => console.log("Oops errors!"));    
     }
@@ -239,7 +239,7 @@ function MainPage() {
             console.log("Multiple update", res);
             message.success('Successfully change status of servers')
             setCheckingRows([])
-            setRefreshPage();
+            dispatch(setRefresh())();
         })
         .catch(err =>{
             console.log("Activate all err", err);
@@ -251,7 +251,7 @@ function MainPage() {
         <React.Fragment>
             <div>
                 <Button className="action-button" onClick={toggleImport}>Import server list</Button>
-                <ImportServer visible={importing} setVisible={setImporting} setRefreshPage={setRefreshPage}></ImportServer>
+                <ImportServer visible={importing} setVisible={setImporting}></ImportServer>
             </div>
 
             <div>
@@ -264,10 +264,16 @@ function MainPage() {
             </Button>
 
             <AddEditServerModal request={editRequest} modalVisible={modalVisible} 
-            setModalVisible={setModalVisible} setEditRequest={setEditRequest} setRefreshPage={setRefreshPage}></AddEditServerModal>
+            setModalVisible={setModalVisible} setEditRequest={setEditRequest}>
+            </AddEditServerModal>
 
-            <Button disabled={checkingRows.length===0} type="primary" style={{margin: '0px 4px 0px 8px'}} onClick={()=>{handleSetStatus(true)}} >Activate all</Button>
-            <Button disabled={checkingRows.length===0} type="primary" style={{ margin: '0px 4px 0px 4px'}}  onClick={()=>{handleSetStatus(false)}} >Deactivate all</Button>
+            <Button disabled={checkingRows.length===0} type="primary" style={{margin: '0px 4px 0px 8px'}} onClick={()=>{handleSetStatus(true)}}>
+                Activate all
+            </Button>
+            <Button disabled={checkingRows.length===0} type="primary" style={{ margin: '0px 4px 0px 4px'}}  onClick={()=>{handleSetStatus(false)}}>
+                Deactivate all
+            </Button>
+
             <Search className="search-bar"
                 placeholder="Input search text"
                 enterButton="Search"
