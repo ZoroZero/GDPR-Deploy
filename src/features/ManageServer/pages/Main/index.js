@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { Table, Pagination, Input, Button, Modal, Tag, Upload, Icon, message } from "antd";
+import React, { useEffect, useState } from "react";
+import { Table, Pagination, Input, Button, Modal, Tag, Menu, Dropdown, message, Row, Col } from "antd";
 // import { UploadOutlined } from '@ant-design/icons';
 import "./index.scss";
 import { getServersApi, deleteServerApi, updateMultipleStatusApi } from "api/server";
@@ -10,6 +10,7 @@ import { SERVER_CONSTANTS } from 'constants/ManageServer/server';
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import ExportServer from 'components/ManageServer/ExportServer';
 import ImportServer from "components/ManageServer/ImportServer";
+import { DownOutlined } from '@ant-design/icons'
 
 MainPage.propTypes = {};
 
@@ -20,7 +21,7 @@ const { confirm } = Modal;
 function MainPage() {
     const dispatch = useDispatch()
 
-    const {sortColumn, sortOrder, data, pagination, total, refresh} = useSelector((state) => state.serverManagement)
+    const { sortColumn, sortOrder, data, pagination, total, refresh} = useSelector((state) => state.serverManagement)
     // const [data, setData] = useState([]);
 
     const [loading, setLoading] = useState(false);
@@ -34,12 +35,8 @@ function MainPage() {
     const [exporting, setExporting] = useState(false);
     const [importing, setImporting] = useState(false);
     const [editRequest, setEditRequest] = useState(null);
-    // const [refresh, setRefresh] = useState(true);
-    // const dispatch(setRefresh()) = useCallback(() => {
-    //     setRefresh(refresh => !refresh);
-    // }, []);
     const [checkingRows, setCheckingRows] = useState([])
-    
+    const [selectingServerIdList, setSelectingServerIdList] = useState([]);
 
     useEffect(() => {
         fetch(pagination, sortColumn, sortOrder, searchKeyword, filter);
@@ -193,7 +190,7 @@ function MainPage() {
         return deleteServerApi({id: id})
         .then((res) => {
             console.log("Delete response", res)
-            dispatch(setRefresh());
+            dispatch(setRefresh(!refresh));
         })
         .catch(() => console.log("Oops errors!"));    
     }
@@ -214,6 +211,7 @@ function MainPage() {
         onChange: (selectedRowKeys, selectedRows) => {
             console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
             setCheckingRows(selectedRows);
+            setSelectingServerIdList(selectedRowKeys)
         },
         onSelect: (record, selected, selectedRows) => {
             // console.log(record, selected, selectedRows);
@@ -223,7 +221,6 @@ function MainPage() {
         },
     };
 
-
     // Show total record
     const showTotal = (total) => {
         return `Total ${total} items`;
@@ -232,20 +229,62 @@ function MainPage() {
     // Handle set status of checking rows
     const handleSetStatus = (status) => {
         return updateMultipleStatusApi({
-            listServer: checkingRows,
+            listServer: selectingServerIdList.join(','),
             status: status
         })
         .then(res => {
             console.log("Multiple update", res);
             message.success('Successfully change status of servers')
-            setCheckingRows([])
-            dispatch(setRefresh())();
+            dispatch(setRefresh(!refresh));
         })
         .catch(err =>{
             console.log("Activate all err", err);
             message.error('Something went wrong')
         })
     }
+
+    // Handle delete of checking rows
+    const handleDeleteMultipleServer = () => {
+        // return deleteServerApi({
+        //     listServer: checkingRows,
+        //     status: status
+        // })
+        // .then(res => {
+        //     console.log("Multiple update", res);
+        //     message.success('Successfully change status of servers')
+        //     dispatch(setRefresh());
+        // })
+        // .catch(err =>{
+        //     console.log("Activate all err", err);
+        //     message.error('Something went wrong')
+        // })
+    } 
+
+    // Handle action menu onClick
+    const handleMenuClick = (e) => {
+        console.log(e);
+        if(e.key === 'delete'){
+            handleDeleteMultipleServer()
+        }
+        else{
+            handleSetStatus(e.key ==='activate')
+        }
+    }
+
+    // Menu of action button
+    const actionMenu = (
+        <Menu onClick={handleMenuClick}>
+            <Menu.Item key="activate">
+                Activate all
+            </Menu.Item>
+            <Menu.Item key="deactivate">
+                Deactivate all
+            </Menu.Item>
+            <Menu.Item key="delete">
+                Delete all
+            </Menu.Item>
+        </Menu>
+    );
 
     return (
         <React.Fragment>
@@ -267,12 +306,18 @@ function MainPage() {
             setModalVisible={setModalVisible} setEditRequest={setEditRequest}>
             </AddEditServerModal>
 
-            <Button disabled={checkingRows.length===0} type="primary" style={{margin: '0px 4px 0px 8px'}} onClick={()=>{handleSetStatus(true)}}>
+            {/* <Button disabled={checkingRows.length===0} type="primary" style={{margin: '0px 4px 0px 8px'}} onClick={()=>{handleSetStatus(true)}}>
                 Activate all
             </Button>
             <Button disabled={checkingRows.length===0} type="primary" style={{ margin: '0px 4px 0px 4px'}}  onClick={()=>{handleSetStatus(false)}}>
                 Deactivate all
-            </Button>
+            </Button> */}
+
+            <Dropdown overlay={actionMenu} disabled={checkingRows.length===0} style={{margin: '0px 10px 0px 10px'}}>
+                        <Button>
+                            Action <DownOutlined />
+                        </Button>
+            </Dropdown>
 
             <Search className="search-bar"
                 placeholder="Input search text"
@@ -288,15 +333,18 @@ function MainPage() {
                 pagination={false}
                 loading={loading}
                 onChange={handleTableChange}/>
-
-            <Pagination
-                showQuickJumper 
-                total={total}
-                current ={pagination.page}
-                pageSize={pagination.pageSize}
-                onChange = {handlePageChange}
-                showTotal={showTotal}
-                style={{margin:'8px 8px'}}/>
+            <Row>
+                <Col span={12} offset={6}>
+                    <Pagination
+                        showQuickJumper 
+                        total={total}
+                        current ={pagination.page}
+                        pageSize={pagination.pageSize}
+                        onChange = {handlePageChange}
+                        showTotal={showTotal}
+                        style={{margin:'8px 8px'}}/>
+                </Col>
+            </Row>
         </React.Fragment>
     );
 }

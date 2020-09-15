@@ -71,6 +71,8 @@ const RequestForm = (props) => {
         </Option>
       );
     });
+
+  const disable = props.disable && props.type !== "new";
   return (
     <>
       <Form
@@ -91,7 +93,7 @@ const RequestForm = (props) => {
                 },
               ]}
             >
-              <Input />
+              <Input disabled={disable} />
             </Form.Item>
           </Col>
         </Row>
@@ -107,7 +109,7 @@ const RequestForm = (props) => {
                 },
               ]}
             >
-              <DatePicker showTime />
+              <DatePicker showTime disabled={disable} />
             </Form.Item>
           </Col>
         </Row>
@@ -124,7 +126,7 @@ const RequestForm = (props) => {
                 },
               ]}
             >
-              <DatePicker showTime />
+              <DatePicker showTime disabled={disable} />
             </Form.Item>
           </Col>
         </Row>
@@ -140,7 +142,7 @@ const RequestForm = (props) => {
                 },
               ]}
             >
-              <Select showSearch onSearch={onSearchServer}>
+              <Select showSearch onSearch={onSearchServer} disabled={disable}>
                 {options}
               </Select>
             </Form.Item>
@@ -149,13 +151,16 @@ const RequestForm = (props) => {
         <Row gutter={[16, 16]}>
           <Col span={24}>
             <Form.Item name="description" label="Description">
-              <Input.TextArea autoSize={{ minRows: 3, maxRows: 5 }} />
+              <Input.TextArea
+                autoSize={{ minRows: 3, maxRows: 5 }}
+                disabled={disable}
+              />
             </Form.Item>
           </Col>
         </Row>
         <Row gutter={[16, 16]} justify="center">
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" disabled={disable}>
               Submit
             </Button>
           </Form.Item>

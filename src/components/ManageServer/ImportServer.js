@@ -4,7 +4,7 @@ import { InboxOutlined } from '@ant-design/icons';
 import { importServerListApi } from 'api/server';
 import * as XLSX from 'xlsx';
 import { setRefresh } from 'features/ManageServer/slice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const { Dragger } = Upload;
 
@@ -12,7 +12,7 @@ function ImportServer(props){
     const dispatch = useDispatch()
     const [fileList, setFileList] = useState([]);
     const [importFile, setImportFile] = useState(null);
-
+    const {refresh} = useSelector((state) => state.serverManagement)
     // Handle upload file change
     const handleChange = info => {
       let fileList = [...info.fileList];
@@ -55,7 +55,8 @@ function ImportServer(props){
                 .then((res) => {
                     console.log('Import customer res',res)
                     message.success("Successfully import server list")
-                    dispatch(setRefresh())
+                    dispatch(setRefresh(!refresh))
+                    props.setVisible(false)
                 }).catch((err) => {
                     console.log("Import error", err)
                     message.error("Something went wrong. Please check your file again")

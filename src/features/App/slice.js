@@ -16,6 +16,7 @@ const initialState = {
   role: null,
   token: null,
   loading: false,
+  userId: null,
 };
 
 const slice = createSlice({
@@ -25,6 +26,7 @@ const slice = createSlice({
     login(state, action) {
       state.token = action.payload.access_token;
       state.role = action.payload.role;
+      state.userId = action.payload.userId;
     },
     logout(state, action) {
       state.token = null;
@@ -54,10 +56,11 @@ export const onLogin = (username, password) => (dispatch) => {
     dispatch(loading());
     return loginApi(username, password)
       .then((res) => {
-        const { access_token, role } = res;
-        dispatch(login({ access_token, role }));
+        const { access_token, role, userId } = res;
+        dispatch(login({ access_token, role, userId }));
         setAccessToken(access_token);
         setLocalStorageItem("role", role);
+        setLocalStorageItem("userId", userId);
         resolve();
       })
       .catch((error) => {

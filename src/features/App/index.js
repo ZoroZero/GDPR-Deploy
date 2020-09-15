@@ -16,6 +16,7 @@ import { getStore } from "store";
 import { login, onLogout } from "./slice";
 import { AbilityContext } from "permission/can";
 import { useAbility } from "@casl/react";
+import { VerifyAcc } from "./pages/VerifyScreen";
 
 const store = getStore();
 const { Header, Content, Sider } = Layout;
@@ -79,7 +80,8 @@ function App(props) {
   useEffect(() => {
     const token = checkToken();
     const role = localStorage.getItem("role");
-    if (token) dispatch(login({ token: token, role: role }));
+    const userId = localStorage.getItem("userId");
+    if (token) dispatch(login({ token: token, role: role, userId: userId }));
   });
 
   const handleLogout = () => {
@@ -129,7 +131,6 @@ function App(props) {
                 minHeight: 280,
               }}
             >
-              {loading && <Loading />}
               <Switch>
                 {ability.can("access", "manage-user") && (
                   <PrivateRoute
@@ -176,6 +177,7 @@ function Router(props) {
       <BrowserRouter>
         <Switch>
           <Route exact path="/login" component={LoginPage} />
+          <Route path="/confirm/:verifyToken" component={VerifyAcc} />
           <PrivateRoute path="/" component={App} />
           <Route component={NotFound} />
         </Switch>
