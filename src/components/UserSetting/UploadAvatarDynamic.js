@@ -16,14 +16,17 @@ const UploadAvatarDynamic = (pross) => {
     //   url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
     // },
   ]);
-
+  // const sleep = (milliseconds) => {
+  //   return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  // };
   useEffect(() => {
     const tokens = checkToken();
     setToken(tokens);
+    // await sleep(500);
     pross.onsub();
   }, []);
   const onChange = ({ fileList: newFileList }) => {
-    // setFileList(newFileList);
+    setFileList(newFileList);
     console.log(`Bearer ${token}`);
     pross.onsub();
   };
