@@ -20,6 +20,7 @@ const UploadAvatarDynamic = (pross) => {
   useEffect(() => {
     const tokens = checkToken();
     setToken(tokens);
+    pross.onsub();
   }, []);
   const onChange = ({ fileList: newFileList }) => {
     // setFileList(newFileList);
