@@ -14,6 +14,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateAccountApi } from "../../api/user";
 import UploadAvatarDynamic from "../../components/UserSetting/UploadAvatarDynamic.js";
+import UploadonClick from "../../components/UserSetting/UploadonClick.js";
 const formItemLayout = {
   labelCol: {
     span: 6,
@@ -123,6 +124,7 @@ const UserSetting = (pros) => {
           </Col>
           <Col span={8}>
             <UploadAvatarDynamic onsub={pros.onSubmitModal} />
+            {/* <UploadonClick /> */}
           </Col>
 
           {/* <Upload name="logo" action="/upload.do" listType="picture">
