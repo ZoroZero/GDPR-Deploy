@@ -19,7 +19,7 @@ export const getCustomerApi = (data) => {
   return new Promise((resolve, reject) => {
     const token = checkToken();
     return axios
-      .get(String(process.env.REACT_APP_BASE_URL) + "/customers", {
+      .get("/customers", {
         params: data,
       })
       .then((res) => {
@@ -35,7 +35,7 @@ export const createCustomerApi = (data) => {
   return new Promise((resolve, reject) => {
     const token = checkToken();
     return axios
-      .post(String(process.env.REACT_APP_BASE_URL) + "/customers", data)
+      .post("/customers", data)
       .then((res) => {
         resolve(res.data);
       })
@@ -49,7 +49,7 @@ export const getContactPointsApi = () => {
   return new Promise((resolve, reject) => {
     const token = checkToken();
     return axios
-      .get(String(process.env.REACT_APP_BASE_URL) + "/customers/contactPoints")
+      .get("/customers/contactPoints")
       .then((res) => {
         resolve(res.data);
       })
@@ -63,7 +63,7 @@ export const deleteCustomerApi = (data) => {
   return new Promise((resolve, reject) => {
     const token = checkToken();
     return axios
-      .delete(String(process.env.REACT_APP_BASE_URL) + "/customers", {
+      .delete("/customers", {
         params: data,
       })
       .then((res) => {
@@ -80,7 +80,7 @@ export const updateCustomerApi = (newData, id) => {
     const token = checkToken();
     return axios
       .put(
-        String(process.env.REACT_APP_BASE_URL) + "/customers" + `?Id=${id}`,
+        "/customers" + `?Id=${id}`,
         newData
       )
       .then((res) => {
@@ -92,13 +92,13 @@ export const updateCustomerApi = (newData, id) => {
   });
 };
 
-export const getServersCustomerApi = (id) => {
+export const getServersCustomerApi = (id, keyword) => {
   return new Promise((resolve, reject) => {
     console.log(id);
     const token = checkToken();
     return axios
-      .get(String(process.env.REACT_APP_BASE_URL) + "/customers/servers", {
-        params: { Id: id },
+      .get("/customers/servers", {
+        params: { Id: id, keyword: keyword },
       })
       .then((res) => {
         resolve(res.data);
@@ -109,15 +109,13 @@ export const getServersCustomerApi = (id) => {
   });
 };
 
-export const getOtherServersApi = (option, id, page) => {
+export const getOtherServersApi = (option, id, page, keyword) => {
   return new Promise((resolve, reject) => {
-    console.log(page);
-    console.log("option", option);
     const token = checkToken();
     return axios
       .get(
-        String(process.env.REACT_APP_BASE_URL) + "/customers/other-servers",
-        { params: { ...option, id: id, page: page } }
+        "/customers/other-servers",
+        { params: { ...option, id: id, page: page, keyword: keyword } }
       )
       .then((res) => {
         resolve(res.data);
@@ -127,3 +125,41 @@ export const getOtherServersApi = (option, id, page) => {
       });
   });
 };
+
+export const deleteServersOfCustomerApi = (deletedServers, customerId) => {
+
+  return new Promise((resolve, reject) => {
+    const token = checkToken();
+    return axios
+      .put(
+        "/customers/servers" + `?Id=${customerId}`,
+        { params: { DeletedServers: deletedServers } }
+      )
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+
+export const addServersForCustomerApi = (addedServers, customerId) => {
+
+  return new Promise((resolve, reject) => {
+    const token = checkToken();
+    return axios
+      .post(
+        "/customers/servers" + `?Id=${customerId}`,
+        { params: { AddedServers: addedServers } }
+      )
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+

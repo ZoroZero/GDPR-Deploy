@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   Table,
@@ -60,7 +60,6 @@ function MainPage() {
   });
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [dataManage, setDataManage] = useState({ Id: "" });
-  const searchBox = useRef(null);
   const pageOptions = [10, 20, 50, 100];
 
   const columns = [
@@ -221,12 +220,11 @@ function MainPage() {
         deleteCustomerApi({ Id: id });
         dispatch(setRefresh(!refresh));
       },
-      onCancel() {},
+      onCancel() { },
     });
   }
 
   async function handleSearchChange(newKeyword) {
-    searchBox.current.state.value = "";
     (await newKeyword)
       ? dispatch(setSearch(newKeyword))
       : dispatch(setSearch(""));
@@ -301,8 +299,7 @@ function MainPage() {
             onSearch={(value) => {
               handleSearchChange(value);
             }}
-            ref={searchBox}
-            autoFocus
+            autoFocus={true}
           />
         </Col>
       </Row>
@@ -326,7 +323,7 @@ function MainPage() {
         pagination={false}
         onChange={handleSortChange}
         rowSelection={rowSelection}
-        // checkbox
+      // checkbox
       />
       <br />
       <Row>
