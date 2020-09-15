@@ -121,7 +121,7 @@ export const acdeacListUsersApi = (data) => {
   console.log("data list", data);
   return new Promise((resolve, reject) => {
     return axios
-      .put(`/api/users/acdeac`, { ...data })
+      .put(`/api/users`, { ...data })
       .then((res) => {
         resolve(res);
       })
