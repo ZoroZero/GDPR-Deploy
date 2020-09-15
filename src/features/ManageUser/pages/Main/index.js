@@ -10,12 +10,18 @@ import {
   Pagination,
   Tag,
   message,
+  Menu,
+  Dropdown,
 } from "antd";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
+import {
+  ExclamationCircleOutlined,
+  UserOutlined,
+  DownOutlined,
+} from "@ant-design/icons";
 import "./index.scss";
 import CreateUserModal from "../../../../components/ManageUser/CreateUserModal.js";
 import UpdateUserModal from "../../../../components/ManageUser/UpdateUserModal.js";
-import { getUsersApi, deleteUsersApi } from "api/user";
+import { getUsersApi, deleteUsersApi, acdeacListUsersApi } from "api/user";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setSearchKey,
@@ -128,6 +134,33 @@ function MainPage() {
       ),
     },
   ];
+
+  async function handleMenuClick(e) {
+    message.info("Click on menu item.");
+    console.log("click", e);
+    if (e.key == "active") {
+      console.log("active list iefasdf");
+      await acdeacListUsersApi({ listid: exportData.join(","), isactive: 1 });
+      refetch();
+    } else if (e.key == "deactive") {
+      console.log("deactive list iefasdf");
+      await acdeacListUsersApi({ listid: exportData.join(","), isactive: 0 });
+      refetch();
+    }
+  }
+  const menu = (
+    <Menu onClick={handleMenuClick}>
+      <Menu.Item key="active" icon={<UserOutlined />}>
+        Active all selected items
+      </Menu.Item>
+      <Menu.Item key="deactive" icon={<UserOutlined />}>
+        Deactive all selected items
+      </Menu.Item>
+      {/* <Menu.Item key="3" icon={<UserOutlined />}>
+        3rd menu item
+      </Menu.Item> */}
+    </Menu>
+  );
 
   const dispatch = useDispatch();
   const [exportData, setExportData] = useState([]);
@@ -300,14 +333,19 @@ function MainPage() {
     <div>
       <Row>
         <Col span={8}>
-          <Button
+          {/* <Button
             type="primary"
             // onClick={this.start}
             disabled={!hasSelected}
             // loading={loading}
           >
             DeActive Selected User
-          </Button>
+          </Button> */}
+          <Dropdown overlay={menu} disabled={!hasSelected}>
+            <Button>
+              Multi actions <DownOutlined />
+            </Button>
+          </Dropdown>
         </Col>
         <Col span={8}>
           <CreateUserModal onSubmitModal={refetch} />

@@ -116,3 +116,17 @@ export const forgotPasswordApi = (email) => {
       });
   });
 };
+
+export const acdeacListUsersApi = (data) => {
+  console.log("data list", data);
+  return new Promise((resolve, reject) => {
+    return axios
+      .put(`/api/users/acdeac`, { ...data })
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error.response);
+      });
+  });
+};
