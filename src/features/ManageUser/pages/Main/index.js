@@ -130,8 +130,10 @@ function MainPage() {
   ];
 
   const dispatch = useDispatch();
+  const [exportData, setExportData] = useState([]);
   const [data, setData] = useState([]);
   const [total, setTotal] = useState();
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [loading, setLoading] = useState(false);
   const { SearchKey, PageNo, PageSize, SortBy, SortOrder, Role } = useSelector(
     (state) => state.userManagement
@@ -276,13 +278,41 @@ function MainPage() {
       });
   };
 
+  // Handle row selected
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      console.log(
+        `selectedRowKeys: ${selectedRowKeys}`,
+        "selectedRows: ",
+        selectedRows
+      );
+      setExportData(selectedRowKeys);
+    },
+    onSelect: (record, selected, selectedRows) => {
+      console.log(record, selected, selectedRows);
+    },
+    onSelectAll: (selected, selectedRows, changeRows) => {
+      console.log(selected, selectedRows, changeRows);
+    },
+  };
+  const hasSelected = exportData.length > 0;
   return (
     <div>
       <Row>
         <Col span={8}>
+          <Button
+            type="primary"
+            // onClick={this.start}
+            disabled={!hasSelected}
+            // loading={loading}
+          >
+            DeActive Selected User
+          </Button>
+        </Col>
+        <Col span={8}>
           <CreateUserModal onSubmitModal={refetch} />
         </Col>
-        <Col span={8} offset={8}>
+        <Col span={8}>
           <Search
             placeholder="input search text"
             onSearch={(value) => search(value)}
@@ -298,6 +328,7 @@ function MainPage() {
         dataSource={data}
         pagination={false}
         loading={loading}
+        rowSelection={rowSelection}
         onChange={handleTableChange}
         // onChange={onChangeTable}
         // onChange={handleTableChange}
