@@ -22,7 +22,7 @@ function MainMenu(props) {
             <Avatar
               style={{ marginRight: "0.82em" }}
               icon={<UserOutlined />}
-              src={`http://localhost:5000/api/users/${avatar}`}
+              src={`${process.env.REACT_APP_BASE_URL}/api/users/thumbnails/${avatar}`}
             />
           }
         >

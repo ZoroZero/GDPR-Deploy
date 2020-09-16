@@ -74,9 +74,10 @@ const UserSetting = (pros) => {
   };
   useEffect(() => {
     dispatch(setua({ username: record.UserName, avatar: record.AvatarPath }));
-    console.log("didmount avbc", record);
     if (record.AvatarPath) {
-      setImageUrl("http://localhost:5000/api/users/" + record.AvatarPath);
+      setImageUrl(
+        process.env.REACT_APP_BASE_URL + "/api/users/" + record.AvatarPath
+      );
     } else {
       setImageUrl(
         "https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
