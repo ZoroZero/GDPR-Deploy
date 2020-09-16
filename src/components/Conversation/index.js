@@ -1,16 +1,14 @@
 import { Button, Card, Form, Input, Row, Col } from "antd";
-import React, { useCallback, useEffect, useState } from "react";
-import { cloneDeep } from "lodash";
-// import socket from "socket/socket";
-import io from "socket.io-client";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import socket from "socket/socket";
 import { getAllMessageApi } from "api/requests";
+import "./index.scss";
 
 const ConversationBox = (props) => {
   const [form] = Form.useForm();
   const [lstMsg, setLstMsg] = useState([]);
-  const { token } = useSelector((state) => state.app);
+  const { token, userId } = useSelector((state) => state.app);
 
   useEffect(() => {
     fetchOldMessage(props.request.Id);
@@ -22,7 +20,6 @@ const ConversationBox = (props) => {
   });
 
   function fetchOldMessage(requestId) {
-    console.log(requestId);
     getAllMessageApi(requestId)
       .then((res) => {
         console.log(res);
@@ -50,14 +47,30 @@ const ConversationBox = (props) => {
   const lstMsgCard = lstMsg.map((val, index) => {
     return (
       <div key={val.Id}>
-        <p>
-          <strong>{val.User.FirstName}: </strong>
-          {val.Content}
-        </p>
+        <article
+          className={`msg-container ${
+            val.User.Id === userId ? "msg-self" : "msg-remote"
+          }`}
+        >
+          <div className="msg-box">
+            <img
+              className="user-img"
+              src="//gravatar.com/avatar/00034587632094500000000000000000?d=retro"
+            />
+            <div className="flr">
+              <span className="timestamp">
+                <span className="username">{val.User.FirstName}</span>&bull;
+                <span className="posttime">{val.CreatedDate}</span>
+              </span>
+              <div className="messages">
+                <p className="msg">{val.Content}</p>
+              </div>
+            </div>
+          </div>
+        </article>
       </div>
     );
   });
-  console.log("1");
   return (
     <>
       <Card
