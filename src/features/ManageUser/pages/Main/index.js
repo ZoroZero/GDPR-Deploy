@@ -177,19 +177,19 @@ function MainPage() {
       SortOrder: SortOrder,
       Role: Role,
     });
-  }, [PageSize, Role]);
-  function onChange(pageNumber) {
-    dispatch(setPageNo({ PageNo: pageNumber }));
-    console.log("onchangepage");
-    fetch({
-      PageNo: pageNumber,
-      PageSize: PageSize,
-      SearchKey: SearchKey,
-      SortBy: SortBy,
-      SortOrder: SortOrder,
-      Role: Role,
-    });
-  }
+  }, [PageNo, PageSize, Role]);
+  // function onChange(pageNumber) {
+  //   dispatch(setPageNo({ PageNo: pageNumber }));
+  //   console.log("onchangepage");
+  //   fetch({
+  //     PageNo: pageNumber,
+  //     PageSize: PageSize,
+  //     SearchKey: SearchKey,
+  //     SortBy: SortBy,
+  //     SortOrder: SortOrder,
+  //     Role: Role,
+  //   });
+  // }
   function refetch() {
     fetch({
       PageNo: PageNo,
@@ -219,7 +219,7 @@ function MainPage() {
     if (pageSize !== PageSize && PageNo > Math.ceil(total / pageSize)) {
       console.log("Total1", total);
       dispatch(setPageSize({ PageSize: pageSize }));
-      dispatch(setPageNo(Math.ceil(total / pageSize)));
+      dispatch(setPageNo({ PageNo: Math.ceil(total / pageSize) }));
 
       // fetch({
       //   PageNo: Math.ceil(total / pageSize),
@@ -232,6 +232,7 @@ function MainPage() {
     } else {
       console.log("Total2", total);
       dispatch(setPageSize({ PageSize: pageSize }));
+      dispatch(setPageNo({ PageNo: current }));
       // fetch({
       //   PageNo: current,
       //   PageSize: pageSize,
@@ -277,6 +278,36 @@ function MainPage() {
       });
     }
   }
+
+  // Handle change in page number
+  const handlePageChange = (pageNumber, pageSize) => {
+    if (pageSize !== PageSize && PageNo > Math.ceil(total / pageSize)) {
+      console.log("Total1", total);
+      dispatch(setPageSize({ PageSize: pageSize }));
+      dispatch(setPageNo({ PageNo: Math.ceil(total / pageSize) }));
+
+      // fetch({
+      //   PageNo: Math.ceil(total / pageSize),
+      //   PageSize: pageSize,
+      //   SearchKey: SearchKey,
+      //   SortBy: SortBy,
+      //   SortOrder: SortOrder,
+      //   Role: Role,
+      // });
+    } else {
+      console.log("Total2", total);
+      dispatch(setPageSize({ PageSize: pageSize }));
+      dispatch(setPageNo({ PageNo: pageNumber }));
+      // fetch({
+      //   PageNo: current,
+      //   PageSize: pageSize,
+      //   SearchKey: SearchKey,
+      //   SortBy: SortBy,
+      //   SortOrder: SortOrder,
+      //   Role: Role,
+      // });
+    }
+  };
 
   const fetch = (params) => {
     setLoading(true);
@@ -347,12 +378,13 @@ function MainPage() {
           <Pagination
             showQuickJumper
             showSizeChanger
-            onShowSizeChange={onShowSizeChange}
+            // onShowSizeChange={onShowSizeChange}
+            onChange={handlePageChange}
             current={PageNo}
             total={total}
             showTotal={showTotal}
             pageSize={PageSize}
-            onChange={onChange}
+            // onChange={onChange}
           />
         </Col>
       </Row>
