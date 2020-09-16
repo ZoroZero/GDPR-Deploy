@@ -17,6 +17,8 @@ import {
   ExclamationCircleOutlined,
   UserOutlined,
   DownOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
 } from "@ant-design/icons";
 import "./index.scss";
 import CreateUserModal from "../../../../components/ManageUser/CreateUserModal.js";
@@ -152,10 +154,10 @@ function MainPage() {
   }
   const menu = (
     <Menu onClick={handleMenuClick}>
-      <Menu.Item key="active" icon={<UserOutlined />}>
+      <Menu.Item key="active" icon={<CheckCircleOutlined />}>
         Active all selected items
       </Menu.Item>
-      <Menu.Item key="deactive" icon={<UserOutlined />}>
+      <Menu.Item key="deactive" icon={<CloseCircleOutlined />}>
         Deactive all selected items
       </Menu.Item>
       {/* <Menu.Item key="3" icon={<UserOutlined />}>
