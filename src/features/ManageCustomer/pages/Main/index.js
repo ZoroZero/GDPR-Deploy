@@ -12,42 +12,67 @@ import {
 } from "antd";
 import { ExclamationCircleOutlined, AudioOutlined } from "@ant-design/icons";
 import "./index.scss";
-import AddCustomerModal from "../../../../components/ManageCustomer/AddCustomerModel";
-import EditCustomerModal from "../../../../components/ManageCustomer/EditCustomerModel";
-import { getCustomerApi } from "api/customer";
-import { getContactPointsApi } from 'api/customer';
-import { deleteCustomerApi } from 'api/customer'
-import { setSort } from "features/ManageCustomer/slice";
+import AddCustomerModal from "../../../../components/ManageCustomer/AddCustomerModal";
+import EditCustomerModal from "../../../../components/ManageCustomer/EditCustomerModal";
+import ManageServerModal from "../../../../components/ManageCustomer/ManageServerModal";
+import { deleteCustomerApi } from "api/customer";
+import {
+  setData,
+  setPagination,
+  setSort,
+  setSearch,
+  setRefresh,
+  getCustomerList,
+  setLoading,
+} from "features/ManageCustomer/slice";
 import { useDispatch, useSelector } from "react-redux";
+import { Menu, Dropdown } from "antd";
+import { DownOutlined } from "@ant-design/icons";
 
 MainPage.propTypes = {};
 const { confirm } = Modal;
-const pageSize = 10;
 const { Search } = Input;
 
-
-
-
 function MainPage() {
-  const [contactPoints, setContactPoints] = useState([]);
-  const [data, setData] = useState([]);
   const dispatch = useDispatch();
-  const { sortColumn, sortOrder } = useSelector(
-    (state) => state.customerManagement
-  );
-  const [loading, setLoading] = useState(false);
-  const [total, setTotal] = useState();
-  const [page, setPage] = useState(1);
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
-  const [refresh, setRefresh] = useState(false)
+  const {
+    data,
+    pagination,
+    sortColumn,
+    sortOrder,
+    keyword,
+    refresh,
+    loading,
+  } = useSelector((state) => state.customerManagement);
+
+  const [modalCreateVisible, setModalCreateVisible] = useState(false);
+  const [modalEditVisible, setModalEditVisible] = useState(false);
+  const [modalManageVisible, setModalManageVisible] = useState(false);
+  const [dataEdit, setDataEdit] = useState({
+    FirstName: "",
+    LastName: "",
+    ContactPointId: null,
+    ContactPointEmail: null,
+    ContractBeginDate: null,
+    ContractEndDate: null,
+    Description: "",
+    IsActive: true,
+  });
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [dataManage, setDataManage] = useState({ Id: "" });
+  const pageOptions = [10, 20, 50, 100];
 
   const columns = [
     {
       title: "Customer Name",
       dataIndex: "FirstName",
       sorter: true,
-      render: (text, record) => <p> {text} {record.LastName}</p>
+      render: (text, record) => (
+        <p>
+          {" "}
+          {text} {record.LastName}
+        </p>
+      ),
     },
     {
       title: "Contact Point",
@@ -80,7 +105,7 @@ function MainPage() {
     },
     {
       title: "Description",
-      dataIndex: "Description"
+      dataIndex: "Description",
     },
     {
       title: "Status",
@@ -105,22 +130,25 @@ function MainPage() {
       key: "action",
       render: (record) => (
         <Space size="middle">
-
-          {/* <Button type="primary" onClick={() => {
-            setModalVisible(true);
-          }}>
+          <Button
+            type="primary"
+            onClick={() => {
+              setDataEdit(record);
+              setModalEditVisible(true);
+            }}
+          >
             Update
-            </Button> */}
-          <EditCustomerModal record={record} refresh={refresh} setPage={setPage} setRefresh={setRefresh}></EditCustomerModal>
+          </Button>
 
-
-
-          <Button type="primary" danger onClick={() => { showPromiseConfirm(record.Id) }}>
+          <Button
+            type="primary"
+            danger
+            onClick={() => {
+              showPromiseConfirm(record.Id);
+            }}
+          >
             Delete
-        </Button>
-          {/* <a className="ant-dropdown-link">
-          More actions <DownOutlined />
-        </a> */}
+          </Button>
         </Space>
       ),
     },
@@ -128,15 +156,59 @@ function MainPage() {
       title: "Machines Owner",
       dataIndex: "servers",
       sorter: true,
-      render: (text) => <Tag color="cyan"> Manage {text ? text : 0} </Tag>,
+      render: (text, record) => (
+        <Button
+          onClick={() => {
+            setDataManage({
+              Id: record.Id,
+              FirstName: record.FirstName,
+              LastName: record.LastName,
+            });
+            setModalManageVisible(true);
+          }}
+        >
+          Manage {text ? text : 0}
+        </Button>
+      ),
     },
   ];
 
+  const handleMenuClick = (value) => {
+    console.log("handle menu click", value);
+  };
+  const menu = (
+    <Menu onClick={handleMenuClick}>
+      <Menu.Item key="delete">delete</Menu.Item>
+      <Menu.Item key="active">active</Menu.Item>
+      <Menu.Item key="deactive">deactive</Menu.Item>
+    </Menu>
+  );
 
   useEffect(() => {
+    console.log("USE EFFECT INDEX");
+    fetch(
+      pagination.current,
+      pagination.pageSize,
+      sortColumn,
+      sortOrder,
+      keyword
+    );
+  }, [refresh, sortColumn, sortOrder]);
 
-    fetch(page, sortColumn, sortOrder, searchKeyword);
-  }, [refresh, sortColumn, sortOrder, searchKeyword]);
+  async function fetch(current, pageSize, sortColumn, sortOrder, keyword) {
+    console.log("FETCH DATA INDEX");
+    dispatch(setLoading(true));
+    await dispatch(
+      getCustomerList({
+        current: current,
+        pageSize: pageSize,
+        sortColumn: sortColumn,
+        sortOrder: sortOrder,
+        keyword: keyword,
+      })
+    );
+    dispatch(setLoading(false));
+  }
 
   function showPromiseConfirm(id) {
     confirm({
@@ -145,98 +217,141 @@ function MainPage() {
       content:
         "When clicked the OK button, this dialog will be closed after 1 second",
       onOk() {
-        deleteCustomerApi({ Id: id })
-
-        setRefresh(!refresh);
+        deleteCustomerApi({ Id: id });
+        dispatch(setRefresh(!refresh));
       },
       onCancel() { },
     });
   }
 
-  function handleSearchCustomer(keyword) {
-    keyword ? setSearchKeyword(keyword) : setSearchKeyword('');
-    fetch(1, sortColumn, sortOrder, keyword);
+  async function handleSearchChange(newKeyword) {
+    (await newKeyword)
+      ? dispatch(setSearch(newKeyword))
+      : dispatch(setSearch(""));
+    await dispatch(setPagination({ ...pagination, current: 1 }));
+    await dispatch(setRefresh(!refresh));
+    dispatch(setSearch(""));
   }
 
-  async function handleSortChange(pagination, filters, sorter) {
+  function handleSortChange(pagination, filters, sorter) {
     var newSortColumn = sorter.column ? sorter.column.dataIndex : "CreatedDate";
     var newSortOrder = sorter.order === "descend" ? "descend" : "ascend";
-    await dispatch(
-      setSort({ sortColumn: newSortColumn, sortOrder: newSortOrder })
-    );
-    fetch(page, newSortColumn, newSortOrder, searchKeyword);
-  }
-  function onPageChange(pageNumber) {
-    setPage(pageNumber);
-    fetch(pageNumber, sortColumn, sortOrder, searchKeyword);
+    dispatch(setSort({ sortColumn: newSortColumn, sortOrder: newSortOrder }));
   }
 
-  const fetch = (pageNumber, sortColumn, sortOrder, keyword) => {
-    setLoading(true);
-    getCustomerApi({
-      current: pageNumber,
-      pageSize: pageSize,
-      sortColumn: sortColumn,
-      sortOrder: sortOrder,
-      keyword: keyword,
-    }).then((res) => {
-      setLoading(false);
-      setData(res);
-      setTotal(res[0] ? res[0].Total : 0);
-    });
+  function handlePageChange(pageNumber, pageSize) {
+    console.log("handle page change", pageNumber, pageSize);
+    fetch(pageNumber, pageSize, sortColumn, sortOrder, keyword);
+  }
+  function showTotal(total) {
+    return `${data.length} of ${total} items`;
+  }
 
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys) => {
+      console.log("selectedRowKeys changed: ", newSelectedRowKeys);
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+  };
+  const hasSelected = selectedRowKeys.length > 0;
+
+  const start = () => {
+    console.log(selectedRowKeys);
   };
 
   return (
-    <div>
+    <>
       <Row>
         <Col span={8}>
-
-          <Button type="primary" onClick={() => { setModalVisible(true) }}>
+          <Button
+            type="primary"
+            onClick={() => {
+              setModalCreateVisible(true);
+            }}
+          >
             Create new Customer
-            </Button>
-          <AddCustomerModal refresh={refresh} setPage={setPage} setRefresh={setRefresh} modalVisible={modalVisible} setModalVisible={setModalVisible}>  </AddCustomerModal>
-
+          </Button>
+          <AddCustomerModal
+            modalVisible={modalCreateVisible}
+            setModalVisible={setModalCreateVisible}
+          ></AddCustomerModal>
+          <EditCustomerModal
+            record={dataEdit}
+            modalVisible={modalEditVisible}
+            setModalVisible={setModalEditVisible}
+          ></EditCustomerModal>
+          <ManageServerModal
+            record={dataManage}
+            modalVisible={modalManageVisible}
+            setModalVisible={setModalManageVisible}
+          >
+            {" "}
+          </ManageServerModal>
         </Col>
         <Col span={8} offset={8}>
           <Search
             className="search-bar"
+            name="search-content"
             placeholder="input search text"
             enterButton="Search"
             size="large"
-            onSearch={(value) => handleSearchCustomer(value)}
+            onSearch={(value) => {
+              handleSearchChange(value);
+            }}
+            autoFocus={true}
           />
         </Col>
       </Row>
-
+      <Dropdown
+        overlay={menu}
+        type="primary"
+        onClick={start}
+        disabled={!hasSelected}
+      >
+        <Button>
+          Actions <DownOutlined />
+        </Button>
+      </Dropdown>
       <br />
       <br />
       <Table
         columns={columns}
         rowKey={(record) => record.Id}
         dataSource={data}
-        pagination={false}
         loading={loading}
+        pagination={false}
         onChange={handleSortChange}
+        rowSelection={rowSelection}
+      // checkbox
       />
       <br />
       <Row>
         <Col span={12} offset={6}>
           <Pagination
+            pageSizeOptions={pageOptions}
+            showTotal={(total) => showTotal(total)}
+            showSizeChanger={true}
             showQuickJumper
             defaultCurrent={1}
-            current={page}
-            defaultPageSize={10}
-            total={total}
-            onChange={onPageChange}
+            current={pagination.current}
+            defaultPageSize={pagination.pageSize}
+            total={pagination.total}
+            onChange={handlePageChange}
           />
         </Col>
       </Row>
-      <button onClick={() => console.log(refresh)}></button>
-
       <br />
-    </div>
+    </>
   );
 }
 
 export default MainPage;
+/*TODO:
+- check multi customer
+- log / detail
+- constraint time select
+- delete customer -> delete customerserver
+
+
+*/

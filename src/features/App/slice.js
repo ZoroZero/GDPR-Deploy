@@ -16,6 +16,8 @@ const initialState = {
   token: null,
   loading: false,
   userId: null,
+  username: null,
+  avatar: null,
 };
 
 const slice = createSlice({
@@ -37,10 +39,14 @@ const slice = createSlice({
     stopLoading(state, action) {
       state.loading = false;
     },
+    setua(state, action) {
+      state.username = action.payload.username;
+      state.avatar = action.payload.avatar;
+    },
   },
 });
 
-export const { login, logout, loading, stopLoading } = slice.actions;
+export const { login, logout, loading, stopLoading, setua } = slice.actions;
 export default slice.reducer;
 
 export const onLogout = () => (dispatch) => {
