@@ -136,14 +136,16 @@ function MainPage() {
   ];
 
   async function handleMenuClick(e) {
-    message.info("Click on menu item.");
+    // message.info("Click on menu item.");
     console.log("click", e);
     if (e.key == "active") {
       console.log("active list iefasdf");
+      message.warning("Active all selected items");
       await acdeacListUsersApi({ listid: exportData.join(","), isactive: 1 });
       refetch();
     } else if (e.key == "deactive") {
       console.log("deactive list iefasdf");
+      message.warning("Deactive all selected items");
       await acdeacListUsersApi({ listid: exportData.join(","), isactive: 0 });
       refetch();
     }

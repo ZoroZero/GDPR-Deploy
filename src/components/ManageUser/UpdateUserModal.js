@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { updateUsersApi } from "../../api/user";
 import "antd/dist/antd.css";
 import {
@@ -76,6 +76,20 @@ const CollectionCreateForm = ({
   setSwitchState,
 }) => {
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    // console.log("didamount record", record);
+    // form.setFieldsValue({
+    //   email: record.Email,
+    //   firstname: record.FirstName,
+    //   lastname: record.LastName,
+    //   password: record.HashPasswd,
+    //   confirm: record.HashPasswd,
+    //   username: record.UserName,
+    //   role: [record.RoleName],
+    // });
+    setSwitchState(record.IsActive);
+  }, [record]);
 
   const onFinish = (values) => {
     console.log("Received values of form: ", { ...values, switchState });
@@ -261,7 +275,7 @@ const CollectionCreateForm = ({
           <Switch
             checkedChildren="Active"
             unCheckedChildren="InActive"
-            defaultChecked={switchState}
+            checked={switchState}
             onChange={onChange}
           />
         </Form.Item>
