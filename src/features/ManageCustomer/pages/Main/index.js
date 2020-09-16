@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   Table,
@@ -14,7 +14,7 @@ import { ExclamationCircleOutlined, AudioOutlined } from "@ant-design/icons";
 import "./index.scss";
 import AddCustomerModal from "../../../../components/ManageCustomer/AddCustomerModal";
 import EditCustomerModal from "../../../../components/ManageCustomer/EditCustomerModal";
-import ManageServerModal from "../../../../components/ManageCustomer/ManageServerModal"
+import ManageServerModal from "../../../../components/ManageCustomer/ManageServerModal";
 import { deleteCustomerApi } from "api/customer";
 import {
   setData,
@@ -28,6 +28,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import ExportCustomerModal from "components/ManageCustomer/ExportCustomerModal";
 import ImportCustomerModal from "components/ManageCustomer/ImportCustomerModal";
+import { Menu, Dropdown } from "antd";
+import { DownOutlined } from "@ant-design/icons";
+
 MainPage.propTypes = {};
 const { confirm } = Modal;
 const { Search } = Input;
@@ -175,6 +178,17 @@ function MainPage() {
     },
   ];
 
+  const handleMenuClick = (value) => {
+    console.log("handle menu click", value);
+  };
+  const menu = (
+    <Menu onClick={handleMenuClick}>
+      <Menu.Item key="delete">delete</Menu.Item>
+      <Menu.Item key="active">active</Menu.Item>
+      <Menu.Item key="deactive">deactive</Menu.Item>
+    </Menu>
+  );
+
   useEffect(() => {
     console.log("USE EFFECT INDEX");
     fetch(
@@ -216,7 +230,6 @@ function MainPage() {
   }
 
   async function handleSearchChange(newKeyword) {
-    searchBox.current.state.value = "";
     (await newKeyword)
       ? dispatch(setSearch(newKeyword))
       : dispatch(setSearch(""));
@@ -253,7 +266,7 @@ function MainPage() {
   };
 
   return (
-    <div>
+    <>
       <Row>
         <Col span={8}>
           <div>
@@ -278,9 +291,7 @@ function MainPage() {
           <AddCustomerModal
             modalVisible={modalCreateVisible}
             setModalVisible={setModalCreateVisible}
-          >
-          </AddCustomerModal>
-
+          ></AddCustomerModal>
           <EditCustomerModal
             record={dataEdit}
             modalVisible={modalEditVisible}
@@ -290,7 +301,9 @@ function MainPage() {
             record={dataManage}
             modalVisible={modalManageVisible}
             setModalVisible={setModalManageVisible}
-          > </ManageServerModal>
+          >
+            {" "}
+          </ManageServerModal>
         </Col>
         <Col span={8} offset={8}>
           <Search
@@ -302,14 +315,20 @@ function MainPage() {
             onSearch={(value) => {
               handleSearchChange(value);
             }}
-            ref={searchBox}
-            autoFocus
+            autoFocus={true}
           />
         </Col>
       </Row>
-      <Button type="primary" onClick={start} disabled={!hasSelected}>
-        Action
-      </Button>
+      <Dropdown
+        overlay={menu}
+        type="primary"
+        onClick={start}
+        disabled={!hasSelected}
+      >
+        <Button>
+          Actions <DownOutlined />
+        </Button>
+      </Dropdown>
       <br />
       <br />
       <Table
@@ -339,15 +358,16 @@ function MainPage() {
         </Col>
       </Row>
       <br />
-    </div>
+    </>
   );
 }
 
 export default MainPage;
 /*TODO:
-- manage server
-- upload file
 - check multi customer
 - log / detail
+- constraint time select
+- delete customer -> delete customerserver
+
 
 */

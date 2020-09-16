@@ -32,7 +32,7 @@ const slice = createSlice({
       state.SortBy = action.payload.SortBy;
     },
     setSortOrder: (state, action) => {
-      state.SortOrder = action.payload.Sortorder;
+      state.SortOrder = action.payload.SortOrder;
     },
     setRole: (state, action) => {
       state.Role = action.payload.Role;

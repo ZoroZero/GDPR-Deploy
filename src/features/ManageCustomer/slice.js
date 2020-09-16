@@ -1,18 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getContactPointsApi, getCustomerApi, getServersCustomerApi, getOtherServersApi } from "api/customer";
+import {
+  getContactPointsApi,
+  getCustomerApi,
+  getServersCustomerApi,
+  getOtherServersApi,
+  deleteServersOfCustomerApi,
+  addServersForCustomerApi,
+} from "api/customer";
 import { loading, stopLoading } from "features/App/slice";
 import { act } from "react-dom/test-utils";
+import { useSelector } from "react-redux";
 
 export const initialState = {
   blockIds: null,
   data: [],
   servers: [],
-  otherServers: [],
+  otherServers: { data: [], loading: false, hasMore: true },
   pagination: {
     total: 0,
     current: 1,
     pageSize: 10,
   },
+  deletedOwnedServers: [],
+  addedServers: [],
   sortColumn: "CreatedDate",
   sortOrder: "descend",
   keyword: "",
@@ -65,6 +75,14 @@ const slice = createSlice({
       state.otherServers = action.payload;
     },
 
+    setDeletedOwnedServers: (state, action) => {
+      state.deletedOwnedServers = action.payload;
+    },
+
+    setAddedServers: (state, action) => {
+      state.addedServers = action.payload;
+    },
+
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
@@ -81,6 +99,8 @@ export const {
   setContactPointList,
   setServers,
   setOtherServers,
+  setDeletedOwnedServers,
+  setAddedServers,
   setLoading,
 } = slice.actions;
 export default slice.reducer;
@@ -112,28 +132,73 @@ export const getContactPointList = () => (dispatch) => {
   });
 };
 
-export const getServersCustomer = (id) => (dispatch) => {
+export const getServersCustomer = (id, keyword) => (dispatch) => {
   return new Promise((resolve, reject) => {
-    return getServersCustomerApi(id)
+    return getServersCustomerApi(id, keyword)
       .then((res) => {
         dispatch(setServers(res));
         resolve();
-      }).catch((error) => {
+      })
+      .catch((error) => {
         console.log(error);
         reject();
       });
   });
 };
 
-export const getOtherServers = (option, id) => (dispatch) => {
+export const getOtherServers = (option, id, page, keyword) => (dispatch, getState) => {
   return new Promise((resolve, reject) => {
-    return getOtherServersApi(option, id)
+    return getOtherServersApi(option, id, page, keyword)
       .then((res) => {
-        dispatch(setOtherServers(res));
+
+        dispatch(
+          setOtherServers({
+            data: getState().customerManagement.otherServers.data.concat(res),
+            hasMore: res.length > 0,
+            loading: false,
+          })
+        );
+
         resolve();
-      }).catch((error) => {
+      })
+      .catch((error) => {
         console.log(error);
         reject();
       });
   });
 };
+
+export const deleteServersOfCustomer = (deletedServers, customerId) => (dispatch, getState) => {
+  return new Promise((resolve, reject) => {
+    return deleteServersOfCustomerApi(deletedServers, customerId)
+      .then((res) => {
+        dispatch(setDeletedOwnedServers([]));
+        dispatch(setRefresh(!getState().customerManagement.refresh));
+
+        resolve();
+      })
+      .catch((error) => {
+        console.log(error);
+        reject();
+      });
+  });
+};
+
+
+export const addServersForCustomer = (addedServers, customerId) => (dispatch, getState) => {
+  return new Promise((resolve, reject) => {
+    return addServersForCustomerApi(addedServers, customerId)
+      .then((res) => {
+        dispatch(setAddedServers([]));
+        dispatch(setRefresh(!getState().customerManagement.refresh));
+
+        resolve();
+      })
+      .catch((error) => {
+        console.log(error);
+        reject();
+      });
+  });
+};
+
+
