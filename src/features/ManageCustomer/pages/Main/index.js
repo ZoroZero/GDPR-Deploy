@@ -1,9 +1,7 @@
 /*TODO: 
 - improve performance
--
 */
 import React, { useEffect, useState } from "react";
-
 import {
   Modal,
   Table,
@@ -13,16 +11,16 @@ import {
   Row,
   Col,
   Tag,
-  Pagination,
+  Tooltip,
+  Pagination, Menu, Dropdown
 } from "antd";
-import { ExclamationCircleOutlined, AudioOutlined } from "@ant-design/icons";
+import { ExclamationCircleOutlined, WarningTwoTone, DownOutlined } from "@ant-design/icons";
 import "./index.scss";
 import AddCustomerModal from "../../../../components/ManageCustomer/AddCustomerModal";
 import EditCustomerModal from "../../../../components/ManageCustomer/EditCustomerModal";
 import ManageServerModal from "../../../../components/ManageCustomer/ManageServerModal";
 import { deleteCustomerApi, deleteCustomersApi, deactiveCustomersApi, activeCustomersApi } from "api/customer";
 import {
-  setData,
   setPagination,
   setSort,
   setSearch,
@@ -31,8 +29,6 @@ import {
   setLoading,
 } from "features/ManageCustomer/slice";
 import { useDispatch, useSelector } from "react-redux";
-import { Menu, Dropdown } from "antd";
-import { DownOutlined } from "@ant-design/icons";
 
 MainPage.propTypes = {};
 const { confirm } = Modal;
@@ -74,7 +70,6 @@ function MainPage() {
       sorter: true,
       render: (text, record) => (
         <p>
-          {" "}
           {text} {record.LastName}
         </p>
       ),
@@ -93,10 +88,10 @@ function MainPage() {
           value: false,
         },
       ],
-      onFilter: (value, record) =>
-        value
-          ? record.ContactPointEmail !== null
-          : record.ContactPointEmail == null,
+      render: (value, record) => (
+
+        record.ContactPointId ? (!record.ContactPointStatus ? <><p> {value} </p> <Tooltip title="Contact Point is inactive!">< WarningTwoTone twoToneColor="orange" /></Tooltip> </> : <p> {value} </p>) : <></>
+      )
     },
     {
       title: "Contract Begin",
@@ -134,13 +129,13 @@ function MainPage() {
       title: "Action",
       key: "action",
       render: (record) => (
-        <Space size="middle" className="wrap2Button" style={{ display: "flex" }}>
+        <Space size="middle" style={{ display: "flex" }}>
           <Button
             className="updateButton"
             type="primary"
             onClick={() => {
-              setDataEdit(record);
               setModalEditVisible(true);
+              setDataEdit(record);
             }}
           >
             Update
@@ -148,7 +143,6 @@ function MainPage() {
 
           <Button
             type="primary"
-            className="deleteButton"
             danger
             onClick={() => {
               showPromiseConfirm(record.Id);
@@ -166,12 +160,12 @@ function MainPage() {
       render: (text, record) => (
         <Button
           onClick={() => {
+            setModalManageVisible(true);
             setDataManage({
               Id: record.Id,
               FirstName: record.FirstName,
               LastName: record.LastName,
             });
-            setModalManageVisible(true);
           }}
         >
           Manage {text ? text : 0}
@@ -180,27 +174,14 @@ function MainPage() {
     },
   ];
 
-  async function handleMenuClick(value) {
-    console.log("handle menu click", value);
-    if (value.key == 'delete') {
-      await deleteCustomersApi({ deletedCustomers: selectedRowKeys });
-      dispatch(setRefresh(!refresh));
-      setSelectedRowKeys([])
-    }
-    if (value.key == 'deactive') {
-      await deactiveCustomersApi({ deactivedCustomers: selectedRowKeys });
-      dispatch(setRefresh(!refresh));
-      setSelectedRowKeys([])
-
-
-    }
-    else {
-      await activeCustomersApi({ activedCustomers: selectedRowKeys });
-      dispatch(setRefresh(!refresh));
-      setSelectedRowKeys([])
-
-    }
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys) => {
+      console.log("selectedRowKeys changed: ", newSelectedRowKeys);
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
   };
+
   const menu = (
     <Menu onClick={handleMenuClick}>
       <Menu.Item key="delete">delete</Menu.Item>
@@ -208,6 +189,9 @@ function MainPage() {
       <Menu.Item key="deactive">deactive</Menu.Item>
     </Menu>
   );
+
+  const hasSelected = selectedRowKeys.length > 0;
+
 
   useEffect(() => {
     console.log("USE EFFECT INDEX");
@@ -235,6 +219,7 @@ function MainPage() {
     dispatch(setLoading(false));
   }
 
+
   function showPromiseConfirm(id) {
     confirm({
       title: "Do you want to delete these items?",
@@ -248,6 +233,25 @@ function MainPage() {
       onCancel() { },
     });
   }
+
+  async function handleMenuClick(value) {
+    console.log("handle menu click", value);
+    if (value.key == 'delete') {
+      await deleteCustomersApi({ deletedCustomers: selectedRowKeys });
+      dispatch(setRefresh(!refresh));
+      setSelectedRowKeys([])
+    }
+    if (value.key == 'deactive') {
+      await deactiveCustomersApi({ deactivedCustomers: selectedRowKeys });
+      dispatch(setRefresh(!refresh));
+      setSelectedRowKeys([])
+    }
+    else {
+      await activeCustomersApi({ activedCustomers: selectedRowKeys });
+      dispatch(setRefresh(!refresh));
+      setSelectedRowKeys([])
+    }
+  };
 
   async function handleSearchChange(newKeyword) {
     (await newKeyword)
@@ -268,26 +272,10 @@ function MainPage() {
     console.log("handle page change", pageNumber, pageSize);
     fetch(pageNumber, pageSize, sortColumn, sortOrder, keyword);
   }
+
   function showTotal(total) {
     return `${data.length} of ${total} items`;
   }
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (newSelectedRowKeys) => {
-      console.log("selectedRowKeys changed: ", newSelectedRowKeys);
-      setSelectedRowKeys(newSelectedRowKeys);
-    },
-  };
-
-  const hasSelected = selectedRowKeys.length > 0;
-
-  async function start() {
-    // console.log(selectedRowKeys);
-    // await deleteCustomersApi({ deletedCustomers: selectedRowKeys });
-    // dispatch(setRefresh(!refresh));
-
-  };
 
   return (
     <>
@@ -315,7 +303,6 @@ function MainPage() {
             modalVisible={modalManageVisible}
             setModalVisible={setModalManageVisible}
           >
-            {" "}
           </ManageServerModal>
         </Col>
         <Col span={8} offset={8}>
@@ -335,7 +322,6 @@ function MainPage() {
       <Dropdown
         overlay={menu}
         type="primary"
-        onClick={start}
         disabled={!hasSelected}
       >
         <Button>
@@ -353,7 +339,6 @@ function MainPage() {
         pagination={false}
         onChange={handleSortChange}
         rowSelection={rowSelection}
-      // checkbox
       />
       <br />
       <Row>
@@ -377,11 +362,5 @@ function MainPage() {
 }
 
 export default MainPage;
-/*TODO:
-- check multi customer
-- log / detail
-- constraint time select
-- delete customer -> delete customerserver
 
 
-*/

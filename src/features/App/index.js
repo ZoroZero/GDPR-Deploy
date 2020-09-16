@@ -95,11 +95,9 @@ function App(props) {
           <Sider
             style={{ minHeight: "100vh" }}
             trigger={null}
-            // collapsible
-            breakpoint="xl"
-            collapsedWidth="0"
+            collapsible
 
-          // collapsed={collapsed}
+            collapsed={collapsed}
           >
             <Link to="/">
               <div className="logo" />
