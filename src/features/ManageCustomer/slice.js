@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   getContactPointsApi,
   getCustomerApi,
+  getDeletedCustomerApi,
   getServersCustomerApi,
   getOtherServersApi,
   deleteServersOfCustomerApi,
@@ -14,6 +15,7 @@ import { useSelector } from "react-redux";
 export const initialState = {
   blockIds: null,
   data: [],
+  deletedData: [],
   servers: [],
   otherServers: { data: [], loading: false, hasMore: true },
   pagination: {
@@ -86,6 +88,10 @@ const slice = createSlice({
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
+
+    setDeletedData: (state, action) => {
+      state.deletedData = action.payload;
+    },
   },
 });
 
@@ -102,6 +108,7 @@ export const {
   setDeletedOwnedServers,
   setAddedServers,
   setLoading,
+  setDeletedData,
 } = slice.actions;
 export default slice.reducer;
 
@@ -126,6 +133,26 @@ export const getCustomerList = (params = {}) => (dispatch) => {
   });
 };
 
+export const getDeletedCustomerList = (params = {}) => (dispatch) => {
+  return new Promise((resolve, reject) => {
+    return getDeletedCustomerApi(params)
+      .then((res) => {
+        dispatch(setData(res));
+        dispatch(
+          setPagination({
+            current: res[0] ? params.current : 0,
+            total: res[0] ? res[0].Total : 0,
+            pageSize: params.pageSize,
+          })
+        );
+        resolve();
+      })
+      .catch((error) => {
+        console.log(error);
+        reject(error);
+      });
+  });
+};
 export const getContactPointList = () => (dispatch) => {
   getContactPointsApi().then((res) => {
     dispatch(setContactPointList(res));

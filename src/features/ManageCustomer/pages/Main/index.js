@@ -1,4 +1,9 @@
+/*TODO: 
+- improve performance
+-
+*/
 import React, { useEffect, useState } from "react";
+
 import {
   Modal,
   Table,
@@ -15,7 +20,7 @@ import "./index.scss";
 import AddCustomerModal from "../../../../components/ManageCustomer/AddCustomerModal";
 import EditCustomerModal from "../../../../components/ManageCustomer/EditCustomerModal";
 import ManageServerModal from "../../../../components/ManageCustomer/ManageServerModal";
-import { deleteCustomerApi } from "api/customer";
+import { deleteCustomerApi, deleteCustomersApi, deactiveCustomersApi, activeCustomersApi } from "api/customer";
 import {
   setData,
   setPagination,
@@ -129,8 +134,9 @@ function MainPage() {
       title: "Action",
       key: "action",
       render: (record) => (
-        <Space size="middle">
+        <Space size="middle" className="wrap2Button" style={{ display: "flex" }}>
           <Button
+            className="updateButton"
             type="primary"
             onClick={() => {
               setDataEdit(record);
@@ -142,6 +148,7 @@ function MainPage() {
 
           <Button
             type="primary"
+            className="deleteButton"
             danger
             onClick={() => {
               showPromiseConfirm(record.Id);
@@ -173,8 +180,26 @@ function MainPage() {
     },
   ];
 
-  const handleMenuClick = (value) => {
+  async function handleMenuClick(value) {
     console.log("handle menu click", value);
+    if (value.key == 'delete') {
+      await deleteCustomersApi({ deletedCustomers: selectedRowKeys });
+      dispatch(setRefresh(!refresh));
+      setSelectedRowKeys([])
+    }
+    if (value.key == 'deactive') {
+      await deactiveCustomersApi({ deactivedCustomers: selectedRowKeys });
+      dispatch(setRefresh(!refresh));
+      setSelectedRowKeys([])
+
+
+    }
+    else {
+      await activeCustomersApi({ activedCustomers: selectedRowKeys });
+      dispatch(setRefresh(!refresh));
+      setSelectedRowKeys([])
+
+    }
   };
   const menu = (
     <Menu onClick={handleMenuClick}>
@@ -254,10 +279,14 @@ function MainPage() {
       setSelectedRowKeys(newSelectedRowKeys);
     },
   };
+
   const hasSelected = selectedRowKeys.length > 0;
 
-  const start = () => {
-    console.log(selectedRowKeys);
+  async function start() {
+    // console.log(selectedRowKeys);
+    // await deleteCustomersApi({ deletedCustomers: selectedRowKeys });
+    // dispatch(setRefresh(!refresh));
+
   };
 
   return (
@@ -313,6 +342,7 @@ function MainPage() {
           Actions <DownOutlined />
         </Button>
       </Dropdown>
+      {(selectedRowKeys.length > 0) && <div style={{ display: "inline-block", padding: "0px 20px 0px 20px" }}>  {selectedRowKeys.length} seleted! </div>}
       <br />
       <br />
       <Table

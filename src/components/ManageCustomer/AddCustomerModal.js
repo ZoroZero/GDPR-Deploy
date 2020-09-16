@@ -19,6 +19,7 @@ import {
   setRefresh,
 } from "features/ManageCustomer/slice";
 import { useSelector, useDispatch } from "react-redux";
+import { current } from "@reduxjs/toolkit";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -142,8 +143,10 @@ function AddCustomerModal(props) {
                 required: false,
               },
             ]}
-          >
-            <DatePicker showTime style={{ width: "100%" }} />
+          ><DatePicker
+              disabledDate={(current) => {
+                return !form.getFieldValue("ContractEndDate") || (current.valueOf() > form.getFieldValue("ContractEndDate").valueOf())
+              }} showTime style={{ width: "100%" }} />
           </Form.Item>
 
           <Form.Item
@@ -160,7 +163,11 @@ function AddCustomerModal(props) {
               },
             ]}
           >
-            <DatePicker showTime style={{ width: "100%" }} />
+            <DatePicker
+              disabledDate={(current) => {
+                return !form.getFieldValue("ContractBeginDate") || (current.valueOf() < form.getFieldValue("ContractBeginDate").valueOf())
+              }
+              } showTime style={{ width: "100%" }} />
           </Form.Item>
         </Form.Item>
         <Form.Item

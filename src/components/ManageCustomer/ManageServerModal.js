@@ -1,7 +1,6 @@
 import { Col, Checkbox, Input, Radio, Row, Space, List, Spin, Tag } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import "antd/dist/antd.css";
-import "./index.css";
 import { useSelector, useDispatch } from "react-redux";
 import React, { useEffect, useState } from "react";
 import {
@@ -214,7 +213,7 @@ const ManageServerModal = (props) => {
               columns={columnsOwned}
               dataSource={servers}
               pagination={false}
-              scroll={{ y: 260 }}
+              scroll={{ y: 360 }}
             />
           </Col>
           <Col span={12} style={{ padding: "10px" }}>
@@ -249,6 +248,7 @@ const ManageServerModal = (props) => {
                             </Row>
                             <Row>
                               <Checkbox
+                                disabled={!record.FirstNameCustomer}
                                 key={keyUpdate}
                                 defaultChecked={false}
                                 onChange={(e) => handleCheck(record.Id, e.target.checked)}

@@ -15,6 +15,21 @@ export const listCustomerApi = () => {
       });
   });
 };
+export const getDeletedCustomerApi = (data) => {
+  return new Promise((resolve, reject) => {
+    const token = checkToken();
+    return axios
+      .get("/customers/deleted", {
+        params: data,
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
 export const getCustomerApi = (data) => {
   return new Promise((resolve, reject) => {
     const token = checkToken();
@@ -64,6 +79,51 @@ export const deleteCustomerApi = (data) => {
     const token = checkToken();
     return axios
       .delete("/customers", {
+        params: data,
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+export const deleteCustomersApi = (data) => {
+  return new Promise((resolve, reject) => {
+    const token = checkToken();
+    return axios
+      .put("/customers/delete-multi", {
+        params: data,
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+export const deactiveCustomersApi = (data) => {
+  return new Promise((resolve, reject) => {
+    const token = checkToken();
+    return axios
+      .put("/customers/deactive-multi", {
+        params: data,
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+export const activeCustomersApi = (data) => {
+  return new Promise((resolve, reject) => {
+    const token = checkToken();
+    return axios
+      .put("/customers/active-multi", {
         params: data,
       })
       .then((res) => {
