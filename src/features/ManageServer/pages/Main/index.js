@@ -235,7 +235,7 @@ function MainPage() {
     // Handle set status of checking rows
     const handleSetStatus = (status) => {
         return updateMultipleStatusApi({
-            listServer: selectingServerIdList.join(','),
+            listServer: selectingServerIdList, 
             status: status
         })
         .then(res => {
@@ -286,9 +286,9 @@ function MainPage() {
             <Menu.Item key="deactivate">
                 Deactivate all
             </Menu.Item>
-            <Menu.Item key="delete">
+            {/* <Menu.Item key="delete">
                 Delete all
-            </Menu.Item>
+            </Menu.Item> */}
         </Menu>
     );
 

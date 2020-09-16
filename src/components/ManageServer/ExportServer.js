@@ -51,8 +51,8 @@ function ExportServer(props){
             {
                 serverName: values.ServerName,
                 ipAddressList: values.IpAddress? values.IpAddress.join(','): undefined,
-                startDate: values.FromDate? values.FromDate.format("YYYY-MM-DD hh:mm:ss"): undefined,
-                endDate: values.ToDate? values.ToDate.format("YYYY-MM-DD hh:mm:ss"): undefined
+                startDate: values.FromDate? values.FromDate.format("YYYY-MM-DD HH:mm:ss"): undefined,
+                endDate: values.ToDate? values.ToDate.format("YYYY-MM-DD HH:mm:ss"): undefined
             }
         )
         .then((res) => {
