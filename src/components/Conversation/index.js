@@ -4,11 +4,17 @@ import { useSelector } from "react-redux";
 import socket from "socket/socket";
 import { getAllMessageApi } from "api/requests";
 import "./index.scss";
+import InfinteScrollReverse from "react-infinite-scroll-reverse";
 
 const ConversationBox = (props) => {
   const [form] = Form.useForm();
   const [lstMsg, setLstMsg] = useState([]);
   const { token, userId } = useSelector((state) => state.app);
+  const [scrollProperty, setScrollProperty] = useState({
+    loading: false,
+    hasMore: true,
+    page: 1,
+  });
 
   useEffect(() => {
     fetchOldMessage(props.request.Id);
@@ -20,7 +26,7 @@ const ConversationBox = (props) => {
   });
 
   function fetchOldMessage(requestId) {
-    getAllMessageApi(requestId)
+    getAllMessageApi(requestId, page)
       .then((res) => {
         console.log(res);
         setLstMsg(res.data);
@@ -71,6 +77,9 @@ const ConversationBox = (props) => {
       </div>
     );
   });
+
+  function getItems() {}
+
   return (
     <>
       <Card
@@ -83,7 +92,15 @@ const ConversationBox = (props) => {
           overflowY: "auto",
         }}
       >
-        {lstMsgCard}
+        <InfinteScrollReverse
+          initialLoad={false}
+          hasMore={!scrollProperty.loading && scrollProperty.hasMore}
+          loadMore={fetchOldMessage}
+          loadArea={7}
+          isLoading={scrollProperty.loading}
+        >
+          {lstMsgCard}
+        </InfinteScrollReverse>
       </Card>
       <Form form={form} onFinish={onSendMessage}>
         <Row>
