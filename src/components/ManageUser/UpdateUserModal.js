@@ -95,29 +95,12 @@ const CollectionCreateForm = ({
     console.log("Received values of form: ", { ...values, switchState });
   };
 
-  const prefixSelector = (
-    <Form.Item name="prefix" noStyle>
-      <Select
-        style={{
-          width: 70,
-        }}
-      >
-        <Option value="86">+86</Option>
-        <Option value="87">+87</Option>
-      </Select>
-    </Form.Item>
-  );
   const [autoCompleteResult, setAutoCompleteResult] = useState([]);
 
   function onChange(checked) {
     console.log(`switch to ${checked}`);
     setSwitchState(checked);
   }
-
-  const websiteOptions = autoCompleteResult.map((website) => ({
-    label: website,
-    value: website,
-  }));
   return (
     <Modal
       visible={visible}
@@ -150,7 +133,7 @@ const CollectionCreateForm = ({
           password: record.HashPasswd,
           confirm: record.HashPasswd,
           username: record.UserName,
-          role: [record.RoleName],
+          rolelist: [record.RoleName],
           prefix: "86",
         }}
         scrollToFirstError
