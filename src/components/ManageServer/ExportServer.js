@@ -6,7 +6,7 @@ import * as XLSX from 'xlsx';
 import { exportServerListApi } from 'api/server';
 import { SERVER_CONSTANTS } from 'constants/ManageServer/server';
 import { VerticalAlignBottomOutlined } from '@ant-design/icons'
-import { getListServerOptions } from "features/ManageRequest/slice";
+import { getListServerOptions } from "features/ManageServer/slice";
 import { useDispatch, useSelector } from "react-redux";
 const { Option } = Select;
 
@@ -19,22 +19,22 @@ function ExportServer(props){
     const [csvData, setCSVData] = useState([])
     const [keyword, setkeyword] = useState("");
     const fileName = SERVER_CONSTANTS.SERVER_EXPORT_FILE; 
-    // const { lstServer } = useSelector(
-    //     (state) => state.serverManagement
-    // );
+    const { lstServer } = useSelector(
+        (state) => state.serverManagement
+    );
     useEffect(() => {
         dispatch(getListServerOptions());
       }, []);
 
 
-    // const options = lstServer.filter((value) => value.Server.includes(keyword))
-    //     .map((value, index) => {
-    //     return (
-    //         <Option value={value.Server} key={value.Server}>
-    //         {value.Server}
-    //         </Option>
-    //     );
-    // });
+    const options = lstServer.filter((value) => value.IpAddress.includes(keyword))
+        .map((value, index) => {
+        return (
+            <Option value={value.IpAddress} key={value.IpAddress}>
+            {value.IpAddress}
+            </Option>
+        );
+    });
 
     function exportToXLSX(csvData, fileName, type)  {
         const ws = XLSX.utils.json_to_sheet(csvData);
@@ -70,16 +70,11 @@ function ExportServer(props){
     }
 
     const handleMenuClick = (e) => {
-        // message.info('Click on menu item.');
-        // console.log('click', e);
         handleExport(e.key);
     }
 
     const menu = (
         <Menu onClick={handleMenuClick}>
-          {/* <Menu.Item key="csv">
-            <CSVLink data={csvData} filename={fileName + '.csv'}>.CSV</CSVLink>
-          </Menu.Item> */}
             <Menu.Item key="csv">
                 <VerticalAlignBottomOutlined /> .CSV 
             </Menu.Item>
@@ -114,10 +109,10 @@ function ExportServer(props){
 
                     <Form.Item label="IP Address"  style={{ display: 'inline-block', width: 'calc(25% - 16px)', margin: '0 8px' }}
                                 name='IpAddress'>
-                        {/* <Select showSearch onSearch={onSearchServer}>
+                        <Select showSearch onSearch={onSearchServer} mode="multiple" >
                             {options}
-                        </Select> */}
-                        <Input></Input>
+                        </Select>
+                        {/* <Input></Input> */}
                     </Form.Item>
 
                     <Form.Item label="From date" style={{ display: 'inline-block', width: 'calc(25% - 16px)', margin: '0 8px'  }} 

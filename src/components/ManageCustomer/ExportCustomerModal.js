@@ -77,8 +77,6 @@ function ExportCustomerModal(props){
     }
 
     const handleMenuClick = (e) => {
-        // message.info('Click on menu item.');
-        // console.log('click', e);
         handleExport(e.key);
     }
 
