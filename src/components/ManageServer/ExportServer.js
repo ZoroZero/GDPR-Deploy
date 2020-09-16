@@ -50,7 +50,7 @@ function ExportServer(props){
         return exportServerListApi(
             {
                 serverName: values.ServerName,
-                ipAddress: values.IpAddress,
+                ipAddressList: values.IpAddress? values.IpAddress.join(','): undefined,
                 startDate: values.FromDate? values.FromDate.format("YYYY-MM-DD hh:mm:ss"): undefined,
                 endDate: values.ToDate? values.ToDate.format("YYYY-MM-DD hh:mm:ss"): undefined
             }

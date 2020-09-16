@@ -123,7 +123,7 @@ export const exportServerListApi = (data) => {
       .get(`/api/servers/export`, {
           params: {
             serverName: data.serverName,
-            serverIp: data.ipAddress,
+            serverIpList: data.ipAddressList,
             startDate: data.startDate,
             endDate: data.endDate
           }
