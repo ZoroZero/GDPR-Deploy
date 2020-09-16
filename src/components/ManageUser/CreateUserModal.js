@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { insertUsersApi } from "../../api/user";
-import CreateUserForm from "./CreateUserForm";
 import "antd/dist/antd.css";
 import {
   Form,
@@ -8,12 +7,8 @@ import {
   Tooltip,
   Cascader,
   Select,
-  Row,
-  Col,
-  Checkbox,
   Button,
   AutoComplete,
-  Radio,
   Modal,
   message,
 } from "antd";
@@ -77,34 +72,6 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
     console.log("Received values of form: ", values);
   };
 
-  const prefixSelector = (
-    <Form.Item name="prefix" noStyle>
-      <Select
-        style={{
-          width: 70,
-        }}
-      >
-        <Option value="86">+86</Option>
-        <Option value="87">+87</Option>
-      </Select>
-    </Form.Item>
-  );
-  const [autoCompleteResult, setAutoCompleteResult] = useState([]);
-
-  const onWebsiteChange = (value) => {
-    if (!value) {
-      setAutoCompleteResult([]);
-    } else {
-      setAutoCompleteResult(
-        [".com", ".org", ".net"].map((domain) => `${value}${domain}`)
-      );
-    }
-  };
-
-  const websiteOptions = autoCompleteResult.map((website) => ({
-    label: website,
-    value: website,
-  }));
   return (
     <Modal
       visible={visible}

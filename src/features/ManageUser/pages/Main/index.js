@@ -10,14 +10,21 @@ import {
   Pagination,
   Tag,
   message,
+  Menu,
+  Dropdown,
 } from "antd";
-import { ExclamationCircleOutlined, AudioOutlined } from "@ant-design/icons";
+import {
+  ExclamationCircleOutlined,
+  UserOutlined,
+  DownOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+} from "@ant-design/icons";
 import "./index.scss";
 import CreateUserModal from "../../../../components/ManageUser/CreateUserModal.js";
 import UpdateUserModal from "../../../../components/ManageUser/UpdateUserModal.js";
-import { getUsersApi, deleteUsersApi } from "api/user";
+import { getUsersApi, deleteUsersApi, acdeacListUsersApi } from "api/user";
 import { useSelector, useDispatch } from "react-redux";
-import { getStore } from "store";
 import {
   setSearchKey,
   setPageNo,
@@ -85,11 +92,11 @@ function MainPage() {
         { text: "contact-point", value: "contact-point" },
       ],
       render: (val) =>
-        val == "admin" ? (
+        val === "admin" ? (
           <Tag color="green">ADMIN</Tag>
-        ) : val == "normal-user" ? (
+        ) : val === "normal-user" ? (
           <Tag color="blue">NORMAL USER</Tag>
-        ) : val == "dc-member" ? (
+        ) : val === "dc-member" ? (
           <Tag color="red">DC-MEMBER</Tag>
         ) : (
           <Tag color="orange">CONTACT POINT</Tag>
@@ -119,7 +126,6 @@ function MainPage() {
           <UpdateUserModal record={record} onSubmitModal={refetch} />
           <Button
             type="primary"
-            // size={"small"}
             danger
             onClick={() => showPromiseConfirm(record)}
           >
@@ -130,21 +136,39 @@ function MainPage() {
     },
   ];
 
+  async function handleMenuClick(e) {
+    console.log("click", e);
+    if (e.key == "active") {
+      message.warning("Active all selected items");
+      await acdeacListUsersApi({ listid: exportData.join(","), isactive: 1 });
+      refetch();
+    } else if (e.key == "deactive") {
+      message.warning("Deactive all selected items");
+      await acdeacListUsersApi({ listid: exportData.join(","), isactive: 0 });
+      refetch();
+    }
+  }
+  const menu = (
+    <Menu onClick={handleMenuClick}>
+      <Menu.Item key="active" icon={<CheckCircleOutlined />}>
+        Active all selected items
+      </Menu.Item>
+      <Menu.Item key="deactive" icon={<CloseCircleOutlined />}>
+        Deactive all selected items
+      </Menu.Item>
+    </Menu>
+  );
+
   const dispatch = useDispatch();
+  const [exportData, setExportData] = useState([]);
   const [data, setData] = useState([]);
-  const [total, setTotal] = useState([]);
-  const [pagination, setPagination] = useState({ PageNo: 1, PageSize: 7 });
+  const [total, setTotal] = useState();
   const [loading, setLoading] = useState(false);
-  const {
-    startDate,
-    SearchKey,
-    PageNo,
-    PageSize,
-    SortBy,
-    SortOrder,
-    Role,
-  } = useSelector((state) => state.userManagement);
+  const { SearchKey, PageNo, PageSize, SortBy, SortOrder, Role } = useSelector(
+    (state) => state.userManagement
+  );
   useEffect(() => {
+    console.log("useeffect");
     fetch({
       PageNo: PageNo,
       PageSize: PageSize,
@@ -153,10 +177,19 @@ function MainPage() {
       SortOrder: SortOrder,
       Role: Role,
     });
-  }, [SearchKey, PageNo, PageSize, SortBy, SortOrder, Role]);
-  function onChange(pageNumber) {
-    dispatch(setPageNo({ PageNo: pageNumber }));
-  }
+  }, [PageNo, PageSize, Role]);
+  // function onChange(pageNumber) {
+  //   dispatch(setPageNo({ PageNo: pageNumber }));
+  //   console.log("onchangepage");
+  //   fetch({
+  //     PageNo: pageNumber,
+  //     PageSize: PageSize,
+  //     SearchKey: SearchKey,
+  //     SortBy: SortBy,
+  //     SortOrder: SortOrder,
+  //     Role: Role,
+  //   });
+  // }
   function refetch() {
     fetch({
       PageNo: PageNo,
@@ -170,25 +203,50 @@ function MainPage() {
   function showTotal(total) {
     return `Total ${total} items`;
   }
-  function search(SearchKey) {
-    dispatch(setSearchKey({ SearchKey: SearchKey }));
+  function search(SearchKeyw) {
+    dispatch(setSearchKey({ SearchKey: SearchKeyw }));
     dispatch(setPageNo({ PageNo: 1 }));
+    fetch({
+      PageNo: 1,
+      PageSize: PageSize,
+      SearchKey: SearchKeyw,
+      SortBy: SortBy,
+      SortOrder: SortOrder,
+      Role: Role,
+    });
   }
   function onShowSizeChange(current, pageSize) {
-    console.log(current, pageSize);
-    if (pageSize != PageSize) dispatch(setPageNo(Math.ceil(total / pageSize)));
-    dispatch(setPageSize({ PageSize: pageSize }));
+    if (pageSize !== PageSize && PageNo > Math.ceil(total / pageSize)) {
+      console.log("Total1", total);
+      dispatch(setPageSize({ PageSize: pageSize }));
+      dispatch(setPageNo({ PageNo: Math.ceil(total / pageSize) }));
+
+      // fetch({
+      //   PageNo: Math.ceil(total / pageSize),
+      //   PageSize: pageSize,
+      //   SearchKey: SearchKey,
+      //   SortBy: SortBy,
+      //   SortOrder: SortOrder,
+      //   Role: Role,
+      // });
+    } else {
+      console.log("Total2", total);
+      dispatch(setPageSize({ PageSize: pageSize }));
+      dispatch(setPageNo({ PageNo: current }));
+      // fetch({
+      //   PageNo: current,
+      //   PageSize: pageSize,
+      //   SearchKey: SearchKey,
+      //   SortBy: SortBy,
+      //   SortOrder: SortOrder,
+      //   Role: Role,
+      // });
+    }
   }
   function handleTableChange(pagination, filters, sorter) {
-    // console.log("Various parameters", pagination, filters, sorter);
-    // console.log("Filter", filters);
-    // console.log("Sorter", sorter);
-    // console.log(sorter.length != 0);
-    if (sorter.length != 0) {
+    if (sorter.length !== 0) {
       dispatch(setSortBy({ SortBy: sorter.field }));
       dispatch(setSortOrder({ SortOrder: sorter.order }));
-      console.log("Order", SortOrder);
-      console.log("By", sorter.field);
       fetch({
         PageNo: PageNo,
         PageSize: PageSize,
@@ -200,10 +258,56 @@ function MainPage() {
     }
     if (filters.RoleName !== null) {
       dispatch(setRole({ Role: filters.RoleName.join(",") }));
+      fetch({
+        PageNo: PageNo,
+        PageSize: PageSize,
+        SearchKey: SearchKey,
+        SortBy: sorter.field,
+        SortOrder: sorter.order,
+        Role: filters.RoleName.join(","),
+      });
     } else {
       dispatch(setRole({ Role: "" }));
+      fetch({
+        PageNo: PageNo,
+        PageSize: PageSize,
+        SearchKey: SearchKey,
+        SortBy: sorter.field,
+        SortOrder: sorter.order,
+        Role: "",
+      });
     }
   }
+
+  // Handle change in page number
+  const handlePageChange = (pageNumber, pageSize) => {
+    if (pageSize !== PageSize && PageNo > Math.ceil(total / pageSize)) {
+      console.log("Total1", total);
+      dispatch(setPageSize({ PageSize: pageSize }));
+      dispatch(setPageNo({ PageNo: Math.ceil(total / pageSize) }));
+
+      // fetch({
+      //   PageNo: Math.ceil(total / pageSize),
+      //   PageSize: pageSize,
+      //   SearchKey: SearchKey,
+      //   SortBy: SortBy,
+      //   SortOrder: SortOrder,
+      //   Role: Role,
+      // });
+    } else {
+      console.log("Total2", total);
+      dispatch(setPageSize({ PageSize: pageSize }));
+      dispatch(setPageNo({ PageNo: pageNumber }));
+      // fetch({
+      //   PageNo: current,
+      //   PageSize: pageSize,
+      //   SearchKey: SearchKey,
+      //   SortBy: SortBy,
+      //   SortOrder: SortOrder,
+      //   Role: Role,
+      // });
+    }
+  };
 
   const fetch = (params) => {
     setLoading(true);
@@ -212,29 +316,45 @@ function MainPage() {
         setLoading(false);
         setData(res.data);
         if (res.status === 200) {
-          // message.success(res.statusText);
         } else {
           message.error(res.statusText);
         }
-        if (res.data.length != 0) setTotal(res.data[0].TotalItem);
+        if (res.data.length !== 0) setTotal(res.data[0].TotalItem);
         else setTotal(0);
         showTotal({ total });
-        setPagination({
-          ...params.pagination,
-        });
       })
       .catch((error) => {
         message.error(error.data.message);
       });
   };
 
+  // Handle row selected
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      setExportData(selectedRowKeys);
+    },
+    onSelect: (record, selected, selectedRows) => {
+      // console.log(record, selected, selectedRows);
+    },
+    onSelectAll: (selected, selectedRows, changeRows) => {
+      // console.log(selected, selectedRows, changeRows);
+    },
+  };
+  const hasSelected = exportData.length > 0;
   return (
     <div>
       <Row>
         <Col span={8}>
+          <Dropdown overlay={menu} disabled={!hasSelected}>
+            <Button>
+              Multi actions <DownOutlined />
+            </Button>
+          </Dropdown>
+        </Col>
+        <Col span={8}>
           <CreateUserModal onSubmitModal={refetch} />
         </Col>
-        <Col span={8} offset={8}>
+        <Col span={8}>
           <Search
             placeholder="input search text"
             onSearch={(value) => search(value)}
@@ -243,16 +363,14 @@ function MainPage() {
         </Col>
       </Row>
       <br />
-      {/* <br /> */}
       <Table
         columns={columns}
         rowKey={(record) => record.Id}
         dataSource={data}
         pagination={false}
         loading={loading}
+        rowSelection={rowSelection}
         onChange={handleTableChange}
-        // onChange={onChangeTable}
-        // onChange={handleTableChange}
       />
       <br />
       <Row>
@@ -260,12 +378,13 @@ function MainPage() {
           <Pagination
             showQuickJumper
             showSizeChanger
-            onShowSizeChange={onShowSizeChange}
-            defaultCurrent={1}
+            // onShowSizeChange={onShowSizeChange}
+            onChange={handlePageChange}
+            current={PageNo}
             total={total}
             showTotal={showTotal}
-            defaultPageSize={10}
-            onChange={onChange}
+            pageSize={PageSize}
+            // onChange={onChange}
           />
         </Col>
       </Row>
