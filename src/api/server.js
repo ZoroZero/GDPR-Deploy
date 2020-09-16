@@ -1,11 +1,11 @@
 import axios from "axios/auth.instance";
 const FormData = require('form-data');
 
-export const listServerApi = () => {
+export const getAllServerApi = () => {
   return new Promise((resolve, reject) => {
     return axios({
       method: "get",
-      url: "/api/servers",
+      url: "/api/servers/all",
     })
       .then((res) => {
         resolve(res.data);
