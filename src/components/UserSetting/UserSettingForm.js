@@ -15,6 +15,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateAccountApi } from "../../api/user";
 import UploadAvatarDynamic from "../../components/UserSetting/UploadAvatarDynamic.js";
 import UploadonClick from "../../components/UserSetting/UploadonClick.js";
+import { setua } from "features/App/slice";
 const formItemLayout = {
   labelCol: {
     span: 6,
@@ -76,7 +77,7 @@ const UserSetting = (pros) => {
   };
   useEffect(() => {
     // fetch();
-
+    dispatch(setua({ username: record.UserName, avatar: record.AvatarPath }));
     console.log("didmount avbc", record);
     if (record.AvatarPath) {
       setImageUrl("http://localhost:5000/api/users/" + record.AvatarPath);

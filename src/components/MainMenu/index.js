@@ -1,18 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useLocation, Link } from "react-router-dom";
-import { Menu } from "antd";
+import { Menu, Avatar, Badge } from "antd";
 import { UserOutlined, VideoCameraOutlined } from "@ant-design/icons";
 import { AbilityContext } from "permission/can";
 import { useAbility } from "@casl/react";
+import { useSelector, useDispatch } from "react-redux";
 
 MainMenu.propTypes = {};
 
 function MainMenu(props) {
+  const { username, avatar } = useSelector((state) => state.app);
   const location = useLocation();
   const ability = useAbility(AbilityContext);
   return (
     <Menu theme="dark" mode="inline" selectedKeys={[location.pathname]}>
+      {
+        <Menu.Item
+          key="/user-setting"
+          icon={
+            // <Badge dot>
+            <Avatar
+              style={{ marginRight: "0.5em" }}
+              icon={<UserOutlined />}
+              src={`http://localhost:5000/api/users/${avatar}`}
+            />
+            // </Badge>
+          }
+        >
+          {`Hi ${username}!`}
+          <Link to="/user-setting" />
+        </Menu.Item>
+      }
       {ability.can("access", "manage-user") && (
         <Menu.Item key="/user-management" icon={<UserOutlined />}>
           Manage User
@@ -37,12 +56,6 @@ function MainMenu(props) {
           <Link to="/customer-management" />
         </Menu.Item>
       )}
-      {
-        <Menu.Item key="/user-setting" icon={<UserOutlined />}>
-          Account Setting
-          <Link to="/user-setting" />
-        </Menu.Item>
-      }
     </Menu>
   );
 }

@@ -1,7 +1,7 @@
 import React, { Suspense, useEffect, useState } from "react";
 import { BrowserRouter, Route, Switch, Link, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Layout, Button } from "antd";
+import { Layout, Button, message } from "antd";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import "./index.scss";
 import { checkToken } from "utils/localstorage";
@@ -18,6 +18,8 @@ import { login, onLogout } from "./slice";
 import { AbilityContext } from "permission/can";
 import { useAbility } from "@casl/react";
 import { VerifyAcc } from "./pages/VerifyScreen";
+import { setua } from "features/App/slice";
+import { getAccountDetailApi } from "api/user";
 
 const store = getStore();
 const { Header, Content, Sider } = Layout;
@@ -83,6 +85,18 @@ function App(props) {
     const role = localStorage.getItem("role");
     const userId = localStorage.getItem("userId");
     if (token) dispatch(login({ token: token, role: role, userId: userId }));
+    getAccountDetailApi()
+      .then((res) => {
+        dispatch(
+          setua({
+            username: res.data.UserName,
+            avatar: res.data.AvatarPath,
+          })
+        );
+      })
+      .catch((error) => {
+        message.error(error.data.message);
+      });
   });
 
   const handleLogout = () => {

@@ -5,9 +5,6 @@ import "./index.scss";
 
 import NotFound from "../../components/NotFound";
 import MainPage from "./pages/Main";
-import DetailPage from "./pages/Detail";
-import { AbilityContext } from "permission/can";
-import { useAbility } from "@casl/react";
 
 User.propTypes = {};
 
