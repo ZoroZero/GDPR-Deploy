@@ -257,7 +257,7 @@ function MainPage() {
       <Row>
         <Col span={8}>
           <div>
-            <Button className="action-button" onClick={() => setImporting(exporting => !exporting)}>Import customer list</Button>
+            <Button onClick={() => setImporting(exporting => !exporting)}>Import customer list</Button>
             <ImportCustomerModal visible={importing} setVisible={setImporting}></ImportCustomerModal>
           </div>
 
