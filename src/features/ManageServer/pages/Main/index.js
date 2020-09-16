@@ -21,15 +21,21 @@ const { confirm } = Modal;
 function MainPage() {
     const dispatch = useDispatch()
 
-    const { sortColumn, sortOrder, data, pagination, total, refresh} = useSelector((state) => state.serverManagement)
-    // const [data, setData] = useState([]);
+    const { refresh } = useSelector((state) => state.serverManagement)
+    const [data, setData] = useState([]);
 
     const [loading, setLoading] = useState(false);
-    // const [total, setTotal ] = useState(0);
+    const [total, setTotal ] = useState(0);
 
-    // const [page, setPage ] = useState(1);
+    const [pagination, setPagination ] = useState({
+        page: 1,
+        pageSize: 10
+    });
+    const [sorter, setSorter] = useState({
+        sortColumn: SERVER_CONSTANTS.DEFAULT_SORT_COLUMN,
+        sortOrder: SERVER_CONSTANTS.DEFAULT_SORT_ORDER
+    })
     const [searchKeyword, setSearchKeyword] = useState('');  
-
     const [filter, setFilter] = useState({filterColumn: SERVER_CONSTANTS.DEFAULT_FILTER_COLUMN, filterKeys: SERVER_CONSTANTS.DEFAULT_FILTER_KEYS}) 
     const [modalVisible, setModalVisible] = useState(false);
     const [exporting, setExporting] = useState(false);
@@ -39,8 +45,8 @@ function MainPage() {
     const [selectingServerIdList, setSelectingServerIdList] = useState([]);
 
     useEffect(() => {
-        fetch(pagination, sortColumn, sortOrder, searchKeyword, filter);
-    }, [pagination, sortColumn, sortOrder, searchKeyword, refresh, filter]);
+        fetch(pagination, sorter.sortColumn, sorter.sortOrder, searchKeyword, filter);
+    }, [pagination, sorter, searchKeyword, refresh, filter]);
 
 
     useEffect(() => {
@@ -111,9 +117,9 @@ function MainPage() {
     const handlePageChange = (pageNumber, pageSize) => {
         // console.log(pageNumber);
         var newPageNum = pageNumber
-        if(pageSize !== pagination.pageSize)
+        if(pageSize !== pagination.pageSize && Math.ceil(total/pageSize) < pagination.pageNumber )
             newPageNum =  Math.ceil(pagination.pageSize*pagination.page/pageSize)
-        dispatch(setPagination({pagination: {page: newPageNum, pageSize: pageSize}}))
+        setPagination({page: newPageNum, pageSize: pageSize})
         console.log("Fetch after pagination change");
     }
 
@@ -139,9 +145,9 @@ function MainPage() {
     // Set table data
     const setTableData = (data, total) => {
         console.log(data)
-        dispatch(setTotal({total: total}))
-        // setData(res.data);
-        dispatch(setData({data: data}))
+        setTotal(total)
+        setData(data);
+        // dispatch(setData({data: data}))
     }
 
     // Handle table change: sort, filter
@@ -150,8 +156,8 @@ function MainPage() {
         console.log('Filters; ',filters);
         var newSortColumn = sorter.column? sorter.column.dataIndex: 'Name'
         var newSortOrder = sorter.order ==='descend'?'descend':'ascend'
-        dispatch(setSort({sortColumn: newSortColumn, sortOrder: newSortOrder }));
-
+        // dispatch(setSort({sortColumn: newSortColumn, sortOrder: newSortOrder }));
+        setSorter({sortColumn: newSortColumn, sortOrder: newSortOrder })
         // Filter
         var filterKeys = filters.Status? filters.Status.join(): SERVER_CONSTANTS.DEFAULT_FILTER_KEYS
         setFilter({filterColumn: filter.filterColumn, filterKeys: filterKeys})
@@ -161,7 +167,7 @@ function MainPage() {
     //Handle search 
     const handleSearchServer = (keyword) => {
         setSearchKeyword(keyword)
-        dispatch(setPagination({pagination: {page: 1, pageSize: pagination.pageSize}}))
+        setPagination({page: 1, pageSize: pagination.pageSize})
         // console.log("Fetch after search");
     }
 
@@ -229,7 +235,7 @@ function MainPage() {
     // Handle set status of checking rows
     const handleSetStatus = (status) => {
         return updateMultipleStatusApi({
-            listServer: selectingServerIdList.join(','),
+            listServer: selectingServerIdList, 
             status: status
         })
         .then(res => {
@@ -280,9 +286,9 @@ function MainPage() {
             <Menu.Item key="deactivate">
                 Deactivate all
             </Menu.Item>
-            <Menu.Item key="delete">
+            {/* <Menu.Item key="delete">
                 Delete all
-            </Menu.Item>
+            </Menu.Item> */}
         </Menu>
     );
 
