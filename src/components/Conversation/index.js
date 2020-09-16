@@ -10,11 +10,6 @@ const ConversationBox = (props) => {
   const [form] = Form.useForm();
   const [lstMsg, setLstMsg] = useState([]);
   const { token, userId } = useSelector((state) => state.app);
-  const [scrollProperty, setScrollProperty] = useState({
-    loading: false,
-    hasMore: true,
-    page: 1,
-  });
 
   useEffect(() => {
     fetchOldMessage(props.request.Id);
@@ -26,7 +21,7 @@ const ConversationBox = (props) => {
   });
 
   function fetchOldMessage(requestId) {
-    getAllMessageApi(requestId, page)
+    getAllMessageApi(requestId)
       .then((res) => {
         console.log(res);
         setLstMsg(res.data);
@@ -92,15 +87,7 @@ const ConversationBox = (props) => {
           overflowY: "auto",
         }}
       >
-        <InfinteScrollReverse
-          initialLoad={false}
-          hasMore={!scrollProperty.loading && scrollProperty.hasMore}
-          loadMore={fetchOldMessage}
-          loadArea={7}
-          isLoading={scrollProperty.loading}
-        >
-          {lstMsgCard}
-        </InfinteScrollReverse>
+        {lstMsgCard}
       </Card>
       <Form form={form} onFinish={onSendMessage}>
         <Row>
