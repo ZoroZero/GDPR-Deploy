@@ -2,7 +2,13 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useLocation, Link } from "react-router-dom";
 import { Menu, Avatar, Badge } from "antd";
-import { UserOutlined, VideoCameraOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  VideoCameraOutlined,
+  CloudServerOutlined,
+  AuditOutlined,
+  CrownOutlined,
+} from "@ant-design/icons";
 import { AbilityContext } from "permission/can";
 import { useAbility } from "@casl/react";
 import { useSelector, useDispatch } from "react-redux";
@@ -37,19 +43,19 @@ function MainMenu(props) {
         </Menu.Item>
       )}
       {ability.can("access", "manage-request") && (
-        <Menu.Item key="/request-management" icon={<VideoCameraOutlined />}>
+        <Menu.Item key="/request-management" icon={<AuditOutlined />}>
           Manage Request
           <Link to="/request-management" />
         </Menu.Item>
       )}
       {ability.can("access", "manage-server") && (
-        <Menu.Item key="/server-management" icon={<VideoCameraOutlined />}>
+        <Menu.Item key="/server-management" icon={<CloudServerOutlined />}>
           Manage Server
           <Link to="/server-management" />
         </Menu.Item>
       )}
       {ability.can("access", "manage-customer") && (
-        <Menu.Item key="/customer-management" icon={<VideoCameraOutlined />}>
+        <Menu.Item key="/customer-management" icon={<CrownOutlined />}>
           Manage Customer
           <Link to="/customer-management" />
         </Menu.Item>
