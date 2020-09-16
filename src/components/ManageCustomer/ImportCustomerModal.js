@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { Button, Modal, Upload, message} from "antd";
 import { InboxOutlined } from '@ant-design/icons';
 import { setRefresh } from 'features/ManageCustomer/slice';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { importCustomerListApi } from 'api/customer';
 import * as XLSX from 'xlsx';
 
 const { Dragger } = Upload;
 
 function ImportCustomerModal(props){
+    const { refresh } = useSelector((state) => state.customerManagement)
     const [fileList, setFileList] = useState([]);
     const [importFile, setImportFile] = useState(null);
     const dispatch = useDispatch();
@@ -27,6 +28,13 @@ function ImportCustomerModal(props){
       multiple: false,
       beforeUpload: () => { return false },
       accept:".xlsx, .csv"
+    }
+
+    // Handle close
+    const handleCloseModal = () => {
+        props.setVisible(false); 
+        setImportFile(null); 
+        setFileList([])
     }
 
     // Handle import  
@@ -55,7 +63,8 @@ function ImportCustomerModal(props){
                 .then((res) => {
                     console.log('Import customer res',res)
                     message.success("Successfully import server list")
-                    dispatch(setRefresh())
+                    dispatch(setRefresh(!refresh))
+                    handleCloseModal()
                 }).catch((err) => {
                     console.log("Import error", err)
                     message.error("Something went wrong. Please check your file again")
@@ -73,7 +82,7 @@ function ImportCustomerModal(props){
             title= {"Import server list"}
             centered
             visible={props.visible}
-            onCancel={()=>{props.setVisible(false)}}
+            onCancel={handleCloseModal}
             okButtonProps={{ style: { display: 'none' } }}
             cancelButtonProps={{ style: { display: 'none' } }}
             forceRender={true} 
@@ -83,7 +92,7 @@ function ImportCustomerModal(props){
                   Import
               </Button>
               ,
-              <Button key="cancel" onClick={()=>{props.setVisible(false); setImportFile(null); setFileList([])}}>
+              <Button key="cancel" onClick={handleCloseModal}>
                   Cancel
               </Button>
             ]}
