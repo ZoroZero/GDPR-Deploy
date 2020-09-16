@@ -168,6 +168,7 @@ function MainPage() {
     (state) => state.userManagement
   );
   useEffect(() => {
+    console.log("useeffect");
     fetch({
       PageNo: PageNo,
       PageSize: PageSize,
@@ -176,9 +177,10 @@ function MainPage() {
       SortOrder: SortOrder,
       Role: Role,
     });
-  }, [PageNo, PageSize, Role]);
+  }, [PageSize, Role]);
   function onChange(pageNumber) {
     dispatch(setPageNo({ PageNo: pageNumber }));
+    console.log("onchangepage");
     fetch({
       PageNo: pageNumber,
       PageSize: PageSize,
@@ -216,8 +218,9 @@ function MainPage() {
   function onShowSizeChange(current, pageSize) {
     if (pageSize !== PageSize && PageNo > Math.ceil(total / pageSize)) {
       console.log("Total1", total);
-      dispatch(setPageNo(Math.ceil(total / pageSize)));
       dispatch(setPageSize({ PageSize: pageSize }));
+      dispatch(setPageNo(Math.ceil(total / pageSize)));
+
       // fetch({
       //   PageNo: Math.ceil(total / pageSize),
       //   PageSize: pageSize,
