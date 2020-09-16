@@ -112,6 +112,7 @@ function App(props) {
             style={{ minHeight: "100vh" }}
             trigger={null}
             collapsible
+
             collapsed={collapsed}
           >
             <Link to="/">
