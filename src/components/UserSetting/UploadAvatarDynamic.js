@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Upload } from "antd";
 import ImgCrop from "antd-img-crop";
 import { checkToken } from "utils/localstorage";
+import { useSelector } from "react-redux";
 
-const token = checkToken();
+// const token = checkToken();
 
 const UploadAvatarDynamic = (pross) => {
+  const [token, setToken] = useState("");
   const [fileList, setFileList] = useState([
     // {
     //   uid: '-1',
@@ -14,11 +16,19 @@ const UploadAvatarDynamic = (pross) => {
     //   url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
     // },
   ]);
-
+  // const sleep = (milliseconds) => {
+  //   return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  // };
+  useEffect(() => {
+    const tokens = checkToken();
+    setToken(tokens);
+    // await sleep(500);
+    pross.onsub();
+  }, []);
   const onChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
     console.log(`Bearer ${token}`);
     pross.onsub();
-    setFileList(newFileList);
   };
 
   const onPreview = async (file) => {
@@ -46,7 +56,7 @@ const UploadAvatarDynamic = (pross) => {
         onChange={onChange}
         onPreview={onPreview}
       >
-        {fileList.length < 1 && "+ Upload"}
+        {fileList.length < 1 && "Change Avatar"}
       </Upload>
     </ImgCrop>
   );

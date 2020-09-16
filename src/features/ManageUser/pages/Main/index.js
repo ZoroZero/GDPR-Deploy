@@ -10,12 +10,20 @@ import {
   Pagination,
   Tag,
   message,
+  Menu,
+  Dropdown,
 } from "antd";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
+import {
+  ExclamationCircleOutlined,
+  UserOutlined,
+  DownOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+} from "@ant-design/icons";
 import "./index.scss";
 import CreateUserModal from "../../../../components/ManageUser/CreateUserModal.js";
 import UpdateUserModal from "../../../../components/ManageUser/UpdateUserModal.js";
-import { getUsersApi, deleteUsersApi } from "api/user";
+import { getUsersApi, deleteUsersApi, acdeacListUsersApi } from "api/user";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setSearchKey,
@@ -118,7 +126,6 @@ function MainPage() {
           <UpdateUserModal record={record} onSubmitModal={refetch} />
           <Button
             type="primary"
-            // size={"small"}
             danger
             onClick={() => showPromiseConfirm(record)}
           >
@@ -129,7 +136,31 @@ function MainPage() {
     },
   ];
 
+  async function handleMenuClick(e) {
+    console.log("click", e);
+    if (e.key == "active") {
+      message.warning("Active all selected items");
+      await acdeacListUsersApi({ listid: exportData.join(","), isactive: 1 });
+      refetch();
+    } else if (e.key == "deactive") {
+      message.warning("Deactive all selected items");
+      await acdeacListUsersApi({ listid: exportData.join(","), isactive: 0 });
+      refetch();
+    }
+  }
+  const menu = (
+    <Menu onClick={handleMenuClick}>
+      <Menu.Item key="active" icon={<CheckCircleOutlined />}>
+        Active all selected items
+      </Menu.Item>
+      <Menu.Item key="deactive" icon={<CloseCircleOutlined />}>
+        Deactive all selected items
+      </Menu.Item>
+    </Menu>
+  );
+
   const dispatch = useDispatch();
+  const [exportData, setExportData] = useState([]);
   const [data, setData] = useState([]);
   const [total, setTotal] = useState();
   const [loading, setLoading] = useState(false);
@@ -145,7 +176,7 @@ function MainPage() {
       SortOrder: SortOrder,
       Role: Role,
     });
-  }, [PageNo, PageSize]);
+  }, [PageNo, PageSize, Role]);
   function onChange(pageNumber) {
     dispatch(setPageNo({ PageNo: pageNumber }));
     fetch({
@@ -183,9 +214,6 @@ function MainPage() {
     });
   }
   function onShowSizeChange(current, pageSize) {
-    console.log(current, pageSize);
-    console.log(PageSize);
-    console.log("Total", total);
     if (pageSize !== PageSize && PageNo > Math.ceil(total / pageSize)) {
       console.log("Total1", total);
       dispatch(setPageNo(Math.ceil(total / pageSize)));
@@ -212,15 +240,9 @@ function MainPage() {
     }
   }
   function handleTableChange(pagination, filters, sorter) {
-    // console.log("Various parameters", pagination, filters, sorter);
-    console.log("Filter", filters);
-    console.log("Sorter", sorter);
-    // console.log(sorter.length != 0);
     if (sorter.length !== 0) {
       dispatch(setSortBy({ SortBy: sorter.field }));
       dispatch(setSortOrder({ SortOrder: sorter.order }));
-      console.log("Order", SortOrder);
-      console.log("By", sorter.field);
       fetch({
         PageNo: PageNo,
         PageSize: PageSize,
@@ -260,29 +282,45 @@ function MainPage() {
         setLoading(false);
         setData(res.data);
         if (res.status === 200) {
-          // message.success(res.statusText);
         } else {
           message.error(res.statusText);
         }
         if (res.data.length !== 0) setTotal(res.data[0].TotalItem);
         else setTotal(0);
         showTotal({ total });
-        // setPagination({
-        //   ...params.pagination,
-        // });
       })
       .catch((error) => {
         message.error(error.data.message);
       });
   };
 
+  // Handle row selected
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      setExportData(selectedRowKeys);
+    },
+    onSelect: (record, selected, selectedRows) => {
+      // console.log(record, selected, selectedRows);
+    },
+    onSelectAll: (selected, selectedRows, changeRows) => {
+      // console.log(selected, selectedRows, changeRows);
+    },
+  };
+  const hasSelected = exportData.length > 0;
   return (
     <div>
       <Row>
         <Col span={8}>
+          <Dropdown overlay={menu} disabled={!hasSelected}>
+            <Button>
+              Multi actions <DownOutlined />
+            </Button>
+          </Dropdown>
+        </Col>
+        <Col span={8}>
           <CreateUserModal onSubmitModal={refetch} />
         </Col>
-        <Col span={8} offset={8}>
+        <Col span={8}>
           <Search
             placeholder="input search text"
             onSearch={(value) => search(value)}
@@ -291,16 +329,14 @@ function MainPage() {
         </Col>
       </Row>
       <br />
-      {/* <br /> */}
       <Table
         columns={columns}
         rowKey={(record) => record.Id}
         dataSource={data}
         pagination={false}
         loading={loading}
+        rowSelection={rowSelection}
         onChange={handleTableChange}
-        // onChange={onChangeTable}
-        // onChange={handleTableChange}
       />
       <br />
       <Row>
@@ -309,11 +345,9 @@ function MainPage() {
             showQuickJumper
             showSizeChanger
             onShowSizeChange={onShowSizeChange}
-            // defaultCurrent={1}
             current={PageNo}
             total={total}
             showTotal={showTotal}
-            // defaultPageSize={10}
             pageSize={PageSize}
             onChange={onChange}
           />
