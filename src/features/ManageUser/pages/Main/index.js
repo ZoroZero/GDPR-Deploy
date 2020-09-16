@@ -182,7 +182,7 @@ function MainPage() {
       SortOrder: SortOrder,
       Role: Role,
     });
-  }, [PageNo, PageSize]);
+  }, [PageNo, PageSize, Role]);
   function onChange(pageNumber) {
     dispatch(setPageNo({ PageNo: pageNumber }));
     fetch({

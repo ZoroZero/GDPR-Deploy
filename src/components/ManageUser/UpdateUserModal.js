@@ -121,7 +121,8 @@ const CollectionCreateForm = ({
   return (
     <Modal
       visible={visible}
-      title={record.Id}
+      // title={record.Id}
+      title="Update User"
       okText="Update"
       cancelText="Cancel"
       onCancel={onCancel}
