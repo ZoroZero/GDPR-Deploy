@@ -14,7 +14,6 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateAccountApi } from "../../api/user";
 import UploadAvatarDynamic from "../../components/UserSetting/UploadAvatarDynamic.js";
-import UploadonClick from "../../components/UserSetting/UploadonClick.js";
 import { setua } from "features/App/slice";
 const formItemLayout = {
   labelCol: {
@@ -28,7 +27,6 @@ const formItemLayout = {
 const UserSetting = (pros) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const [data, setData] = useState({});
   const [imageUrl, setImageUrl] = useState(
     "https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
   );
@@ -49,7 +47,6 @@ const UserSetting = (pros) => {
           console.log("res from insert", res);
           if (res.status === 201) {
             message.success(res.statusText);
-            // form.resetFields();
           }
           pros.onSubmitModal();
         })
@@ -76,7 +73,6 @@ const UserSetting = (pros) => {
     }
   };
   useEffect(() => {
-    // fetch();
     dispatch(setua({ username: record.UserName, avatar: record.AvatarPath }));
     console.log("didmount avbc", record);
     if (record.AvatarPath) {
@@ -86,7 +82,6 @@ const UserSetting = (pros) => {
         "https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
       );
     }
-    setData(record);
     form.setFieldsValue(record);
   }, [record]);
   const fetch = () => {};
@@ -96,36 +91,15 @@ const UserSetting = (pros) => {
       name="validate_other"
       {...formItemLayout}
       onFinish={onFinish}
-      // initialValues={
-      //   {
-      //     // Email: record.Email,
-      //     // FirstName: data.FirstName,
-      //     // LastName: record.LastName,
-      //     // HashPasswd: record.HashPasswd,
-      //     // UserName: record.UserName,
-      //     // RoleName: record.RoleName,
-      //   }
-      // }
     >
       <Form.Item>
-        <Row
-          type="flex"
-          justify="center"
-          align="middle"
-          // style={{ minHeight: "100vh" }}
-        >
+        <Row type="flex" justify="center" align="middle">
           <Col span={8}></Col>
           <Col span={8}>
-            <Avatar
-              size={150}
-              style={{ padding: 0 }}
-              // src="https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
-              src={imageUrl}
-            />
+            <Avatar size={150} style={{ padding: 0 }} src={imageUrl} />
           </Col>
           <Col span={8}>
             <UploadAvatarDynamic onsub={pros.onSubmitModal} />
-            {/* <UploadonClick /> */}
           </Col>
 
           {/* <Upload name="logo" action="/upload.do" listType="picture">
@@ -134,15 +108,11 @@ const UserSetting = (pros) => {
         </Row>
       </Form.Item>
 
-      {/* <Form.Item name="rate" label="Rate">
-        <Rate />
-      </Form.Item> */}
       <Form.Item
         name="UserId"
         label="ID"
         rules={[
           {
-            // required: true,
             message: "Please input your ID!",
             whitespace: true,
           },
@@ -211,7 +181,6 @@ const UserSetting = (pros) => {
         label="New Password"
         rules={[
           {
-            // required: true,
             message: "Please input your password!",
           },
         ]}
@@ -227,7 +196,6 @@ const UserSetting = (pros) => {
         hasFeedback
         rules={[
           {
-            // required: true,
             message: "Please confirm your password!",
           },
           ({ getFieldValue }) => ({
@@ -244,32 +212,6 @@ const UserSetting = (pros) => {
       >
         <Input.Password />
       </Form.Item>
-
-      {/* <Form.Item
-        name="confirm"
-        label="Confirm New Password"
-        dependencies={["password"]}
-        hasFeedback
-        rules={[
-          {
-            required: true,
-            message: "Please confirm your password!",
-          },
-          ({ getFieldValue }) => ({
-            validator(rule, value) {
-              if (!value || getFieldValue("password") === value) {
-                return Promise.resolve();
-              }
-
-              return Promise.reject(
-                "The two passwords that you entered do not match!"
-              );
-            },
-          }),
-        ]}
-      >
-        <Input.Password />
-      </Form.Item> */}
 
       <Form.Item
         name="UserName"
@@ -283,7 +225,6 @@ const UserSetting = (pros) => {
         }
         rules={[
           {
-            // required: true,
             message: "Please input your username!",
             whitespace: true,
           },
@@ -297,7 +238,6 @@ const UserSetting = (pros) => {
         label="Role permission"
         rules={[
           {
-            // required: true,
             message: "Please input your role name!",
             whitespace: true,
           },
@@ -315,39 +255,6 @@ const UserSetting = (pros) => {
           onChange={onChange}
         />
       </Form.Item>
-
-      {/* <Form.Item
-        name="upload"
-        label="Upload"
-        valuePropName="fileList"
-        getValueFromEvent={normFile}
-        extra="longgggggggggggggggggggggggggggggggggg"
-      >
-        <Upload name="logo" action="/upload.do" listType="picture">
-          <Button icon={<UploadOutlined />}>Click to upload</Button>
-        </Upload>
-      </Form.Item>
-
-      <Form.Item label="Dragger">
-        <Form.Item
-          name="dragger"
-          valuePropName="fileList"
-          getValueFromEvent={normFile}
-          noStyle
-        >
-          <Upload.Dragger name="files" action="/upload.do">
-            <p className="ant-upload-drag-icon">
-              <InboxOutlined />
-            </p>
-            <p className="ant-upload-text">
-              Click or drag file to this area to upload
-            </p>
-            <p className="ant-upload-hint">
-              Support for a single or bulk upload.
-            </p>
-          </Upload.Dragger>
-        </Form.Item>
-      </Form.Item> */}
 
       <Form.Item
         wrapperCol={{

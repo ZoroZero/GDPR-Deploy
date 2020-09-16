@@ -19,16 +19,14 @@ function MainMenu(props) {
         <Menu.Item
           key="/user-setting"
           icon={
-            // <Badge dot>
             <Avatar
-              style={{ marginRight: "0.5em" }}
+              style={{ marginRight: "0.82em" }}
               icon={<UserOutlined />}
               src={`http://localhost:5000/api/users/${avatar}`}
             />
-            // </Badge>
           }
         >
-          {`Hi ${username}!`}
+          <b>{`Hi ${username}!`}</b>
           <Link to="/user-setting" />
         </Menu.Item>
       }
