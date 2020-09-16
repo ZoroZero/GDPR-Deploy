@@ -207,6 +207,9 @@ const MainPage = (props) => {
             onShowSizeChange={onPageSizeChange}
           />
         </Col>
+        <Col>
+          <p>Total: {data.length > 0 ? data[0].Total : 0} items</p>
+        </Col>
       </Row>
     </>
   );
