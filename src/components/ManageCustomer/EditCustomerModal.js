@@ -130,7 +130,7 @@ function EditCustomerModal(props) {
             >
               {contactPoints.length > 0 &&
                 contactPoints.map((item) => (
-                  <Option key={item.Id}> {item.Email} </Option>
+                  <Option disabled={item.IsActive} key={item.Id}> {item.Email} </Option>
                 ))}
             </Select>
           </Form.Item>

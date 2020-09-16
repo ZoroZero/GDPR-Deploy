@@ -22,6 +22,7 @@ import ManageServerModal from "../../../../components/ManageCustomer/ManageServe
 import { deleteCustomerApi, deleteCustomersApi, deactiveCustomersApi, activeCustomersApi } from "api/customer";
 import {
   setPagination,
+  setFilter,
   setSort,
   setSearch,
   setRefresh,
@@ -42,6 +43,7 @@ function MainPage() {
     sortColumn,
     sortOrder,
     keyword,
+    filterValue,
     refresh,
     loading,
   } = useSelector((state) => state.customerManagement);
@@ -63,6 +65,120 @@ function MainPage() {
   const [dataManage, setDataManage] = useState({ Id: "" });
   const pageOptions = [10, 20, 50, 100];
 
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys) => {
+      console.log("selectedRowKeys changed: ", newSelectedRowKeys);
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+  };
+
+  const menu = (
+    <Menu onClick={handleMenuClick}>
+      <Menu.Item key="delete">delete</Menu.Item>
+      <Menu.Item key="active">active</Menu.Item>
+      <Menu.Item key="deactive">deactive</Menu.Item>
+    </Menu>
+  );
+
+  const hasSelected = selectedRowKeys.length > 0;
+
+
+  useEffect(() => {
+    console.log("USE EFFECT INDEX");
+    fetch(
+      pagination.current,
+      pagination.pageSize,
+      sortColumn,
+      sortOrder,
+      keyword,
+      filterValue
+    );
+  }, [refresh, sortColumn, sortOrder, filterValue]);
+
+  async function fetch(current, pageSize, sortColumn, sortOrder, keyword, filterValue) {
+    console.log("FETCH DATA INDEX", filterValue);
+    dispatch(setLoading(true));
+    await dispatch(
+      getCustomerList({
+        current: current,
+        pageSize: pageSize,
+        sortColumn: sortColumn,
+        sortOrder: sortOrder,
+        keyword: keyword,
+        filterValue: filterValue
+      })
+    );
+    dispatch(setLoading(false));
+  }
+
+
+  function showPromiseConfirm(id) {
+    confirm({
+      title: "Do you want to delete these items?",
+      icon: <ExclamationCircleOutlined />,
+      content:
+        "When clicked the OK button, this dialog will be closed after 1 second",
+      onOk() {
+        deleteCustomerApi({ Id: id });
+        dispatch(setRefresh(!refresh));
+      },
+      onCancel() { },
+    });
+  }
+
+  async function handleMenuClick(value) {
+    console.log("handle menu click", value);
+    if (value.key == 'delete') {
+      await deleteCustomersApi({ deletedCustomers: selectedRowKeys });
+      dispatch(setRefresh(!refresh));
+      setSelectedRowKeys([])
+    }
+    if (value.key == 'deactive') {
+      await deactiveCustomersApi({ deactivedCustomers: selectedRowKeys });
+      dispatch(setRefresh(!refresh));
+      setSelectedRowKeys([])
+    }
+    else {
+      await activeCustomersApi({ activedCustomers: selectedRowKeys });
+      dispatch(setRefresh(!refresh));
+      setSelectedRowKeys([])
+    }
+  };
+
+  async function handleFilterChange(newFilterValue) {
+    dispatch(setFilter(newFilterValue));
+  }
+
+  async function handleSearchChange(newKeyword) {
+    (await newKeyword)
+      ? dispatch(setSearch(newKeyword))
+      : dispatch(setSearch(""));
+    await dispatch(setPagination({ ...pagination, current: 1 }));
+    dispatch(setRefresh(!refresh));
+  }
+
+  async function handleSortChange(pagination, filters, sorter) {
+    console.log("filter", filters.IsActive)
+    if (filters) {
+      await dispatch(setPagination({ ...pagination, current: 1 }));
+      dispatch(setFilter(filters.IsActive))
+    }
+    else {
+      var newSortColumn = sorter.column ? sorter.column.dataIndex : "CreatedDate";
+      var newSortOrder = sorter.order === "descend" ? "descend" : "ascend";
+      dispatch(setSort({ sortColumn: newSortColumn, sortOrder: newSortOrder }));
+    }
+  }
+
+  function handlePageChange(pageNumber, pageSize) {
+    console.log("handle page change", pageNumber, pageSize);
+    fetch(pageNumber, pageSize, sortColumn, sortOrder, keyword);
+  }
+
+  function showTotal(total) {
+    return `${data.length} of ${total} items`;
+  }
   const columns = [
     {
       title: "Customer Name",
@@ -78,16 +194,6 @@ function MainPage() {
       title: "Contact Point",
       dataIndex: "ContactPointEmail",
       sorter: true,
-      filters: [
-        {
-          text: "Assigned",
-          value: true,
-        },
-        {
-          text: "Null",
-          value: false,
-        },
-      ],
       render: (value, record) => (
 
         record.ContactPointId ? (!record.ContactPointStatus ? <><p> {value} </p> <Tooltip title="Contact Point is inactive!">< WarningTwoTone twoToneColor="orange" /></Tooltip> </> : <p> {value} </p>) : <></>
@@ -114,14 +220,14 @@ function MainPage() {
       filters: [
         {
           text: "Active",
-          value: true,
+          value: 1,
         },
         {
           text: "Inactive",
-          value: false,
+          value: 0,
         },
       ],
-      onFilter: (value, record) => record.IsActive == value,
+      // onFilter: (value) => handleFilterChange(value),
       render: (val) =>
         val ? <Tag color="green">Active</Tag> : <Tag color="red">Inactive</Tag>,
     },
@@ -173,110 +279,6 @@ function MainPage() {
       ),
     },
   ];
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (newSelectedRowKeys) => {
-      console.log("selectedRowKeys changed: ", newSelectedRowKeys);
-      setSelectedRowKeys(newSelectedRowKeys);
-    },
-  };
-
-  const menu = (
-    <Menu onClick={handleMenuClick}>
-      <Menu.Item key="delete">delete</Menu.Item>
-      <Menu.Item key="active">active</Menu.Item>
-      <Menu.Item key="deactive">deactive</Menu.Item>
-    </Menu>
-  );
-
-  const hasSelected = selectedRowKeys.length > 0;
-
-
-  useEffect(() => {
-    console.log("USE EFFECT INDEX");
-    fetch(
-      pagination.current,
-      pagination.pageSize,
-      sortColumn,
-      sortOrder,
-      keyword
-    );
-  }, [refresh, sortColumn, sortOrder]);
-
-  async function fetch(current, pageSize, sortColumn, sortOrder, keyword) {
-    console.log("FETCH DATA INDEX");
-    dispatch(setLoading(true));
-    await dispatch(
-      getCustomerList({
-        current: current,
-        pageSize: pageSize,
-        sortColumn: sortColumn,
-        sortOrder: sortOrder,
-        keyword: keyword,
-      })
-    );
-    dispatch(setLoading(false));
-  }
-
-
-  function showPromiseConfirm(id) {
-    confirm({
-      title: "Do you want to delete these items?",
-      icon: <ExclamationCircleOutlined />,
-      content:
-        "When clicked the OK button, this dialog will be closed after 1 second",
-      onOk() {
-        deleteCustomerApi({ Id: id });
-        dispatch(setRefresh(!refresh));
-      },
-      onCancel() { },
-    });
-  }
-
-  async function handleMenuClick(value) {
-    console.log("handle menu click", value);
-    if (value.key == 'delete') {
-      await deleteCustomersApi({ deletedCustomers: selectedRowKeys });
-      dispatch(setRefresh(!refresh));
-      setSelectedRowKeys([])
-    }
-    if (value.key == 'deactive') {
-      await deactiveCustomersApi({ deactivedCustomers: selectedRowKeys });
-      dispatch(setRefresh(!refresh));
-      setSelectedRowKeys([])
-    }
-    else {
-      await activeCustomersApi({ activedCustomers: selectedRowKeys });
-      dispatch(setRefresh(!refresh));
-      setSelectedRowKeys([])
-    }
-  };
-
-  async function handleSearchChange(newKeyword) {
-    (await newKeyword)
-      ? dispatch(setSearch(newKeyword))
-      : dispatch(setSearch(""));
-    await dispatch(setPagination({ ...pagination, current: 1 }));
-    await dispatch(setRefresh(!refresh));
-    dispatch(setSearch(""));
-  }
-
-  function handleSortChange(pagination, filters, sorter) {
-    var newSortColumn = sorter.column ? sorter.column.dataIndex : "CreatedDate";
-    var newSortOrder = sorter.order === "descend" ? "descend" : "ascend";
-    dispatch(setSort({ sortColumn: newSortColumn, sortOrder: newSortOrder }));
-  }
-
-  function handlePageChange(pageNumber, pageSize) {
-    console.log("handle page change", pageNumber, pageSize);
-    fetch(pageNumber, pageSize, sortColumn, sortOrder, keyword);
-  }
-
-  function showTotal(total) {
-    return `${data.length} of ${total} items`;
-  }
-
   return (
     <>
       <Row>
@@ -338,6 +340,7 @@ function MainPage() {
         loading={loading}
         pagination={false}
         onChange={handleSortChange}
+        // onFilter={handleFilterChange}
         rowSelection={rowSelection}
       />
       <br />
