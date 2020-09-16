@@ -130,3 +130,16 @@ export const getAllMessageApi = (requestId) => {
       });
   });
 };
+
+export const getRepliedMsgApi = (requestId) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .get(`/api/messages/${requestId}`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
