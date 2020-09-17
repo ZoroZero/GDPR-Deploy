@@ -125,7 +125,7 @@ function MainPage() {
 
     // Fetch data
     const fetch = (pagination, sortColumn, sortOrder, keyword, filter) => {
-        console.log(filter);
+        // console.log(filter);
         if(!exporting){
             setLoading(true);
             return getServersApi({
@@ -137,8 +137,10 @@ function MainPage() {
                                 filterColumn: filter.filterColumn,
                                 filterKeys: filter.filterKeys})
                 .then((res) => {
+                console.log("Fetch res", res);
                 setLoading(false);
                 setTableData(res.data, res.total)
+                showTotal(res.total);
             }).catch((err) => {console.log(err)});
         }
     };
