@@ -1,28 +1,27 @@
 import { Card, Col, Row } from "antd";
 import React from "react";
+import "./index.scss";
 
 const ChangeLogBox = (props) => {
   const listCardLogs = props.logs.map((val, index) => {
     return (
-      <div
-        key={val.Id}
-        style={{ border: "1px solid #99ccff", backgroundColor: "white" }}
-      >
-        <Row gutter={[0, 0]}>
-          <Col span={12}>
-            <p>
-              <strong>{val.UserName}</strong>
-            </p>
-          </Col>
-          <Col span={12}>
-            <p>
-              <strong>{val.UpdateTime}</strong>
-            </p>
-          </Col>
-        </Row>
-        <Row>
-          <p>{val.StatusChange}</p>
-        </Row>
+      <div class="row">
+        <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+          <div class="new-message-box">
+            <div class="new-message-box-alert">
+              <div class="info-tab tip-icon-alert" title="error">
+                <i></i>
+              </div>
+              <div class="tip-box-alert">
+                <div class="status-header">
+                  <p>{val.UserName} </p>
+                  <p> {val.UpdateTime}</p>
+                </div>
+                <p>{val.StatusChange}</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   });

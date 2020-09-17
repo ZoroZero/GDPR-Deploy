@@ -68,8 +68,6 @@ const ConversationBox = (props) => {
     return <Message msg={val} key={val.Id} />;
   });
 
-  function getItems() {}
-
   return (
     <>
       <Card
@@ -88,7 +86,7 @@ const ConversationBox = (props) => {
         <Row>
           <Col span={22}>
             <Form.Item name="message">
-              <Input />
+              <Input autoFocus/>
             </Form.Item>
           </Col>
           <Col span={2}>
