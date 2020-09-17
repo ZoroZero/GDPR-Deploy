@@ -90,7 +90,7 @@ function MainPage() {
 
 
   useEffect(() => {
-    console.log("USE EFFECT INDEX");
+    console.log("USE EFFECT INDEX", pagination);
     fetch(
       pagination.current,
       pagination.pageSize,
@@ -302,7 +302,7 @@ function MainPage() {
 
 
           <div>
-            <Button onClick={() => setExporting(exporting => !exporting)} style={{marginBottom: '20px'}}>Export customer list</Button>
+            <Button onClick={() => setExporting(exporting => !exporting)} style={{ marginBottom: '20px' }}>Export customer list</Button>
             <ExportCustomerModal id='export-server' className='export-server' visible={exporting} setVisible={setExporting}></ExportCustomerModal>
           </div>
 
