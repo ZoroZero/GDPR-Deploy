@@ -9,7 +9,7 @@ import { VerticalAlignBottomOutlined } from '@ant-design/icons'
 import { getListServerOptions } from "features/ManageServer/slice";
 import { useDispatch, useSelector } from "react-redux";
 const { Option } = Select;
-
+const { RangePicker } = DatePicker;
 function ExportServer(props){ 
     
     const dispatch = useDispatch()

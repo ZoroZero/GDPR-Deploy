@@ -6,6 +6,7 @@ import { GLOBAL_CONSTANTS } from 'constants/global'
 import moment from 'moment';
 import { useDispatch, useSelector } from "react-redux";
 import { setRefresh } from 'features/ManageServer/slice';
+import { getDefaultErrorMessage } from "@casl/ability";
 
 
 function AddEditServerModal(props) {
@@ -141,7 +142,7 @@ function AddEditServerModal(props) {
                                         required: true,
                                         message: "Please input the start date of server!"
                                     }]}>
-                            <DatePicker showTime  style={{  width: '100%' }}/>
+                            <DatePicker showTime  disabledDate={d => !d || d.isBefore(moment().format('YYYY-MM-DD HH:mm:ss'))} style={{  width: '100%' }}/>
                         </Form.Item>
 
                         <Form.Item label="End date" style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 8px' }}
@@ -150,7 +151,7 @@ function AddEditServerModal(props) {
                                         required: true,
                                         message: "Please input the end date of server!"
                                     }]}>
-                            <DatePicker showTime style={{  width: '100%' }}/>
+                            <DatePicker showTime disabledDate={d => !d || d.isBefore(moment().format('YYYY-MM-DD HH:mm:ss'))} style={{  width: '100%' }}/>
                         </Form.Item>
                     </Form.Item>
                     

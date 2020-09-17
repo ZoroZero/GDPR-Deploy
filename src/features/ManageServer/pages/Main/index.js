@@ -121,6 +121,7 @@ function MainPage() {
             newPageNum =  Math.ceil(pagination.pageSize*pagination.page/pageSize)
         setPagination({page: newPageNum, pageSize: pageSize})
         console.log("Fetch after pagination change");
+        setSelectingServerIdList([])
     }
 
     // Fetch data
@@ -165,6 +166,7 @@ function MainPage() {
         var filterKeys = filters.IsActive? filters.IsActive.join(): SERVER_CONSTANTS.DEFAULT_FILTER_KEYS
         setFilter({filterColumn: filter.filterColumn, filterKeys: filterKeys})
         // console.log("Fetch after sort change");
+        setSelectingServerIdList([])
     }
 
     //Handle search 
@@ -315,7 +317,12 @@ function MainPage() {
                 placeholder="Input search text"
                 enterButton="Search"
                 size="large"
-                onSearch={value => handleSearchServer(value.trim())}/>
+                onSearch={value => handleSearchServer(value.trim())}
+                style = {{
+                    float: 'right',
+                    marginBottom: '10px',
+                    width: '400px',
+                }}/>
 
             <Table
                 columns={columns}
