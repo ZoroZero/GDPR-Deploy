@@ -81,7 +81,7 @@ function EditCustomerModal(props) {
   return (
     <div>
       <Modal
-        title="Update new Customer"
+        title="Update Customer"
         centered
         visible={props.modalVisible}
         forceRender={true}

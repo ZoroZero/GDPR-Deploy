@@ -96,8 +96,8 @@ function AddCustomerModal(props) {
         <Button key="cancel" onClick={() => { props.setModalVisible(false) }}>
           Cancel
  </Button>]}
-    // onOk={handleOk}
-    // onCancel={handleCancel}
+      // onOk={handleOk}
+      onCancel={handleCancel}
     >
       <Form form={form} onFinish={onFinish} name="myForm" layout="vertical">
         <Form.Item
