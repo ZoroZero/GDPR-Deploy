@@ -44,8 +44,10 @@ const UserSettingPassword = (pros) => {
       PassWord: values.password,
     })
       .then((res) => {
-        if (res.status === 201) {
+        if (res.status === 200) {
           message.success(res.statusText);
+        } else {
+          message.error(res.statusText);
         }
         pros.onSubmitModal();
       })
