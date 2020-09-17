@@ -40,7 +40,7 @@ function MainPage() {
     const [modalVisible, setModalVisible] = useState(false);
     const [exporting, setExporting] = useState(false);
     const [importing, setImporting] = useState(false);
-    const [editRequest, setEditRequest] = useState(null);
+    const [editRequest, setEditRequest] = useState();
     const [checkingRows, setCheckingRows] = useState([])
     const [selectingServerIdList, setSelectingServerIdList] = useState([]);
 
@@ -309,7 +309,7 @@ function MainPage() {
             </Button>
 
             <AddEditServerModal request={editRequest} modalVisible={modalVisible} 
-            setModalVisible={setModalVisible} setEditRequest={setEditRequest}>
+                                setModalVisible={setModalVisible} setEditRequest={setEditRequest}>
             </AddEditServerModal>
 
             {/* <Button disabled={checkingRows.length===0} type="primary" style={{margin: '0px 4px 0px 8px'}} onClick={()=>{handleSetStatus(true)}}>

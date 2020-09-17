@@ -41,8 +41,8 @@ function AddEditServerModal(props) {
     };
 
     const handleClose = () => {
-        props.setModalVisible(false);
         props.setEditRequest(null);
+        props.setModalVisible(false);
     }
 
     const onFinish = values => {
@@ -101,7 +101,7 @@ function AddEditServerModal(props) {
             title= {title}
             centered
             visible={props.modalVisible}
-            onCancel={()=>{props.setModalVisible(false)}}
+            onCancel={handleClose}
             okButtonProps={{ style: { display: 'none' } }}
             cancelButtonProps={{ style: { display: 'none' } }}
             forceRender={true} 
