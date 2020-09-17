@@ -158,22 +158,22 @@ function MainPage() {
     dispatch(setRefresh(!refresh));
   }
 
-  async function handleSortChange(pagination, filters, sorter) {
+  async function handleSortChange(pag, filters, sorter) {
     console.log("filter", filters.IsActive)
     if (filters) {
       await dispatch(setPagination({ ...pagination, current: 1 }));
       dispatch(setFilter(filters.IsActive))
     }
-    else {
+    if (sorter) {
       var newSortColumn = sorter.column ? sorter.column.dataIndex : "CreatedDate";
-      var newSortOrder = sorter.order === "descend" ? "descend" : "ascend";
+      var newSortOrder = sorter.order === "ascend" ? "ascend" : "descend";
       dispatch(setSort({ sortColumn: newSortColumn, sortOrder: newSortOrder }));
     }
   }
 
   function handlePageChange(pageNumber, pageSize) {
     console.log("handle page change", pageNumber, pageSize);
-    fetch(pageNumber, pageSize, sortColumn, sortOrder, keyword);
+    fetch(pageNumber, pageSize, sortColumn, sortOrder, keyword, filterValue);
   }
 
   function showTotal(total) {
@@ -184,6 +184,7 @@ function MainPage() {
       title: "Customer Name",
       dataIndex: "FirstName",
       sorter: true,
+      defaultSortOrder: (sortColumn == "FirstName" ? sortOrder : null),
       render: (text, record) => (
         <p>
           {text} {record.LastName}
@@ -194,6 +195,8 @@ function MainPage() {
       title: "Contact Point",
       dataIndex: "ContactPointEmail",
       sorter: true,
+      defaultSortOrder: (sortColumn == "ContactPointEmail" ? sortOrder : null),
+
       render: (value, record) => (
 
         record.ContactPointId ? (!record.ContactPointStatus ? <><p> {value} </p> <Tooltip title="Contact Point is inactive!">< WarningTwoTone twoToneColor="orange" /></Tooltip> </> : <p> {value} </p>) : <></>
@@ -203,11 +206,13 @@ function MainPage() {
       title: "Contract Begin",
       dataIndex: "ContractBeginDate",
       sorter: true,
+      defaultSortOrder: (sortColumn == "ContractBeginDate" ? sortOrder : null),
     },
     {
       title: "Contract End",
       dataIndex: "ContractEndDate",
       sorter: true,
+      defaultSortOrder: (sortColumn == "ContractEndDate" ? sortOrder : null),
     },
     {
       title: "Description",
@@ -227,6 +232,7 @@ function MainPage() {
           value: 0,
         },
       ],
+      defaultFilteredValue: filterValue,
       // onFilter: (value) => handleFilterChange(value),
       render: (val) =>
         val ? <Tag color="green">Active</Tag> : <Tag color="red">Inactive</Tag>,
@@ -263,6 +269,7 @@ function MainPage() {
       title: "Machines Owner",
       dataIndex: "servers",
       sorter: true,
+      defaultSortOrder: (sortColumn == "servers" ? sortOrder : null),
       render: (text, record) => (
         <Button
           onClick={() => {
@@ -342,6 +349,7 @@ function MainPage() {
         onChange={handleSortChange}
         // onFilter={handleFilterChange}
         rowSelection={rowSelection}
+
       />
       <br />
       <Row>

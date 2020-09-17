@@ -89,10 +89,12 @@ function AddCustomerModal(props) {
           label="First name"
           name="FirstName"
           rules={[
+
             {
               required: true,
               message: "Please enter your first name!",
-            },
+
+            }
           ]}
         >
           <Input />
