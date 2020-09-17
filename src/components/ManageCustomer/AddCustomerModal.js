@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Modal,
+  Button,
   Form,
   Input,
   DatePicker,
@@ -28,12 +29,17 @@ function AddCustomerModal(props) {
   );
   const [form] = Form.useForm();
   const shouldGetData = props.modalVisible !== false;
+  const [updateKey, setUpdateKey] = useState(1);
+  const [updateKey2, setUpdateKey2] = useState(false);
 
   useEffect(() => {
     if (shouldGetData) {
+      setUpdateKey2(!updateKey2)
+      setUpdateKey(updateKey + 1)
+      console.log("USE EFFECT ")
       form.setFieldsValue({
-        FirstName: "",
-        LastName: "",
+        FirstName: null,
+        LastName: null,
         ContactPointId: null,
         ContractBeginDate: null,
         ContractEndDate: null,
@@ -45,7 +51,7 @@ function AddCustomerModal(props) {
   }, [shouldGetData]);
 
   const handleOk = () => {
-    props.setModalVisible(false);
+
     form.submit();
   };
 
@@ -54,9 +60,10 @@ function AddCustomerModal(props) {
   };
 
   async function onFinish(values) {
+    props.setModalVisible(false);
     console.log(values);
     try {
-      createCustomerApi(values);
+      await createCustomerApi(values);
       await dispatch(setPagination({ ...pagination, current: 1 }));
       dispatch(setRefresh(!refresh));
       openNotification("Sucessfully add new customer");
@@ -81,11 +88,20 @@ function AddCustomerModal(props) {
       centered
       visible={props.modalVisible}
       forceRender={true}
-      onOk={handleOk}
-      onCancel={handleCancel}
+      footer={[
+        <Button form="myForm" key="submit" type="primary" htmlType="submit">
+          Submit
+                </Button>
+        ,
+        <Button key="cancel" onClick={() => { props.setModalVisible(false) }}>
+          Cancel
+ </Button>]}
+    // onOk={handleOk}
+    // onCancel={handleCancel}
     >
       <Form form={form} onFinish={onFinish} name="myForm" layout="vertical">
         <Form.Item
+          key={updateKey}
           label="First name"
           name="FirstName"
           rules={[
@@ -100,6 +116,7 @@ function AddCustomerModal(props) {
           <Input />
         </Form.Item>
         <Form.Item
+          key={updateKey2}
           label="Last name"
           name="LastName"
           rules={[
@@ -178,6 +195,12 @@ function AddCustomerModal(props) {
             defaultChecked="Active"
           ></Switch>
         </Form.Item>
+
+        {/* <Form.Item> */}
+        {/* <Button type="primary" htmlType="submit" >
+            Submit
+            </Button>
+        </Form.Item> */}
       </Form>
     </Modal>
   );
