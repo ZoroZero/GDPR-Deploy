@@ -25,14 +25,14 @@ import CreateUserModal from "../../../../components/ManageUser/CreateUserModal.j
 import UpdateUserModal from "../../../../components/ManageUser/UpdateUserModal.js";
 import { getUsersApi, deleteUsersApi, acdeacListUsersApi } from "api/user";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  setSearchKey,
-  setPageNo,
-  setPageSize,
-  setSortBy,
-  setSortOrder,
-  setRole,
-} from "../../slice";
+// import {
+//   setSearchKey,
+//   setPageNo,
+//   setPageSize,
+//   setSortBy,
+//   setSortOrder,
+//   setRole,
+// } from "../../slice";
 
 MainPage.propTypes = {};
 const { confirm } = Modal;
@@ -180,12 +180,14 @@ function MainPage() {
   const [SortBy, setSortBy]=useState("");
   const [SortOrder, setSortOrder]=useState("ascend");
   const [Role,setRole]=useState("");
+  const [PageNo,setPageNo]=useState(1);
+  const [PageSize,setPageSize]=useState(10);
   const dispatch = useDispatch();
   const [exportData, setExportData] = useState([]);
   const [data, setData] = useState([]);
   const [total, setTotal] = useState();
   const [loading, setLoading] = useState(false);
-  const { PageNo, PageSize } = useSelector(
+  const { } = useSelector(
     (state) => state.userManagement
   );
   useEffect(() => {
@@ -198,19 +200,7 @@ function MainPage() {
       SortOrder: SortOrder,
       Role: Role,
     });
-  }, [PageNo, PageSize, Role]);
-  // function onChange(pageNumber) {
-  //   dispatch(setPageNo({ PageNo: pageNumber }));
-  //   console.log("onchangepage");
-  //   fetch({
-  //     PageNo: pageNumber,
-  //     PageSize: PageSize,
-  //     SearchKey: SearchKey,
-  //     SortBy: SortBy,
-  //     SortOrder: SortOrder,
-  //     Role: Role,
-  //   });
-  // }
+  }, [PageNo, PageSize, SearchKey,SortBy,SortOrder, Role]);
   function refetch() {
     fetch({
       PageNo: PageNo,
@@ -227,78 +217,18 @@ function MainPage() {
   function search(SearchKeyw) {
     setSelectedRowKeys([]);
     setSearchKey(SearchKeyw);
-    dispatch(setPageNo({ PageNo: 1 }));
-    fetch({
-      PageNo: 1,
-      PageSize: PageSize,
-      SearchKey: SearchKeyw,
-      SortBy: SortBy,
-      SortOrder: SortOrder,
-      Role: Role,
-    });
-  }
-  function onShowSizeChange(current, pageSize) {
-    if (pageSize !== PageSize && PageNo > Math.ceil(total / pageSize)) {
-      console.log("Total1", total);
-      dispatch(setPageSize({ PageSize: pageSize }));
-      dispatch(setPageNo({ PageNo: Math.ceil(total / pageSize) }));
-
-      // fetch({
-      //   PageNo: Math.ceil(total / pageSize),
-      //   PageSize: pageSize,
-      //   SearchKey: SearchKey,
-      //   SortBy: SortBy,
-      //   SortOrder: SortOrder,
-      //   Role: Role,
-      // });
-    } else {
-      console.log("Total2", total);
-      dispatch(setPageSize({ PageSize: pageSize }));
-      dispatch(setPageNo({ PageNo: current }));
-      // fetch({
-      //   PageNo: current,
-      //   PageSize: pageSize,
-      //   SearchKey: SearchKey,
-      //   SortBy: SortBy,
-      //   SortOrder: SortOrder,
-      //   Role: Role,
-      // });
-    }
+    setPageNo(1);
   }
   function handleTableChange(pagination, filters, sorter) {
     if (sorter.length !== 0) {
       setSortBy(sorter.field);
       setSortOrder(sorter.order);
-      fetch({
-        PageNo: PageNo,
-        PageSize: PageSize,
-        SearchKey: SearchKey,
-        SortBy: sorter.field,
-        SortOrder: sorter.order,
-        Role: Role,
-      });
     }
     if (filters.RoleName !== null) {
       setRole(filters.RoleName.join(","));
-      dispatch(setPageNo({ PageNo: 1 }));
-      fetch({
-        PageNo: 1,
-        PageSize: PageSize,
-        SearchKey: SearchKey,
-        SortBy: sorter.field,
-        SortOrder: sorter.order,
-        Role: filters.RoleName.join(","),
-      });
+      setPageNo(1);
     } else {
       setRole("");
-      fetch({
-        PageNo: PageNo,
-        PageSize: PageSize,
-        SearchKey: SearchKey,
-        SortBy: sorter.field,
-        SortOrder: sorter.order,
-        Role: "",
-      });
     }
   }
 
@@ -306,29 +236,12 @@ function MainPage() {
   const handlePageChange = (pageNumber, pageSize) => {
     if (pageSize !== PageSize && PageNo > Math.ceil(total / pageSize)) {
       console.log("Total1", total);
-      dispatch(setPageSize({ PageSize: pageSize }));
-      dispatch(setPageNo({ PageNo: Math.ceil(total / pageSize) }));
-
-      // fetch({
-      //   PageNo: Math.ceil(total / pageSize),
-      //   PageSize: pageSize,
-      //   SearchKey: SearchKey,
-      //   SortBy: SortBy,
-      //   SortOrder: SortOrder,
-      //   Role: Role,
-      // });
+      setPageSize(pageSize);
+      setPageNo(Math.ceil(total / pageSize));
     } else {
       console.log("Total2", total);
-      dispatch(setPageSize({ PageSize: pageSize }));
-      dispatch(setPageNo({ PageNo: pageNumber }));
-      // fetch({
-      //   PageNo: current,
-      //   PageSize: pageSize,
-      //   SearchKey: SearchKey,
-      //   SortBy: SortBy,
-      //   SortOrder: SortOrder,
-      //   Role: Role,
-      // });
+      setPageSize(pageSize);
+      setPageNo(pageNumber);
     }
   };
 
@@ -351,18 +264,6 @@ function MainPage() {
       });
   };
 
-  // Handle row selected
-  // const rowSelection = {
-  //   onChange: (selectedRowKeys, selectedRows) => {
-  //     setSelectedRowKeys(selectedRowKeys);
-  //   },
-  //   onSelect: (record, selected, selectedRows) => {
-  //     // console.log(record, selected, selectedRows);
-  //   },
-  //   onSelectAll: (selected, selectedRows, changeRows) => {
-  //     // console.log(selected, selectedRows, changeRows);
-  //   },
-  // };
   const rowSelection = {
     selectedRowKeys,
     onChange: (newSelectedRowKeys) => {
