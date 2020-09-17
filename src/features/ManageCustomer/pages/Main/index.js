@@ -156,6 +156,7 @@ function MainPage() {
   }
 
   async function handleSearchChange(newKeyword) {
+    newKeyword = String(newKeyword).trim();
     (await newKeyword)
       ? dispatch(setSearch(newKeyword))
       : dispatch(setSearch(""));
