@@ -44,7 +44,6 @@ const UserSettingPassword = (pros) => {
       PassWord: values.password,
     })
       .then((res) => {
-        console.log("res from insert", res);
         if (res.status === 201) {
           message.success(res.statusText);
         }

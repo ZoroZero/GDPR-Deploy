@@ -88,10 +88,10 @@ function MainPage() {
       dataIndex: "UserName",
       sorter: true,
     },
-    {
-      title: "HashPasswd",
-      dataIndex: "HashPasswd",
-    },
+    // {
+    //   title: "HashPasswd",
+    //   dataIndex: "HashPasswd",
+    // },
     {
       title: "Role",
       dataIndex: "RoleName",
