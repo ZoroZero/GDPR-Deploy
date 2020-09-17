@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { updateUsersApi } from "../../api/user";
 import "antd/dist/antd.css";
 import {
@@ -77,37 +77,35 @@ const CollectionCreateForm = ({
 }) => {
   const [form] = Form.useForm();
 
+  useEffect(() => {
+    // console.log("didamount record", record);
+    // form.setFieldsValue({
+    //   email: record.Email,
+    //   firstname: record.FirstName,
+    //   lastname: record.LastName,
+    //   password: record.HashPasswd,
+    //   confirm: record.HashPasswd,
+    //   username: record.UserName,
+    //   role: [record.RoleName],
+    // });
+    setSwitchState(record.IsActive);
+  }, [record]);
+
   const onFinish = (values) => {
     console.log("Received values of form: ", { ...values, switchState });
   };
 
-  const prefixSelector = (
-    <Form.Item name="prefix" noStyle>
-      <Select
-        style={{
-          width: 70,
-        }}
-      >
-        <Option value="86">+86</Option>
-        <Option value="87">+87</Option>
-      </Select>
-    </Form.Item>
-  );
   const [autoCompleteResult, setAutoCompleteResult] = useState([]);
 
   function onChange(checked) {
     console.log(`switch to ${checked}`);
     setSwitchState(checked);
   }
-
-  const websiteOptions = autoCompleteResult.map((website) => ({
-    label: website,
-    value: website,
-  }));
   return (
     <Modal
       visible={visible}
-      title={record.Id}
+      // title={record.Id}
+      title="Update User"
       okText="Update"
       cancelText="Cancel"
       onCancel={onCancel}
@@ -135,7 +133,7 @@ const CollectionCreateForm = ({
           password: record.HashPasswd,
           confirm: record.HashPasswd,
           username: record.UserName,
-          role: [record.RoleName],
+          rolelist: [record.RoleName],
           prefix: "86",
         }}
         scrollToFirstError
@@ -154,7 +152,7 @@ const CollectionCreateForm = ({
             },
           ]}
         >
-          <Input />
+          <Input disabled={true} />
         </Form.Item>
 
         <Form.Item
@@ -261,7 +259,7 @@ const CollectionCreateForm = ({
           <Switch
             checkedChildren="Active"
             unCheckedChildren="InActive"
-            defaultChecked={switchState}
+            checked={switchState}
             onChange={onChange}
           />
         </Form.Item>

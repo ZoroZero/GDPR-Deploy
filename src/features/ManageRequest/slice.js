@@ -8,6 +8,8 @@ import {
   cancelRequestApi,
   getRequestDetailApi,
   updateRequestApi,
+  getListUserOptionsApi,
+  exportRequestApi,
 } from "api/requests";
 import { message } from "antd";
 
@@ -22,6 +24,7 @@ export const initialState = {
   showModal: false,
   lstServer: [],
   requestDetail: {},
+  requestLogs: [],
 };
 
 const slice = createSlice({
@@ -58,6 +61,7 @@ const slice = createSlice({
     },
     setRequestDetail: (state, action) => {
       state.requestDetail = action.payload.requestDetail;
+      state.requestLogs = action.payload.requestLogs;
     },
   },
 });
@@ -133,9 +137,25 @@ export const getListServerOptions = () => (dispatch) => {
       .then((res) => {
         console.log(res);
         dispatch(setListServer({ lstServer: res.data.data }));
+        resolve(res);
       })
       .catch((error) => {
         console.log(error);
+        reject(error);
+      });
+  });
+};
+
+export const getListUserOptions = () => {
+  return new Promise((resolve, reject) => {
+    return getListUserOptionsApi()
+      .then((res) => {
+        console.log(res);
+        resolve(res);
+      })
+      .catch((error) => {
+        console.log(error);
+        reject(error);
       });
   });
 };
@@ -183,8 +203,14 @@ export const getRequestDetail = (value) => (dispatch) => {
     return getRequestDetailApi(value)
       .then((res) => {
         console.log(res);
-        if (res.data && res.data.length > 0)
-          dispatch(setRequestDetail({ requestDetail: res.data[0] }));
+        if (res.data) {
+          dispatch(
+            setRequestDetail({
+              requestDetail: res.data.detail,
+              requestLogs: res.data.logs,
+            })
+          );
+        }
         resolve();
       })
       .catch((error) => {
@@ -200,6 +226,7 @@ export const onUpdateRequest = (value, requestId) => (dispatch) => {
     return updateRequestApi(value, requestId)
       .then((res) => {
         dispatch(getRequestDetail(requestId));
+        message.success("success");
         resolve();
       })
       .catch((error) => {
@@ -208,6 +235,21 @@ export const onUpdateRequest = (value, requestId) => (dispatch) => {
       })
       .finally(() => {
         dispatch(stopLoading());
+      });
+  });
+};
+
+export const exportRequestByServer = (val) => (dispatch) => {
+  return new Promise((resolve, reject) => {
+    return exportRequestApi(val)
+      .then((res) => {
+        console.log(res);
+        message.success("success");
+        resolve(res);
+      })
+      .catch((error) => {
+        message.error("fail");
+        console.log(error);
       });
   });
 };

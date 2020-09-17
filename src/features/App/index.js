@@ -1,7 +1,7 @@
 import React, { Suspense, useEffect, useState } from "react";
 import { BrowserRouter, Route, Switch, Link, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Layout, Button } from "antd";
+import { Layout, Button, message } from "antd";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import "./index.scss";
 import { checkToken } from "utils/localstorage";
@@ -17,6 +17,9 @@ import { getStore } from "store";
 import { login, onLogout } from "./slice";
 import { AbilityContext } from "permission/can";
 import { useAbility } from "@casl/react";
+import { VerifyAcc } from "./pages/VerifyScreen";
+import { setua } from "features/App/slice";
+import { getAccountDetailApi } from "api/user";
 
 const store = getStore();
 const { Header, Content, Sider } = Layout;
@@ -80,7 +83,20 @@ function App(props) {
   useEffect(() => {
     const token = checkToken();
     const role = localStorage.getItem("role");
-    if (token) dispatch(login({ token: token, role: role }));
+    const userId = localStorage.getItem("userId");
+    if (token) dispatch(login({ token: token, role: role, userId: userId }));
+    getAccountDetailApi()
+      .then((res) => {
+        dispatch(
+          setua({
+            username: res.data.UserName,
+            avatar: res.data.AvatarPath,
+          })
+        );
+      })
+      .catch((error) => {
+        message.error(error.data.message);
+      });
   });
 
   const handleLogout = () => {
@@ -131,7 +147,6 @@ function App(props) {
                 minHeight: 280,
               }}
             >
-              {loading && <Loading />}
               <Switch>
                 {ability.can("access", "manage-user") && (
                   <PrivateRoute
@@ -179,6 +194,7 @@ function Router(props) {
         <Switch>
           <Route exact path="/login" component={LoginPage} />
           <Route exact path="/forgotpassword" component={ForgotPasswordPage} />
+          <Route path="/confirm/:verifyToken" component={VerifyAcc} />
           <PrivateRoute path="/" component={App} />
 
           <Route component={NotFound} />
