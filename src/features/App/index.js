@@ -95,9 +95,10 @@ function App(props) {
         );
       })
       .catch((error) => {
+        handleLogout()
         message.error(error.data.message);
       });
-  });
+  }, []);
 
   const handleLogout = () => {
     dispatch(onLogout());

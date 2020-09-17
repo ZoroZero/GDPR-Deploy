@@ -125,6 +125,7 @@ function MainPage() {
 
     // Fetch data
     const fetch = (pagination, sortColumn, sortOrder, keyword, filter) => {
+        console.log(filter);
         if(!exporting){
             setLoading(true);
             return getServersApi({
@@ -159,7 +160,7 @@ function MainPage() {
         // dispatch(setSort({sortColumn: newSortColumn, sortOrder: newSortOrder }));
         setSorter({sortColumn: newSortColumn, sortOrder: newSortOrder })
         // Filter
-        var filterKeys = filters.Status? filters.Status.join(): SERVER_CONSTANTS.DEFAULT_FILTER_KEYS
+        var filterKeys = filters.IsActive? filters.IsActive.join(): SERVER_CONSTANTS.DEFAULT_FILTER_KEYS
         setFilter({filterColumn: filter.filterColumn, filterKeys: filterKeys})
         // console.log("Fetch after sort change");
     }
