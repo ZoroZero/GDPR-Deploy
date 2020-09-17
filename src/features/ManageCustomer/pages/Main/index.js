@@ -92,7 +92,7 @@ function MainPage() {
   useEffect(() => {
     console.log("USE EFFECT INDEX", pagination);
     fetch(
-      pagination.current,
+      pagination.current > 0 ? pagination.current : 1,
       pagination.pageSize,
       sortColumn,
       sortOrder,
@@ -160,7 +160,9 @@ function MainPage() {
     (await newKeyword)
       ? dispatch(setSearch(newKeyword))
       : dispatch(setSearch(""));
+    setSelectedRowKeys([])
     await dispatch(setPagination({ ...pagination, current: 1 }));
+
     dispatch(setRefresh(!refresh));
   }
 

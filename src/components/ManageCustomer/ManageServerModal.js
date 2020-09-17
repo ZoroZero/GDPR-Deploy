@@ -126,34 +126,16 @@ const ManageServerModal = (props) => {
       dataIndex: "Id",
       key: "Id",
       align: "center",
-      filters: [
-        {
-          text: "InActive",
-          value: false,
-        },
-        {
-          text: "Active",
-          value: true,
-        },
-      ],
-      onFilter: (value, record) => (value ? record.IsActive : !record.IsActive),
       render: (text, record) => (
         <Meta
           style={{ align: "left" }}
           avatar={
-            <>
-              <Row>
-                {record.IsActive && <Tag color="cyan"> Active</Tag>}
-                {!record.IsActive && <Tag color="red"> InActive</Tag>}
-              </Row>
-              <Row>
-                <Checkbox
-                  key={keyUpdate}
-                  defaultChecked={true}
-                  onChange={(e) => handleUncheck(record.Id, e.target.checked)}
-                />
-              </Row>
-            </>
+
+            <Checkbox
+              key={keyUpdate}
+              defaultChecked={true}
+              onChange={(e) => handleUncheck(record.Id, e.target.checked)}
+            />
           }
           title={record.Name}
           description={<Text> {record.IpAddress}</Text>}
@@ -183,7 +165,7 @@ const ManageServerModal = (props) => {
         forceRender={true}
         onOk={handleOk}
         onCancel={handleCancel}
-        width={800}
+        width={600}
       >
         <Row>
           <Col span={10} offset={7}>
@@ -234,8 +216,10 @@ const ManageServerModal = (props) => {
             <div className="demo-infinite-container">
               <InfiniteScroll
                 initialLoad={false}
+                pageStart={0}
                 loadMore={handleInfiniteOnLoad}
                 hasMore={otherServers.hasMore}
+                useWindow={false}
               >
                 <List
                   dataSource={otherServers.data}
@@ -243,27 +227,17 @@ const ManageServerModal = (props) => {
                     <List.Item key={record.Id}>
                       <List.Item.Meta
                         avatar={
-                          <>
-                            <Row>
-                              {record.IsActive && (
-                                <Tag color="cyan"> Active</Tag>
-                              )}
-                              {!record.IsActive && (
-                                <Tag color="red"> InActive</Tag>
-                              )}
-                            </Row>
-                            <Row>
-                              <Checkbox
-                                disabled={!record.FirstNameCustomer}
-                                key={keyUpdate}
-                                defaultChecked={false}
-                                onChange={(e) =>
-                                  handleCheck(record.Id, e.target.checked)
-                                }
-                                disabled={record.FirstNameCustomer}
-                              />
-                            </Row>
-                          </>
+
+                          <Checkbox
+                            disabled={!record.FirstNameCustomer}
+                            key={keyUpdate}
+                            defaultChecked={false}
+                            onChange={(e) =>
+                              handleCheck(record.Id, e.target.checked)
+                            }
+                            disabled={record.FirstNameCustomer}
+                          />
+
                         }
                         title={record.Name}
                         description={
