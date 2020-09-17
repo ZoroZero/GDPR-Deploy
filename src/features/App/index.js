@@ -84,12 +84,8 @@ function App(props) {
     const token = checkToken();
     const role = localStorage.getItem("role");
     const userId = localStorage.getItem("userId");
-<<<<<<< HEAD
-    if (token) dispatch(login({ access_token: token, role: role, userId: userId }));
-=======
     if (token)
       dispatch(login({ access_token: token, role: role, userId: userId }));
->>>>>>> feature/feature_manage_request
     getAccountDetailApi()
       .then((res) => {
         dispatch(
@@ -103,11 +99,7 @@ function App(props) {
         handleLogout()
         message.error(error.data.message);
       });
-<<<<<<< HEAD
-  }, []);
-=======
   });
->>>>>>> feature/feature_manage_request
 
   const handleLogout = () => {
     dispatch(onLogout());
