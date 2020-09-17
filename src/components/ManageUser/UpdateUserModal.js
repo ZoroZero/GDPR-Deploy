@@ -130,8 +130,8 @@ const CollectionCreateForm = ({
           email: record.Email,
           firstname: record.FirstName,
           lastname: record.LastName,
-          password: record.HashPasswd,
-          confirm: record.HashPasswd,
+          // password: record.HashPasswd,
+          // confirm: record.HashPasswd,
           username: record.UserName,
           rolelist: [record.RoleName],
           prefix: "86",
@@ -159,9 +159,11 @@ const CollectionCreateForm = ({
           name="password"
           label="Password"
           rules={[
+            { min: 5, message: "Password must be minimum 5 characters." },
             {
-              required: true,
-              message: "Please input your password!",
+              pattern: "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])",
+              message:
+                "Password must include number, uppercase and lowercase character",
             },
           ]}
           hasFeedback
@@ -175,9 +177,11 @@ const CollectionCreateForm = ({
           dependencies={["password"]}
           hasFeedback
           rules={[
+            { min: 5, message: "Password must be minimum 5 characters." },
             {
-              required: true,
-              message: "Please confirm your password!",
+              pattern: "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])",
+              message:
+                "Password must include number, uppercase and lowercase character",
             },
             ({ getFieldValue }) => ({
               validator(rule, value) {
