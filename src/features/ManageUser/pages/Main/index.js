@@ -277,8 +277,9 @@ function MainPage() {
     }
     if (filters.RoleName !== null) {
       dispatch(setRole({ Role: filters.RoleName.join(",") }));
+      dispatch(setPageNo({ PageNo: 1 }));
       fetch({
-        PageNo: PageNo,
+        PageNo: 1,
         PageSize: PageSize,
         SearchKey: SearchKey,
         SortBy: sorter.field,
