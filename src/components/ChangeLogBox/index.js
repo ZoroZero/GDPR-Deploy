@@ -5,15 +5,15 @@ import "./index.scss";
 const ChangeLogBox = (props) => {
   const listCardLogs = props.logs.map((val, index) => {
     return (
-      <div class="row">
-        <div class="col-xs-12 col-sm-6 col-sm-offset-3">
-          <div class="new-message-box">
-            <div class="new-message-box-alert">
-              <div class="info-tab tip-icon-alert" title="error">
+      <div className="row" key={val.Id}>
+        <div className="col-xs-12 col-sm-6 col-sm-offset-3">
+          <div className="new-message-box">
+            <div className="new-message-box-alert">
+              <div className="info-tab tip-icon-alert" title="error">
                 <i></i>
               </div>
-              <div class="tip-box-alert">
-                <div class="status-header">
+              <div className="tip-box-alert">
+                <div className="status-header">
                   <p>{val.UserName} </p>
                   <p> {val.UpdateTime}</p>
                 </div>

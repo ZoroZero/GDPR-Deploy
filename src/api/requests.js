@@ -121,7 +121,7 @@ export const exportRequestApi = (val) => {
 export const getAllMessageApi = (requestId) => {
   return new Promise((resolve, reject) => {
     return axios
-      .get(`/api/messages/${requestId}`)
+      .get(`/api/messages/by-request/${requestId}`)
       .then((res) => {
         resolve(res);
       })
@@ -131,10 +131,10 @@ export const getAllMessageApi = (requestId) => {
   });
 };
 
-export const getRepliedMsgApi = (requestId) => {
+export const getRepliedMsgApi = (msgId) => {
   return new Promise((resolve, reject) => {
     return axios
-      .get(`/api/messages/${requestId}`)
+      .get(`/api/messages/${msgId}`)
       .then((res) => {
         resolve(res);
       })
