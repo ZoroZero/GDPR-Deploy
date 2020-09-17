@@ -281,6 +281,9 @@ function MainPage() {
               Multi actions <DownOutlined />
             </Button>
           </Dropdown>
+          <span style={{ marginLeft: 8 }}>
+            {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
+          </span>
         </Col>
         <Col span={8}>
           <CreateUserModal onSubmitModal={refetch} />
