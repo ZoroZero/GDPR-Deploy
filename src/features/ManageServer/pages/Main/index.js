@@ -4,7 +4,7 @@ import { Table, Pagination, Input, Button, Modal, Tag, Menu, Dropdown, message, 
 import "./index.scss";
 import { getServersApi, deleteServerApi, updateMultipleStatusApi } from "api/server";
 import { useDispatch, useSelector } from "react-redux";
-import { setSort, setData, setPagination, setTotal, setRefresh } from "features/ManageServer/slice";
+import { setRefresh } from "features/ManageServer/slice";
 import AddEditServerModal from "components/ManageServer/AddEditServerModal"; 
 import { SERVER_CONSTANTS } from 'constants/ManageServer/server';
 import { ExclamationCircleOutlined } from "@ant-design/icons";
@@ -41,7 +41,7 @@ function MainPage() {
     const [exporting, setExporting] = useState(false);
     const [importing, setImporting] = useState(false);
     const [editRequest, setEditRequest] = useState(null);
-    const [checkingRows, setCheckingRows] = useState([])
+    // const [checkingRows, setCheckingRows] = useState([])
     const [selectingServerIdList, setSelectingServerIdList] = useState([]);
 
     useEffect(() => {
@@ -168,6 +168,8 @@ function MainPage() {
     const handleSearchServer = (keyword) => {
         setSearchKeyword(keyword)
         setPagination({page: 1, pageSize: pagination.pageSize})
+        // setCheckingRows([])
+        setSelectingServerIdList([])
         // console.log("Fetch after search");
     }
 
@@ -213,10 +215,10 @@ function MainPage() {
 
     // Handle row selected
     const rowSelection = {
-        checkingRows,
+        selectedRowKeys: selectingServerIdList,
         onChange: (selectedRowKeys, selectedRows) => {
             console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-            setCheckingRows(selectedRows);
+            // setCheckingRows(selectedRows);
             setSelectingServerIdList(selectedRowKeys)
         },
         onSelect: (record, selected, selectedRows) => {
@@ -249,32 +251,10 @@ function MainPage() {
         })
     }
 
-    // Handle delete of checking rows
-    const handleDeleteMultipleServer = () => {
-        // return deleteServerApi({
-        //     listServer: checkingRows,
-        //     status: status
-        // })
-        // .then(res => {
-        //     console.log("Multiple update", res);
-        //     message.success('Successfully change status of servers')
-        //     dispatch(setRefresh());
-        // })
-        // .catch(err =>{
-        //     console.log("Activate all err", err);
-        //     message.error('Something went wrong')
-        // })
-    } 
-
     // Handle action menu onClick
     const handleMenuClick = (e) => {
-        console.log(e);
-        if(e.key === 'delete'){
-            handleDeleteMultipleServer()
-        }
-        else{
-            handleSetStatus(e.key ==='activate')
-        }
+        console.log(e)
+        handleSetStatus(e.key ==='activate')
     }
 
     // Menu of action button
@@ -304,23 +284,17 @@ function MainPage() {
                 <ExportServer id='export-server' className='export-server' visible={exporting} setVisible={setExporting}></ExportServer>
             </div>
 
-            <Button type="primary" onClick={()=> setEditRequest(SERVER_CONSTANTS.ADD_SERVER_REQUEST)} style={{ background: 'lawngreen', color: 'black'}}>
-                Create new server
-            </Button>
+            <div>
+                <Button type="primary" onClick={()=> setEditRequest(SERVER_CONSTANTS.ADD_SERVER_REQUEST)} style={{ background: 'lawngreen', color: 'black'}}>
+                    Create new server
+                </Button>
 
-            <AddEditServerModal request={editRequest} modalVisible={modalVisible} 
-            setModalVisible={setModalVisible} setEditRequest={setEditRequest}>
-            </AddEditServerModal>
-
-            {/* <Button disabled={checkingRows.length===0} type="primary" style={{margin: '0px 4px 0px 8px'}} onClick={()=>{handleSetStatus(true)}}>
-                Activate all
-            </Button>
-            <Button disabled={checkingRows.length===0} type="primary" style={{ margin: '0px 4px 0px 4px'}}  onClick={()=>{handleSetStatus(false)}}>
-                Deactivate all
-            </Button> */}
-
-            <Dropdown overlay={actionMenu} disabled={checkingRows.length===0} style={{margin: '0px 10px 0px 10px'}}>
-                        <Button>
+                <AddEditServerModal request={editRequest} modalVisible={modalVisible} 
+                setModalVisible={setModalVisible} setEditRequest={setEditRequest}>
+                </AddEditServerModal>
+            </div>
+            <Dropdown overlay={actionMenu} disabled={selectingServerIdList.length===0} >
+                        <Button style={{margin: '10px 0px 0px 0px'}}>
                             Action <DownOutlined />
                         </Button>
             </Dropdown>
