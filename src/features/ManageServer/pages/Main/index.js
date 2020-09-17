@@ -155,8 +155,7 @@ function MainPage() {
     }
 
     // Handle table change: sort, filter
-    const handleTableChange = (pagination, filters, sorter) => {
-        // console.log('params', sorter);
+    const handleTableChange = (pagi, filters, sorter) => {
         console.log('Filters; ',filters);
         var newSortColumn = sorter.column? sorter.column.dataIndex: 'Name'
         var newSortOrder = sorter.order ==='descend'?'descend':'ascend'
@@ -164,6 +163,9 @@ function MainPage() {
         setSorter({sortColumn: newSortColumn, sortOrder: newSortOrder })
         // Filter
         var filterKeys = filters.IsActive? filters.IsActive.join(): SERVER_CONSTANTS.DEFAULT_FILTER_KEYS
+        if(filter.filterKeys!==filterKeys){
+            setPagination({page: 1, pageSize: pagination.pageSize})
+        }
         setFilter({filterColumn: filter.filterColumn, filterKeys: filterKeys})
         // console.log("Fetch after sort change");
         setSelectingServerIdList([])
