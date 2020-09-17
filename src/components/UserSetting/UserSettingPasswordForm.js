@@ -12,7 +12,7 @@ import {
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateAccountApi } from "../../api/user";
+import { updateAccountPassApi } from "../../api/user";
 import UploadAvatarDynamic from "./UploadAvatarDynamic.js";
 import { setua } from "features/App/slice";
 const formItemLayout = {
@@ -27,6 +27,7 @@ const formItemLayout = {
 const UserSettingPassword = (pros) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
+  const [id, setId] = useState();
   const [imageUrl, setImageUrl] = useState(
     "https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
   );
@@ -38,39 +39,21 @@ const UserSettingPassword = (pros) => {
   }
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
-    if (values.password !== undefined) {
-      updateAccountApi(values.UserId, {
-        ...values,
-        PassWord: values.password,
+    updateAccountPassApi({
+      ...values,
+      PassWord: values.password,
+    })
+      .then((res) => {
+        console.log("res from insert", res);
+        if (res.status === 201) {
+          message.success(res.statusText);
+        }
+        pros.onSubmitModal();
       })
-        .then((res) => {
-          console.log("res from insert", res);
-          if (res.status === 201) {
-            message.success(res.statusText);
-          }
-          pros.onSubmitModal();
-        })
-        .catch((error) => {
-          message.error(error.data.message);
-        });
-      pros.onSubmitModal();
-    } else {
-      updateAccountApi(values.UserId, {
-        ...values,
-        PassWord: values.HashPasswd,
-      })
-        .then((res) => {
-          console.log("res from update account", res);
-          if (res.status === 200) {
-            message.success(res.statusText);
-          }
-          pros.onSubmitModal();
-        })
-        .catch((error) => {
-          message.error(error.data.message);
-        });
-      pros.onSubmitModal();
-    }
+      .catch((error) => {
+        message.error(error.data.message);
+      });
+    pros.onSubmitModal();
   };
   useEffect(() => {
     dispatch(setua({ username: record.UserName, avatar: record.AvatarPath }));
@@ -83,6 +66,7 @@ const UserSettingPassword = (pros) => {
         "https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
       );
     }
+    setId(record.UserId);
     form.setFieldsValue(record);
   }, [record]);
   const fetch = () => {};

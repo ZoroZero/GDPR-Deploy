@@ -40,40 +40,22 @@ const UserSetting = (pros) => {
   }
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
-    if (values.password !== undefined) {
-      updateAccountApi(values.UserId, {
-        ...values,
-        PassWord: values.password,
+    console.log("id", id);
+    updateAccountApi({
+      ...values,
+      UserId: id,
+    })
+      .then((res) => {
+        console.log("res from update account", res);
+        if (res.status === 200) {
+          message.success(res.statusText);
+        }
+        pros.onSubmitModal();
       })
-        .then((res) => {
-          console.log("res from insert", res);
-          if (res.status === 201) {
-            message.success(res.statusText);
-          }
-          pros.onSubmitModal();
-        })
-        .catch((error) => {
-          message.error(error.data.message);
-        });
-      pros.onSubmitModal();
-    } else {
-      console.log("id", id);
-      updateAccountApi(values.UserId, {
-        ...values,
-        UserId: id,
-      })
-        .then((res) => {
-          console.log("res from update account", res);
-          if (res.status === 200) {
-            message.success(res.statusText);
-          }
-          pros.onSubmitModal();
-        })
-        .catch((error) => {
-          message.error(error.data.message);
-        });
-      pros.onSubmitModal();
-    }
+      .catch((error) => {
+        message.error(error.data.message);
+      });
+    pros.onSubmitModal();
   };
   useEffect(() => {
     dispatch(setua({ username: record.UserName, avatar: record.AvatarPath }));
