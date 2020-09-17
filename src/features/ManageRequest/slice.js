@@ -171,6 +171,7 @@ export const approveRequest = (value) => (dispatch) => {
       })
       .catch((error) => {
         console.log(error);
+        message.error(error.response.data.message);
         reject(error);
       })
       .finally(() => {
@@ -189,7 +190,8 @@ export const cancelRequest = (value) => (dispatch) => {
         resolve();
       })
       .catch((error) => {
-        console.log(error);
+        console.log(error.response);
+        message.error(error.response.data.message);
         reject(error);
       })
       .finally(() => {

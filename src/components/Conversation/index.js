@@ -16,7 +16,25 @@ const ConversationBox = (props) => {
     fetchOldMessage(props.request.Id);
   }, [props.request.Id]);
 
+  useEffect(() => {
+    socket.emit("joinRoom", {
+      requestId: props.request.Id,
+      headers: {
+        Authorization: token,
+      },
+    });
+    return () => {
+      socket.emit("leaveRoom", {
+        requestId: props.request.Id,
+        headers: {
+          Authorization: token,
+        },
+      });
+    };
+  }, [props.request.Id]);
+
   socket.once(props.request.Id, (data) => {
+    console.log("Hello");
     updateLstMsg(data);
     form.resetFields();
   });
