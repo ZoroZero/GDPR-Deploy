@@ -8,13 +8,12 @@ import {
   Input,
   Tooltip,
   message,
-  Descriptions,
 } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateAccountApi } from "../../api/user";
-import UploadAvatarDynamic from "../../components/UserSetting/UploadAvatarDynamic.js";
+import UploadAvatarDynamic from "./UploadAvatarDynamic.js";
 import { setua } from "features/App/slice";
 const formItemLayout = {
   labelCol: {
@@ -25,10 +24,9 @@ const formItemLayout = {
   },
 };
 
-const UserSetting = (pros) => {
+const UserSettingPassword = (pros) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const [id, setId] = useState();
   const [imageUrl, setImageUrl] = useState(
     "https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
   );
@@ -57,10 +55,9 @@ const UserSetting = (pros) => {
         });
       pros.onSubmitModal();
     } else {
-      console.log("id", id);
       updateAccountApi(values.UserId, {
         ...values,
-        UserId: id,
+        PassWord: values.HashPasswd,
       })
         .then((res) => {
           console.log("res from update account", res);
@@ -86,7 +83,6 @@ const UserSetting = (pros) => {
         "https://f1.pngfuel.com/png/386/684/972/face-icon-user-icon-design-user-profile-share-icon-avatar-black-and-white-silhouette-png-clip-art.png"
       );
     }
-    setId(record.UserId);
     form.setFieldsValue(record);
   }, [record]);
   const fetch = () => {};
@@ -97,83 +93,19 @@ const UserSetting = (pros) => {
       {...formItemLayout}
       onFinish={onFinish}
     >
-      <Form.Item>
-        <Row type="flex" justify="center" align="middle">
-          <Col span={8}></Col>
-          <Col span={8}>
-            <Avatar size={150} style={{ padding: 0 }} src={imageUrl} />
-          </Col>
-          <Col span={8}>
-            <UploadAvatarDynamic onsub={pros.onSubmitModal} />
-          </Col>
-
-          {/* <Upload name="logo" action="/upload.do" listType="picture">
-            <Button icon={<UploadOutlined />}>Click to upload</Button>
-          </Upload> */}
-        </Row>
-      </Form.Item>
-
-      {/* <Form.Item
-        name="UserId"
-        label="ID"
-        rules={[
-          {
-            message: "Please input your ID!",
-            whitespace: true,
-          },
-        ]}
-      >
-        <Input disabled={true} />
-      </Form.Item> */}
       <Form.Item
-        name="Email"
-        label="E-mail"
-        rules={[
-          {
-            type: "email",
-            message: "The input is not valid E-mail!",
-          },
-          {
-            required: true,
-            message: "Please input your E-mail!",
-          },
-        ]}
-      >
-        <Input disabled={true} />
-      </Form.Item>
-      <Form.Item
-        name="FirstName"
-        label="First Name"
-        rules={[
-          {
-            required: true,
-            message: "Please input Firstname!",
-          },
-        ]}
-      >
-        <Input />
-      </Form.Item>
-
-      <Form.Item
-        name="LastName"
-        label="Last Name"
-        rules={[
-          {
-            required: true,
-            message: "Please input Lastname!",
-          },
-        ]}
-      >
-        <Input />
-      </Form.Item>
-
-      {/* <Form.Item
         name="Pass"
         label="Old Password"
         rules={[
           {
-            // required: true,
+            required: true,
             message: "Please input your old password!",
+          },
+          { min: 5, message: "Password must be minimum 5 characters." },
+          {
+            pattern: "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])",
+            message:
+              "Password must include number, uppercase and lowercase character",
           },
         ]}
         hasFeedback
@@ -186,7 +118,14 @@ const UserSetting = (pros) => {
         label="New Password"
         rules={[
           {
+            required: true,
             message: "Please input your password!",
+          },
+          { min: 5, message: "Password must be minimum 5 characters." },
+          {
+            pattern: "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])",
+            message:
+              "Password must include number, uppercase and lowercase character",
           },
         ]}
         hasFeedback
@@ -201,6 +140,7 @@ const UserSetting = (pros) => {
         hasFeedback
         rules={[
           {
+            required: true,
             message: "Please confirm your password!",
           },
           ({ getFieldValue }) => ({
@@ -213,54 +153,16 @@ const UserSetting = (pros) => {
               );
             },
           }),
+          { min: 5, message: "Password must be minimum 5 characters." },
+          {
+            pattern: "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])",
+            message:
+              "Password must include number, uppercase and lowercase character",
+          },
         ]}
       >
         <Input.Password />
-      </Form.Item> */}
-
-      <Form.Item
-        name="UserName"
-        label={
-          <span>
-            Username&nbsp;
-            <Tooltip title="What do you want others to call you?">
-              <QuestionCircleOutlined />
-            </Tooltip>
-          </span>
-        }
-        rules={[
-          {
-            message: "Please input your username!",
-            whitespace: true,
-          },
-        ]}
-      >
-        <Input disabled={true} />
       </Form.Item>
-
-      <Form.Item
-        name="RoleName"
-        label="Role permission"
-        rules={[
-          {
-            message: "Please input your role name!",
-            whitespace: true,
-          },
-        ]}
-      >
-        <Input disabled={true} />
-      </Form.Item>
-
-      {/* <Form.Item name="IsActive" label="Status">
-        <Switch
-          disabled={true}
-          checkedChildren="Active"
-          unCheckedChildren="InActive"
-          defaultChecked={switchState}
-          onChange={onChange}
-        />
-      </Form.Item> */}
-
       <Form.Item
         wrapperCol={{
           span: 12,
@@ -268,11 +170,11 @@ const UserSetting = (pros) => {
         }}
       >
         <Button type="primary" htmlType="submit">
-          Apply New Change
+          Change PassWord
         </Button>
       </Form.Item>
     </Form>
   );
 };
 
-export default UserSetting;
+export default UserSettingPassword;
