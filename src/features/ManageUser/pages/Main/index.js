@@ -46,7 +46,17 @@ function MainPage() {
       content: "Warning: The delete user cannot be recover",
       onOk() {
         return new Promise((resolve, reject) => {
-          deleteUsersApi(row.Id);
+          deleteUsersApi(row.Id)
+            .then((res) => {
+              if (res.status === 200) {
+                // message.success(res.statusText);
+              } else {
+                message.error(res.statusText);
+              }
+            })
+            .catch((error) => {
+              message.error(error.data.message);
+            });
           setTimeout(Math.random() > 0.5 ? resolve : reject, 2000);
         })
           .catch(() => console.log("Oops errors!"))
