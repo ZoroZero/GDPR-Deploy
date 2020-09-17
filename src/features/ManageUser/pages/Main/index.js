@@ -176,13 +176,16 @@ function MainPage() {
       </Menu.Item>
     </Menu>
   );
-
+  const [SearchKey, setSearchKey]=useState("");
+  const [SortBy, setSortBy]=useState("");
+  const [SortOrder, setSortOrder]=useState("ascend");
+  const [Role,setRole]=useState("");
   const dispatch = useDispatch();
   const [exportData, setExportData] = useState([]);
   const [data, setData] = useState([]);
   const [total, setTotal] = useState();
   const [loading, setLoading] = useState(false);
-  const { SearchKey, PageNo, PageSize, SortBy, SortOrder, Role } = useSelector(
+  const { PageNo, PageSize } = useSelector(
     (state) => state.userManagement
   );
   useEffect(() => {
@@ -223,7 +226,7 @@ function MainPage() {
   }
   function search(SearchKeyw) {
     setSelectedRowKeys([]);
-    dispatch(setSearchKey({ SearchKey: SearchKeyw }));
+    setSearchKey(SearchKeyw);
     dispatch(setPageNo({ PageNo: 1 }));
     fetch({
       PageNo: 1,
@@ -264,8 +267,8 @@ function MainPage() {
   }
   function handleTableChange(pagination, filters, sorter) {
     if (sorter.length !== 0) {
-      dispatch(setSortBy({ SortBy: sorter.field }));
-      dispatch(setSortOrder({ SortOrder: sorter.order }));
+      setSortBy(sorter.field);
+      setSortOrder(sorter.order);
       fetch({
         PageNo: PageNo,
         PageSize: PageSize,
@@ -276,7 +279,7 @@ function MainPage() {
       });
     }
     if (filters.RoleName !== null) {
-      dispatch(setRole({ Role: filters.RoleName.join(",") }));
+      setRole(filters.RoleName.join(","));
       dispatch(setPageNo({ PageNo: 1 }));
       fetch({
         PageNo: 1,
@@ -287,7 +290,7 @@ function MainPage() {
         Role: filters.RoleName.join(","),
       });
     } else {
-      dispatch(setRole({ Role: "" }));
+      setRole("");
       fetch({
         PageNo: PageNo,
         PageSize: PageSize,
