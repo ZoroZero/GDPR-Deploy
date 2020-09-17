@@ -39,6 +39,8 @@ const { confirm } = Modal;
 const { Search } = Input;
 
 function MainPage() {
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
   function showPromiseConfirm(row) {
     confirm({
       title: "Do you want to delete user " + row.UserName,
@@ -150,11 +152,17 @@ function MainPage() {
     console.log("click", e);
     if (e.key == "active") {
       message.warning("Active all selected items");
-      await acdeacListUsersApi({ listid: exportData.join(","), isactive: 1 });
+      await acdeacListUsersApi({
+        listid: selectedRowKeys.join(","),
+        isactive: 1,
+      });
       refetch();
     } else if (e.key == "deactive") {
       message.warning("Deactive all selected items");
-      await acdeacListUsersApi({ listid: exportData.join(","), isactive: 0 });
+      await acdeacListUsersApi({
+        listid: selectedRowKeys.join(","),
+        isactive: 0,
+      });
       refetch();
     }
   }
@@ -214,6 +222,7 @@ function MainPage() {
     return `Total ${total} items`;
   }
   function search(SearchKeyw) {
+    setSelectedRowKeys([]);
     dispatch(setSearchKey({ SearchKey: SearchKeyw }));
     dispatch(setPageNo({ PageNo: 1 }));
     fetch({
@@ -339,18 +348,25 @@ function MainPage() {
   };
 
   // Handle row selected
+  // const rowSelection = {
+  //   onChange: (selectedRowKeys, selectedRows) => {
+  //     setSelectedRowKeys(selectedRowKeys);
+  //   },
+  //   onSelect: (record, selected, selectedRows) => {
+  //     // console.log(record, selected, selectedRows);
+  //   },
+  //   onSelectAll: (selected, selectedRows, changeRows) => {
+  //     // console.log(selected, selectedRows, changeRows);
+  //   },
+  // };
   const rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      setExportData(selectedRowKeys);
-    },
-    onSelect: (record, selected, selectedRows) => {
-      // console.log(record, selected, selectedRows);
-    },
-    onSelectAll: (selected, selectedRows, changeRows) => {
-      // console.log(selected, selectedRows, changeRows);
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys) => {
+      console.log("selectedRowKeys changed: ", newSelectedRowKeys);
+      setSelectedRowKeys(newSelectedRowKeys);
     },
   };
-  const hasSelected = exportData.length > 0;
+  const hasSelected = selectedRowKeys.length > 0;
   return (
     <div>
       <Row>
