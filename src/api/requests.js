@@ -117,3 +117,16 @@ export const exportRequestApi = (val) => {
       });
   });
 };
+
+export const getAllMessageApi = (requestId) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .get(`/api/messages/${requestId}`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};

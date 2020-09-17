@@ -99,7 +99,7 @@ function DetailPage(props) {
           </Card>
         </Col>
         <Col span={12}>
-          <ConversationBox />
+          <ConversationBox request={requestDetail} />
           <ChangeLogBox logs={requestLogs} />
         </Col>
       </Row>

@@ -1,12 +1,10 @@
-import { Col, Checkbox, Input, Radio, Row, Space, List, Spin, Tag } from "antd";
-import Modal from "antd/lib/modal/Modal";
-import "antd/dist/antd.css";
-import "./index.css";
-import { useSelector, useDispatch } from "react-redux";
+import { Col, Checkbox, Input, Radio, Row, List, Spin, Tag, Typography, Table, Modal } from "antd";
+import Meta from "antd/lib/card/Meta";
 import React, { useEffect, useState } from "react";
+import "antd/dist/antd.css";
+import { useSelector, useDispatch } from "react-redux";
 import {
   getServersCustomer,
-  SetServers,
   getOtherServers,
   deleteServersOfCustomer,
   addServersForCustomer,
@@ -14,31 +12,29 @@ import {
   setDeletedOwnedServers,
   setAddedServers,
 } from "../../features/ManageCustomer/slice";
-import { Typography } from "antd";
-import { Button, Tooltip, Table } from "antd";
-import { DeleteTwoTone } from "@ant-design/icons";
-import Meta from "antd/lib/card/Meta";
 import InfiniteScroll from "react-infinite-scroller";
+
 const { Title, Text } = Typography;
 const { Search } = Input;
 
 const ManageServerModal = (props) => {
   const dispatch = useDispatch();
-  const { servers, otherServers, deletedOwnedServers, addedServers } = useSelector(
-    (state) => state.customerManagement
-  );
+  const {
+    servers,
+    otherServers,
+    deletedOwnedServers,
+    addedServers,
+  } = useSelector((state) => state.customerManagement);
   const shouldGetData = props.modalVisible !== false;
   const [option, setOption] = useState({
     status: "available",
   });
   const [page, setPage] = useState(2);
   const [keyword, setKeyword] = useState("");
-  const [keyUpdate, setKeyUpdate] = useState(true)
+  const [keyUpdate, setKeyUpdate] = useState(true);
 
-  // const [checkStatus, setCheckStatus] = useState(true)
   useEffect(() => {
     if (shouldGetData) {
-      console.log("USE EFFECT MANAGE SERVER", props);
       dispatch(
         setOtherServers({
           data: [],
@@ -47,63 +43,70 @@ const ManageServerModal = (props) => {
         })
       );
       setPage(2);
-      setKeyUpdate(!keyUpdate)
-
+      setKeyUpdate(!keyUpdate);
       dispatch(getServersCustomer(props.record.Id, ""));
       dispatch(getOtherServers(option, props.record.Id, 1, ""));
     }
   }, [shouldGetData, props.record, option.status]);
 
   const handleOk = () => {
+    props.setModalVisible(false);
     if (deletedOwnedServers.length > 0) {
       dispatch(deleteServersOfCustomer(deletedOwnedServers, props.record.Id));
-
     }
     if (addedServers.length > 0) {
       dispatch(addServersForCustomer(addedServers, props.record.Id));
     }
-    props.setModalVisible(false);
-
   };
+
+  const handleCancel = () => {
+    props.setModalVisible(false);
+  };
+
   const handleStatusChange = (e) => {
-    console.log("HANDLE ON CHANGE STATUS", e.target.value);
     setOption({ status: e.target.value });
   };
 
   const handleUncheck = (id, value) => {
-
     if (!value) {
-      dispatch(setDeletedOwnedServers(deletedOwnedServers.concat(id)))
+      dispatch(setDeletedOwnedServers(deletedOwnedServers.concat(id)));
+    } else {
+      dispatch(
+        setDeletedOwnedServers(
+          deletedOwnedServers.filter((item) => {
+            return item !== id;
+          })
+        )
+      );
     }
-    else {
-      dispatch(setDeletedOwnedServers(deletedOwnedServers.filter((item) => { return item !== id })))
-    }
-  }
+  };
+
   const handleCheck = (id, value) => {
     if (value) {
-      dispatch(setAddedServers(addedServers.concat(id)))
+      dispatch(setAddedServers(addedServers.concat(id)));
+    } else {
+      dispatch(
+        setAddedServers(
+          addedServers.filter((item) => {
+            return item !== id;
+          })
+        )
+      );
     }
-    else {
-      dispatch(setAddedServers(addedServers.filter((item) => { return item !== id })))
-    }
-  }
-  const handleCancel = () => {
-    props.setModalVisible(false);
   };
+
   async function handleInfiniteOnLoad() {
-    await setPage(page + 1);
-    console.log("ON HANDLE INFINITE", page);
     dispatch(
       setOtherServers({
         ...otherServers,
         loading: true,
       })
     );
-    dispatch(getOtherServers(option, props.record.Id, page, keyword));
+    dispatch(getOtherServers(option, props.record.Id, page + 1, keyword));
+    setPage(page + 1);
   }
 
   async function handleSearchChange(newKeyword) {
-    (await newKeyword) ? setKeyword(newKeyword) : setKeyword("");
     dispatch(
       setOtherServers({
         data: [],
@@ -111,10 +114,12 @@ const ManageServerModal = (props) => {
         loading: false,
       })
     );
-    setPage(2);
     dispatch(getServersCustomer(props.record.Id, newKeyword));
     dispatch(getOtherServers(option, props.record.Id, 1, newKeyword));
+    newKeyword ? setKeyword(newKeyword) : setKeyword("");
+    setPage(2);
   }
+
   const columnsOwned = [
     {
       title: "Owned Servers",
@@ -132,7 +137,6 @@ const ManageServerModal = (props) => {
         },
       ],
       onFilter: (value, record) => (value ? record.IsActive : !record.IsActive),
-
       render: (text, record) => (
         <Meta
           style={{ align: "left" }}
@@ -143,7 +147,11 @@ const ManageServerModal = (props) => {
                 {!record.IsActive && <Tag color="red"> InActive</Tag>}
               </Row>
               <Row>
-                <Checkbox key={keyUpdate} defaultChecked={true} onChange={(e) => handleUncheck(record.Id, e.target.checked)} />
+                <Checkbox
+                  key={keyUpdate}
+                  defaultChecked={true}
+                  onChange={(e) => handleUncheck(record.Id, e.target.checked)}
+                />
               </Row>
             </>
           }
@@ -182,7 +190,7 @@ const ManageServerModal = (props) => {
             <Search
               className="search-bar"
               name="search-content"
-              placeholder="input search text"
+              placeholder="search any server"
               enterButton="Search"
               size="large"
               onSearch={(value) => {
@@ -201,8 +209,7 @@ const ManageServerModal = (props) => {
             }}
           >
             <Radio value="all" style={{ fontSize: "small" }}>
-              {" "}
-              All{" "}
+              All
             </Radio>
             <Radio value="available"> Available </Radio>
           </Radio.Group>
@@ -213,8 +220,7 @@ const ManageServerModal = (props) => {
             <Table
               columns={columnsOwned}
               dataSource={servers}
-              pagination={false}
-              scroll={{ y: 260 }}
+              scroll={{ y: 360 }}
             />
           </Col>
           <Col span={12} style={{ padding: "10px" }}>
@@ -227,10 +233,8 @@ const ManageServerModal = (props) => {
             <div className="demo-infinite-container">
               <InfiniteScroll
                 initialLoad={false}
-                pageStart={0}
                 loadMore={handleInfiniteOnLoad}
                 hasMore={otherServers.hasMore}
-                useWindow={false}
               >
                 <List
                   dataSource={otherServers.data}
@@ -249,9 +253,12 @@ const ManageServerModal = (props) => {
                             </Row>
                             <Row>
                               <Checkbox
+                                disabled={!record.FirstNameCustomer}
                                 key={keyUpdate}
                                 defaultChecked={false}
-                                onChange={(e) => handleCheck(record.Id, e.target.checked)}
+                                onChange={(e) =>
+                                  handleCheck(record.Id, e.target.checked)
+                                }
                                 disabled={record.FirstNameCustomer}
                               />
                             </Row>
@@ -263,10 +270,8 @@ const ManageServerModal = (props) => {
                             <Text style={{ align: "left" }}>
                               {record.IpAddress}
                             </Text>{" "}
-                            {"  "}
                             {record.FirstNameCustomer ? (
                               <Text style={{ color: "blue", align: "right" }}>
-                                {" "}
                                 {record.FirstNameCustomer}{" "}
                                 {record.LastNameCustomer}{" "}
                               </Text>

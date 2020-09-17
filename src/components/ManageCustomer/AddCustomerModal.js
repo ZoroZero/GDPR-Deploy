@@ -1,5 +1,4 @@
 /* TODO: 
-- disable day before begin day
 */
 import React, { useEffect, useState } from "react";
 import {
@@ -7,7 +6,6 @@ import {
   Form,
   Input,
   DatePicker,
-  Button,
   notification,
   Select,
   Switch,
@@ -25,11 +23,10 @@ const { TextArea } = Input;
 
 function AddCustomerModal(props) {
   const dispatch = useDispatch();
-  const { refresh, pagination, keyword, contactPoints } = useSelector(
+  const { refresh, pagination, contactPoints } = useSelector(
     (state) => state.customerManagement
   );
   const [form] = Form.useForm();
-
   const shouldGetData = props.modalVisible !== false;
 
   useEffect(() => {
@@ -55,10 +52,11 @@ function AddCustomerModal(props) {
   const handleCancel = () => {
     props.setModalVisible(false);
   };
+
   async function onFinish(values) {
     console.log(values);
     try {
-      await createCustomerApi(values);
+      createCustomerApi(values);
       await dispatch(setPagination({ ...pagination, current: 1 }));
       dispatch(setRefresh(!refresh));
       openNotification("Sucessfully add new customer");
@@ -85,7 +83,6 @@ function AddCustomerModal(props) {
       forceRender={true}
       onOk={handleOk}
       onCancel={handleCancel}
-
     >
       <Form form={form} onFinish={onFinish} name="myForm" layout="vertical">
         <Form.Item
@@ -100,7 +97,6 @@ function AddCustomerModal(props) {
         >
           <Input />
         </Form.Item>
-
         <Form.Item
           label="Last name"
           name="LastName"
@@ -113,7 +109,6 @@ function AddCustomerModal(props) {
         >
           <Input />
         </Form.Item>
-
         <Form.Item label="Contact Point" name="ContactPointId">
           <Select
             showSearch
@@ -142,10 +137,9 @@ function AddCustomerModal(props) {
                 required: false,
               },
             ]}
-          >
-            <DatePicker showTime style={{ width: "100%" }} />
+          ><DatePicker
+              showTime style={{ width: "100%" }} />
           </Form.Item>
-
           <Form.Item
             label="Contract end date"
             style={{
@@ -160,7 +154,8 @@ function AddCustomerModal(props) {
               },
             ]}
           >
-            <DatePicker showTime style={{ width: "100%" }} />
+            <DatePicker
+              showTime style={{ width: "100%" }} />
           </Form.Item>
         </Form.Item>
         <Form.Item

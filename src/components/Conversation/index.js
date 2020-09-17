@@ -1,33 +1,94 @@
 import { Button, Card, Form, Input, Row, Col } from "antd";
-import React, { useEffect } from "react";
-import socketIOClient from "socket.io-client";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import socket from "socket/socket";
+import { getAllMessageApi } from "api/requests";
+import "./index.scss";
+import InfinteScrollReverse from "react-infinite-scroll-reverse";
 
 const ConversationBox = (props) => {
   const [form] = Form.useForm();
-  const LstMessages = [];
+  const [lstMsg, setLstMsg] = useState([]);
+  const { token, userId } = useSelector((state) => state.app);
+
   useEffect(() => {
-    const socket = socketIOClient("http://127.0.0.1:5000");
-    socket.on("msgToClient", (data) => {
-      console.log(data);
-      form.resetFields();
-    });
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+    fetchOldMessage(props.request.Id);
+  }, [props.request.Id]);
+
+  socket.once(props.request.Id, (data) => {
+    updateLstMsg(data);
+    form.resetFields();
+  });
+
+  function fetchOldMessage(requestId) {
+    getAllMessageApi(requestId)
+      .then((res) => {
+        console.log(res);
+        setLstMsg(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+  function updateLstMsg(data) {
+    console.log(data);
+    setLstMsg([...lstMsg, data]);
+  }
 
   function onSendMessage(val) {
-    const socket = socketIOClient("http://127.0.0.1:5000");
-    socket.emit("msgToServer", val);
+    socket.emit("msgToServer", {
+      ...val,
+      requestId: props.request.Id,
+      headers: {
+        Authorization: token,
+      },
+    });
   }
+
+  const lstMsgCard = lstMsg.map((val, index) => {
+    return (
+      <div key={val.Id}>
+        <article
+          className={`msg-container ${
+            val.User.Id === userId ? "msg-self" : "msg-remote"
+          }`}
+        >
+          <div className="msg-box">
+            <img
+              className="user-img"
+              src="//gravatar.com/avatar/00034587632094500000000000000000?d=retro"
+            />
+            <div className="flr">
+              <span className="timestamp">
+                <span className="username">{val.User.FirstName}</span>&bull;
+                <span className="posttime">{val.CreatedDate}</span>
+              </span>
+              <div className="messages">
+                <p className="msg">{val.Content}</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    );
+  });
+
+  function getItems() {}
+
   return (
-    <Card
-      title="Conversation"
-      bordered={true}
-      headStyle={{ backgroundColor: "#339966", color: "white" }}
-      bodyStyle={{ height: "500px", border: "1px solid #339966" }}
-    >
-      {LstMessages}
+    <>
+      <Card
+        title="Conversation"
+        bordered={true}
+        headStyle={{ backgroundColor: "#339966", color: "white" }}
+        bodyStyle={{
+          height: "500px",
+          border: "1px solid #339966",
+          overflowY: "auto",
+        }}
+      >
+        {lstMsgCard}
+      </Card>
       <Form form={form} onFinish={onSendMessage}>
         <Row>
           <Col span={22}>
@@ -44,7 +105,7 @@ const ConversationBox = (props) => {
           </Col>
         </Row>
       </Form>
-    </Card>
+    </>
   );
 };
 
