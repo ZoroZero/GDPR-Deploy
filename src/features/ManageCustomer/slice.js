@@ -2,18 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   getContactPointsApi,
   getCustomerApi,
-  getDeletedCustomerApi,
   getServersCustomerApi,
   getOtherServersApi,
   deleteServersOfCustomerApi,
   addServersForCustomerApi,
 } from "api/customer";
-import { loading, stopLoading } from "features/App/slice";
-import { act } from "react-dom/test-utils";
-import { useSelector } from "react-redux";
 
 export const initialState = {
-  blockIds: null,
   data: [],
   deletedData: [],
   servers: [],
@@ -28,6 +23,7 @@ export const initialState = {
   sortColumn: "CreatedDate",
   sortOrder: "descend",
   keyword: "",
+  filterValue: [],
   refresh: false,
   contactPoints: [],
   loading: false,
@@ -38,9 +34,6 @@ const slice = createSlice({
   initialState,
 
   reducers: {
-    setFilter: (state, action) => {
-      state.blockIds = action.payload.blockIds;
-    },
 
     setData: (state, action) => {
       console.log("SET DATA", action.payload);
@@ -59,6 +52,10 @@ const slice = createSlice({
 
     setSearch: (state, action) => {
       state.keyword = action.payload;
+    },
+
+    setFilter: (state, action) => {
+      state.filterValue = action.payload;
     },
 
     setRefresh: (state, action) => {
@@ -133,26 +130,6 @@ export const getCustomerList = (params = {}) => (dispatch) => {
   });
 };
 
-export const getDeletedCustomerList = (params = {}) => (dispatch) => {
-  return new Promise((resolve, reject) => {
-    return getDeletedCustomerApi(params)
-      .then((res) => {
-        dispatch(setData(res));
-        dispatch(
-          setPagination({
-            current: res[0] ? params.current : 0,
-            total: res[0] ? res[0].Total : 0,
-            pageSize: params.pageSize,
-          })
-        );
-        resolve();
-      })
-      .catch((error) => {
-        console.log(error);
-        reject(error);
-      });
-  });
-};
 export const getContactPointList = () => (dispatch) => {
   getContactPointsApi().then((res) => {
     dispatch(setContactPointList(res));

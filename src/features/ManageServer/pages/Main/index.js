@@ -285,13 +285,22 @@ function MainPage() {
             </div>
 
             <div>
-                <Button type="primary" onClick={()=> setEditRequest(SERVER_CONSTANTS.ADD_SERVER_REQUEST)} style={{ background: 'lawngreen', color: 'black'}}>
-                    Create new server
-                </Button>
+                
+            <Button type="primary" onClick={()=> setEditRequest(SERVER_CONSTANTS.ADD_SERVER_REQUEST)} style={{ background: 'lawngreen', color: 'black'}}>
+                Create new server
+            </Button>
 
-                <AddEditServerModal request={editRequest} modalVisible={modalVisible} 
-                setModalVisible={setModalVisible} setEditRequest={setEditRequest}>
-                </AddEditServerModal>
+            <AddEditServerModal request={editRequest} modalVisible={modalVisible} 
+                                setModalVisible={setModalVisible} setEditRequest={setEditRequest}>
+            </AddEditServerModal>
+
+            {/* <Button disabled={checkingRows.length===0} type="primary" style={{margin: '0px 4px 0px 8px'}} onClick={()=>{handleSetStatus(true)}}>
+                Activate all
+            </Button>
+            <Button disabled={checkingRows.length===0} type="primary" style={{ margin: '0px 4px 0px 4px'}}  onClick={()=>{handleSetStatus(false)}}>
+                Deactivate all
+            </Button> */}
+
             </div>
             <Dropdown overlay={actionMenu} disabled={selectingServerIdList.length===0} >
                         <Button style={{margin: '10px 0px 0px 0px'}}>

@@ -57,7 +57,10 @@ function LoginPage(props) {
             label="Password"
             name="password"
             initialValue="u7Rg2KBu"
-            rules={[{ required: true, message: "Please input your password!" }]}
+            rules={[
+              { required: true, message: "Please input your password!" },
+              { min: 5, message: 'Password must be minimum 5 characters.' },
+              { pattern: "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])", message: 'Password must include number, uppercase and lowercase character'}]}
           >
             <Input.Password />
           </Form.Item>

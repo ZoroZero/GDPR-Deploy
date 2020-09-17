@@ -22,6 +22,7 @@ import ManageServerModal from "../../../../components/ManageCustomer/ManageServe
 import { deleteCustomerApi, deleteCustomersApi, deactiveCustomersApi, activeCustomersApi } from "api/customer";
 import {
   setPagination,
+  setFilter,
   setSort,
   setSearch,
   setRefresh,
@@ -43,6 +44,7 @@ function MainPage() {
     sortColumn,
     sortOrder,
     keyword,
+    filterValue,
     refresh,
     loading,
   } = useSelector((state) => state.customerManagement);
@@ -66,117 +68,6 @@ function MainPage() {
   const [importing, setImporting] = useState(false);
   const searchBox = useRef(null);
   const pageOptions = [10, 20, 50, 100];
-
-  const columns = [
-    {
-      title: "Customer Name",
-      dataIndex: "FirstName",
-      sorter: true,
-      render: (text, record) => (
-        <p>
-          {text} {record.LastName}
-        </p>
-      ),
-    },
-    {
-      title: "Contact Point",
-      dataIndex: "ContactPointEmail",
-      sorter: true,
-      filters: [
-        {
-          text: "Assigned",
-          value: true,
-        },
-        {
-          text: "Null",
-          value: false,
-        },
-      ],
-      render: (value, record) => (
-
-        record.ContactPointId ? (!record.ContactPointStatus ? <><p> {value} </p> <Tooltip title="Contact Point is inactive!">< WarningTwoTone twoToneColor="orange" /></Tooltip> </> : <p> {value} </p>) : <></>
-      )
-    },
-    {
-      title: "Contract Begin",
-      dataIndex: "ContractBeginDate",
-      sorter: true,
-    },
-    {
-      title: "Contract End",
-      dataIndex: "ContractEndDate",
-      sorter: true,
-    },
-    {
-      title: "Description",
-      dataIndex: "Description",
-    },
-    {
-      title: "Status",
-      dataIndex: "IsActive",
-      key: "IsActive",
-      filters: [
-        {
-          text: "Active",
-          value: true,
-        },
-        {
-          text: "Inactive",
-          value: false,
-        },
-      ],
-      onFilter: (value, record) => record.IsActive == value,
-      render: (val) =>
-        val ? <Tag color="green">Active</Tag> : <Tag color="red">Inactive</Tag>,
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (record) => (
-        <Space size="middle" style={{ display: "flex" }}>
-          <Button
-            className="updateButton"
-            type="primary"
-            onClick={() => {
-              setModalEditVisible(true);
-              setDataEdit(record);
-            }}
-          >
-            Update
-          </Button>
-
-          <Button
-            type="primary"
-            danger
-            onClick={() => {
-              showPromiseConfirm(record.Id);
-            }}
-          >
-            Delete
-          </Button>
-        </Space>
-      ),
-    },
-    {
-      title: "Machines Owner",
-      dataIndex: "servers",
-      sorter: true,
-      render: (text, record) => (
-        <Button
-          onClick={() => {
-            setModalManageVisible(true);
-            setDataManage({
-              Id: record.Id,
-              FirstName: record.FirstName,
-              LastName: record.LastName,
-            });
-          }}
-        >
-          Manage {text ? text : 0}
-        </Button>
-      ),
-    },
-  ];
 
   const rowSelection = {
     selectedRowKeys,
@@ -204,12 +95,13 @@ function MainPage() {
       pagination.pageSize,
       sortColumn,
       sortOrder,
-      keyword
+      keyword,
+      filterValue
     );
-  }, [refresh, sortColumn, sortOrder]);
+  }, [refresh, sortColumn, sortOrder, filterValue]);
 
-  async function fetch(current, pageSize, sortColumn, sortOrder, keyword) {
-    console.log("FETCH DATA INDEX");
+  async function fetch(current, pageSize, sortColumn, sortOrder, keyword, filterValue) {
+    console.log("FETCH DATA INDEX", filterValue);
     dispatch(setLoading(true));
     await dispatch(
       getCustomerList({
@@ -218,6 +110,7 @@ function MainPage() {
         sortColumn: sortColumn,
         sortOrder: sortOrder,
         keyword: keyword,
+        filterValue: filterValue
       })
     );
     dispatch(setLoading(false));
@@ -257,30 +150,146 @@ function MainPage() {
     }
   };
 
+  async function handleFilterChange(newFilterValue) {
+    dispatch(setFilter(newFilterValue));
+  }
+
   async function handleSearchChange(newKeyword) {
     (await newKeyword)
       ? dispatch(setSearch(newKeyword))
       : dispatch(setSearch(""));
     await dispatch(setPagination({ ...pagination, current: 1 }));
-    await dispatch(setRefresh(!refresh));
-    dispatch(setSearch(""));
+    dispatch(setRefresh(!refresh));
   }
 
-  function handleSortChange(pagination, filters, sorter) {
-    var newSortColumn = sorter.column ? sorter.column.dataIndex : "CreatedDate";
-    var newSortOrder = sorter.order === "descend" ? "descend" : "ascend";
-    dispatch(setSort({ sortColumn: newSortColumn, sortOrder: newSortOrder }));
+  async function handleSortChange(pag, filters, sorter) {
+    console.log("filter", filters.IsActive)
+    if (filters) {
+      await dispatch(setPagination({ ...pagination, current: 1 }));
+      dispatch(setFilter(filters.IsActive))
+    }
+    if (sorter) {
+      var newSortColumn = sorter.column ? sorter.column.dataIndex : "CreatedDate";
+      var newSortOrder = sorter.order === "ascend" ? "ascend" : "descend";
+      dispatch(setSort({ sortColumn: newSortColumn, sortOrder: newSortOrder }));
+    }
   }
 
   function handlePageChange(pageNumber, pageSize) {
     console.log("handle page change", pageNumber, pageSize);
-    fetch(pageNumber, pageSize, sortColumn, sortOrder, keyword);
+    fetch(pageNumber, pageSize, sortColumn, sortOrder, keyword, filterValue);
   }
 
   function showTotal(total) {
     return `${data.length} of ${total} items`;
   }
+  const columns = [
+    {
+      title: "Customer Name",
+      dataIndex: "FirstName",
+      sorter: true,
+      defaultSortOrder: (sortColumn == "FirstName" ? sortOrder : null),
+      render: (text, record) => (
+        <p>
+          {text} {record.LastName}
+        </p>
+      ),
+    },
+    {
+      title: "Contact Point",
+      dataIndex: "ContactPointEmail",
+      sorter: true,
+      defaultSortOrder: (sortColumn == "ContactPointEmail" ? sortOrder : null),
 
+      render: (value, record) => (
+
+        record.ContactPointId ? (!record.ContactPointStatus ? <><p> {value} </p> <Tooltip title="Contact Point is inactive!">< WarningTwoTone twoToneColor="orange" /></Tooltip> </> : <p> {value} </p>) : <></>
+      )
+    },
+    {
+      title: "Contract Begin",
+      dataIndex: "ContractBeginDate",
+      sorter: true,
+      defaultSortOrder: (sortColumn == "ContractBeginDate" ? sortOrder : null),
+    },
+    {
+      title: "Contract End",
+      dataIndex: "ContractEndDate",
+      sorter: true,
+      defaultSortOrder: (sortColumn == "ContractEndDate" ? sortOrder : null),
+    },
+    {
+      title: "Description",
+      dataIndex: "Description",
+    },
+    {
+      title: "Status",
+      dataIndex: "IsActive",
+      key: "IsActive",
+      filters: [
+        {
+          text: "Active",
+          value: 1,
+        },
+        {
+          text: "Inactive",
+          value: 0,
+        },
+      ],
+      defaultFilteredValue: filterValue,
+      // onFilter: (value) => handleFilterChange(value),
+      render: (val) =>
+        val ? <Tag color="green">Active</Tag> : <Tag color="red">Inactive</Tag>,
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (record) => (
+        <Space size="middle" style={{ display: "flex" }}>
+          <Button
+            className="updateButton"
+            type="primary"
+            onClick={() => {
+              setModalEditVisible(true);
+              setDataEdit(record);
+            }}
+          >
+            Update
+          </Button>
+
+          <Button
+            type="primary"
+            danger
+            onClick={() => {
+              showPromiseConfirm(record.Id);
+            }}
+          >
+            Delete
+          </Button>
+        </Space>
+      ),
+    },
+    {
+      title: "Machines Owner",
+      dataIndex: "servers",
+      sorter: true,
+      defaultSortOrder: (sortColumn == "servers" ? sortOrder : null),
+      render: (text, record) => (
+        <Button
+          onClick={() => {
+            setModalManageVisible(true);
+            setDataManage({
+              Id: record.Id,
+              FirstName: record.FirstName,
+              LastName: record.LastName,
+            });
+          }}
+        >
+          Manage {text ? text : 0}
+        </Button>
+      ),
+    },
+  ];
   return (
     <>
       <Row>
@@ -353,7 +362,9 @@ function MainPage() {
         loading={loading}
         pagination={false}
         onChange={handleSortChange}
+        // onFilter={handleFilterChange}
         rowSelection={rowSelection}
+
       />
       <br />
       <Row>

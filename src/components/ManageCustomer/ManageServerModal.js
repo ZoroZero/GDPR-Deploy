@@ -219,6 +219,7 @@ const ManageServerModal = (props) => {
           <Col span={12} style={{ padding: "10px" }}>
             <Table
               columns={columnsOwned}
+              pagination={false}
               dataSource={servers}
               scroll={{ y: 360 }}
             />
