@@ -28,13 +28,22 @@ const ApproveRequestForm = (props) => {
         </Form.Item>
         <Row>
           {!props.IsApproved && !props.IsClosed ? (
-            <Col span={4}>
-              <Form.Item>
-                <Button type="primary" onClick={onApprove}>
-                  Approve Request
-                </Button>
-              </Form.Item>
-            </Col>
+            <>
+              <Col span={4}>
+                <Form.Item>
+                  <Button type="primary" onClick={onApprove}>
+                    Approve Request
+                  </Button>
+                </Form.Item>
+              </Col>
+              <Col span={4} offset={1}>
+                <Form.Item>
+                  <Button type="danger" onClick={onCancel}>
+                    Cancel Request
+                  </Button>
+                </Form.Item>
+              </Col>
+            </>
           ) : !props.IsClosed ? (
             <Col span={4}>
               <Form.Item>

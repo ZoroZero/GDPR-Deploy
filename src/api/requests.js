@@ -121,7 +121,20 @@ export const exportRequestApi = (val) => {
 export const getAllMessageApi = (requestId) => {
   return new Promise((resolve, reject) => {
     return axios
-      .get(`/api/messages/${requestId}`)
+      .get(`/api/messages/by-request/${requestId}`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export const getRepliedMsgApi = (msgId) => {
+  return new Promise((resolve, reject) => {
+    return axios
+      .get(`/api/messages/${msgId}`)
       .then((res) => {
         resolve(res);
       })
