@@ -155,14 +155,34 @@ function MainPage() {
       await acdeacListUsersApi({
         listid: selectedRowKeys.join(","),
         isactive: 1,
-      });
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            message.success(res.statusText);
+          } else {
+            message.error(res.statusText);
+          }
+        })
+        .catch((error) => {
+          message.error(error.data.message);
+        });
       refetch();
     } else if (e.key == "deactive") {
       message.warning("Deactive all selected items");
       await acdeacListUsersApi({
         listid: selectedRowKeys.join(","),
         isactive: 0,
-      });
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            message.success(res.statusText);
+          } else {
+            message.error(res.statusText);
+          }
+        })
+        .catch((error) => {
+          message.error("Oops, error!");
+        });
       refetch();
     }
   }
@@ -176,20 +196,18 @@ function MainPage() {
       </Menu.Item>
     </Menu>
   );
-  const [SearchKey, setSearchKey]=useState("");
-  const [SortBy, setSortBy]=useState("");
-  const [SortOrder, setSortOrder]=useState("ascend");
-  const [Role,setRole]=useState("");
-  const [PageNo,setPageNo]=useState(1);
-  const [PageSize,setPageSize]=useState(10);
+  const [SearchKey, setSearchKey] = useState("");
+  const [SortBy, setSortBy] = useState("");
+  const [SortOrder, setSortOrder] = useState("ascend");
+  const [Role, setRole] = useState("");
+  const [PageNo, setPageNo] = useState(1);
+  const [PageSize, setPageSize] = useState(10);
   const dispatch = useDispatch();
   const [exportData, setExportData] = useState([]);
   const [data, setData] = useState([]);
   const [total, setTotal] = useState();
   const [loading, setLoading] = useState(false);
-  const { } = useSelector(
-    (state) => state.userManagement
-  );
+  const {} = useSelector((state) => state.userManagement);
   useEffect(() => {
     console.log("useeffect");
     fetch({
@@ -200,7 +218,7 @@ function MainPage() {
       SortOrder: SortOrder,
       Role: Role,
     });
-  }, [PageNo, PageSize, SearchKey,SortBy,SortOrder, Role]);
+  }, [PageNo, PageSize, SearchKey, SortBy, SortOrder, Role]);
   function refetch() {
     fetch({
       PageNo: PageNo,
@@ -282,7 +300,7 @@ function MainPage() {
             </Button>
           </Dropdown>
           <span style={{ marginLeft: 8 }}>
-            {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
+            {hasSelected ? `Selected ${selectedRowKeys.length} items` : ""}
           </span>
         </Col>
         <Col span={8}>

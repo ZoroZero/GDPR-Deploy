@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Upload } from "antd";
+import { Upload, Button } from "antd";
 import ImgCrop from "antd-img-crop";
 import { checkToken } from "utils/localstorage";
 import { useSelector } from "react-redux";
+import { UploadOutlined } from "@ant-design/icons";
 
 // const token = checkToken();
 
@@ -26,7 +27,7 @@ const UploadAvatarDynamic = (pross) => {
     pross.onsub();
   }, []);
   const onChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
+    // setFileList(newFileList);
     console.log(`Bearer ${token}`);
     pross.onsub();
   };
@@ -51,12 +52,14 @@ const UploadAvatarDynamic = (pross) => {
       <Upload
         action="http://localhost:5000/api/users/avatar"
         headers={{ Authorization: `Bearer ${token}` }}
-        listType="picture-card"
+        // listType="picture-card"
         fileList={fileList}
         onChange={onChange}
         onPreview={onPreview}
       >
-        {fileList.length < 1 && "Change Avatar"}
+        {fileList.length < 1 && (
+          <Button icon={<UploadOutlined />}>Upload Avatar</Button>
+        )}
       </Upload>
     </ImgCrop>
   );
