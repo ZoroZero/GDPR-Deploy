@@ -69,7 +69,7 @@ function ExportServer(props){
         // props.setLoading(true);
         return exportServerListApi(
             {
-                serverName: values.ServerName.trim(),
+                serverName: values.ServerName? values.ServerName.trim(): undefined,
                 ipAddressList: values.IpAddress? values.IpAddress.join(','): undefined,
                 startDate: values.FromDate? values.FromDate.format("YYYY-MM-DD HH:mm:ss"): undefined,
                 endDate: values.ToDate? values.ToDate.format("YYYY-MM-DD HH:mm:ss"): undefined
