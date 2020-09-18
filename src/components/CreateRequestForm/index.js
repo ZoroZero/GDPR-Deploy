@@ -26,6 +26,8 @@ const RequestForm = (props) => {
     (state) => state.requestManagement
   );
   const [keyword, setkeyword] = useState("");
+  const [endDate, setEndDate] = useState();
+  const [beginDate, setBeginDate] = useState();
 
   useEffect(() => {
     form.resetFields();
@@ -106,13 +108,19 @@ const RequestForm = (props) => {
               rules={[
                 {
                   required: true,
-                  message: "Please input end date!",
+                  message: "Please input start date!",
                 },
               ]}
             >
               <DatePicker
                 showTime
                 disabled={disable}
+                onChange={(value) => setBeginDate(value)}
+                disabledDate={(d) =>
+                  !d ||
+                  (endDate &&
+                    !d.isBefore(moment(endDate).format("YYYY-MM-DD HH:mm:ss")))
+                }
                 style={{ width: "100%", fontWeight: "bold" }}
               />
             </Form.Item>
@@ -131,6 +139,16 @@ const RequestForm = (props) => {
               <DatePicker
                 showTime
                 disabled={disable}
+                onChange={(value) => setEndDate(value)}
+                disabledDate={(d) => {
+                  return (
+                    !d ||
+                    (beginDate &&
+                      !d.isAfter(
+                        moment(beginDate).format("YYYY-MM-DD HH:mm:ss")
+                      ))
+                  );
+                }}
                 style={{ width: "100%", fontWeight: "bold" }}
               />
             </Form.Item>
