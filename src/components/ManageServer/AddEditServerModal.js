@@ -15,20 +15,23 @@ function AddEditServerModal(props) {
     const [form] = Form.useForm();
     const [title, setTitle] = useState('Create new server');
     const [active, setActive] = useState(true);
-
+    const shouldGetData = props.modalVisible !== false;
     useEffect(() => {
-        console.log("Request", props.request);
-        form.setFieldsValue({ 
-            ServerName: '',
-            IpAddress: '',
-            StartDate: '',
-            EndDate: ''
-         });
+        if(shouldGetData){
+            console.log("Request", props.request);
+            form.setFieldsValue({ 
+                ServerName: null,
+                IpAddress: null,
+                StartDate: null,
+                EndDate: null
+            });
 
-        setTitle(props.request && props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE?'Update server information' : 'Creat new server')
-        if(props.request && props.request.data)
-            onFill()
-      }, [props.request]);
+            setTitle(props.request && props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE?'Update server information' : 'Creat new server')
+            if(props.request && props.request.data){
+                onFill()
+            }
+        }
+      }, [shouldGetData]);
 
     const onFill = () => {
         console.log(props)

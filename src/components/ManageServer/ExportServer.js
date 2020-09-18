@@ -129,7 +129,6 @@ function ExportServer(props){
 
                 <Form.Item>
                     <Button form="exportForm" key="submit" type="primary" htmlType="submit" style={{margin: '0px 8px'}}>Filter</Button>
-                    {/* <Button disabled={!props.csvData[0]} variant="warning" onClick={handleExport}>Export</Button> */}
                     <Dropdown overlay={menu} disabled={!csvData[0]} style={{margin: '0px 8px'}}>
                         <Button>
                             <VerticalAlignBottomOutlined /> Export <DownOutlined />
