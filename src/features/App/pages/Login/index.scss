@@ -2,5 +2,25 @@
   height: calc(100vh - 100px);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center;  
+  // background: linear-gradient(rgb(200, 223, 231), rgb(35, 125, 209));
+  // background-repeat: no-repeat;
+  // background-position: center;
+  // background-size: cover,
+}
+
+.login-form {
+  .header {
+    margin: 0 0 24px 0;
+  }
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+// .login-form-container{
+
+// }
+body{
+  background: linear-gradient(rgb(200, 223, 231), rgb(35, 125, 209));
 }

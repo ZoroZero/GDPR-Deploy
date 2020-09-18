@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Pagination, Input, Button, Modal, Tag, Menu, Dropdown, message, Row, Col } from "antd";
+import { Table, Pagination, Input, Button, Modal, Tag, Menu, Dropdown, message, Row, Col, Space } from "antd";
 // import { UploadOutlined } from '@ant-design/icons';
 import "./index.scss";
 import { getServersApi, deleteServerApi, updateMultipleStatusApi } from "api/server";
@@ -65,25 +65,25 @@ function MainPage() {
         {
             title: "Ip address",
             dataIndex: "IpAddress",
-            width: "10%",
+            width: "12%",
             sorter: true,
         },
         {
             title: "Start Date",
             dataIndex: "StartDate",
-            width: "10%",
+            width: "12%",
             sorter: true,
         },
         {
             title: "End Date",
             dataIndex: "EndDate",
             sorter: true,
-            width: "10%",
+            width: "12%",
         },
         {
             title: "Status",
             dataIndex: "IsActive",
-            width: "10%",
+            width: "12%",
             render: (val) => val? <Tag color="green">Active</Tag> : <Tag color="red">InActive</Tag>,
             filters: [
                 { text: 'Active', value: '1' },
@@ -93,24 +93,28 @@ function MainPage() {
         {
             title: "Owner",
             dataIndex: "OwnerName",
-            width: "10%",
+            width: "12%",
             sorter: true,
         },
         {
-            title: 'Edit',
+            title: 'Action',
             key: 'operation',
             width: "10%",
-            render: (record) => <Button type="primary" 
-                    onClick={() => {setEditRequest({
-                        type: SERVER_CONSTANTS.UPDATE_SERVER_TYPE, 
-                        data: record})}}>Edit</Button>,
+            render: (record) => 
+                    <Space size="middle" style={{ display: "flex" }}>
+                        <Button type="primary" 
+                        onClick={() => {setEditRequest({
+                            type: SERVER_CONSTANTS.UPDATE_SERVER_TYPE, 
+                            data: record})}}>Edit</Button> 
+                        <Button danger type="primary" onClick={() => {showDeleteModal(record)} }>Delete</Button>
+                    </Space>
           },
-          {
-            title: 'Delete',
-            key: 'operation',
-            width: "10%",
-            render: (record) => <Button danger type="primary" onClick={() => {showDeleteModal(record)} }>Delete</Button>,
-          }
+        //   {
+        //     title: 'Delete',
+        //     key: 'operation',
+        //     width: "10%",
+        //     render: (record) => ,
+        //   }
     ];
 
     // Handle change in page number
@@ -330,7 +334,8 @@ function MainPage() {
             <Row>
                 <Col span={12} offset={6}>
                     <Pagination
-                        showQuickJumper 
+                        showQuickJumper
+                        showSizeChanger 
                         total={total}
                         current ={pagination.page}
                         pageSize={pagination.pageSize}

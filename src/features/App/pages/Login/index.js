@@ -1,8 +1,8 @@
 import React from "react";
-import { Form, Input, Button, message, Checkbox, Row, Col } from "antd";
+import { Form, Input, Button, message, Checkbox, Row, Col, Card } from "antd";
 import "./index.scss";
 import PropTypes from "prop-types";
-import { onLogin } from "features/App/slice";
+import { logout, onLogin } from "features/App/slice";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 
@@ -37,7 +37,14 @@ function LoginPage(props) {
 
   return (
     <div className="login-container">
-      <div style={{ width: "33%" }}>
+      <div className='login-form-container' style={{ width: "33%" }}>
+        <Card className='login-form'>
+          <div className='header'>
+            <img src={window.location.origin +'/logo.png'} height='100px' alt='React Starter' /> 
+            {/* <h1>GDPR</h1> */}
+            <h1>Server adminstration website</h1>
+          </div>
+        
         <Form
           {...layout}
           name="basic"
@@ -66,13 +73,13 @@ function LoginPage(props) {
           </Form.Item>
           <Form.Item {...tailLayout}>
             <Row>
-              <Col span={8}>
+              <Col span={6}>
                 <Button type="primary" htmlType="submit">
                   Submit
                 </Button>
               </Col>
-              <Col span={8}></Col>
-              <Col span={8}>
+              <Col span={2}></Col>
+              <Col span={6}>
                 <Button
                   className="login-form-forgot"
                   onClick={() => {
@@ -85,6 +92,7 @@ function LoginPage(props) {
             </Row>
           </Form.Item>
         </Form>
+        </Card>
       </div>
     </div>
   );
