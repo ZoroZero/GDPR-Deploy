@@ -1,3 +1,5 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faReply } from "@fortawesome/free-solid-svg-icons";
 import { getRepliedMsgApi } from "api/requests";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -72,7 +74,7 @@ const Message = (props) => {
           </div>
         </div>
         <button className="reply-btn" onClick={setReplyToMsg}>
-          Reply
+          <FontAwesomeIcon icon={faReply} />
         </button>
       </article>
     </div>

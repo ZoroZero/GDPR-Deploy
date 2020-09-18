@@ -80,6 +80,7 @@ const RequestForm = (props) => {
         name="request-form"
         style={{ paddingTop: "30px" }}
         onFinish={onSubmitForm}
+        layout="vertical"
       >
         <Row gutter={[16, 16]}>
           <Col span={24}>
@@ -98,7 +99,7 @@ const RequestForm = (props) => {
           </Col>
         </Row>
         <Row gutter={[16, 16]}>
-          <Col span={18}>
+          <Col span={12}>
             <Form.Item
               label="From Date"
               name="startDate"
@@ -109,13 +110,14 @@ const RequestForm = (props) => {
                 },
               ]}
             >
-              <DatePicker showTime disabled={disable} />
+              <DatePicker
+                showTime
+                disabled={disable}
+                style={{ width: "100%" }}
+              />
             </Form.Item>
           </Col>
-        </Row>
-
-        <Row gutter={[16, 16]}>
-          <Col span={18}>
+          <Col span={12}>
             <Form.Item
               label="To Date"
               name="endDate"
@@ -126,10 +128,18 @@ const RequestForm = (props) => {
                 },
               ]}
             >
-              <DatePicker showTime disabled={disable} />
+              <DatePicker
+                showTime
+                disabled={disable}
+                style={{ width: "100%" }}
+              />
             </Form.Item>
           </Col>
         </Row>
+
+        {/* <Row gutter={[16, 16]}>
+          
+        </Row> */}
         <Row gutter={[16, 16]}>
           <Col span={24}>
             <Form.Item
@@ -150,7 +160,16 @@ const RequestForm = (props) => {
         </Row>
         <Row gutter={[16, 16]}>
           <Col span={24}>
-            <Form.Item name="description" label="Description">
+            <Form.Item
+              name="description"
+              label="Description"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input some description!",
+                },
+              ]}
+            >
               <Input.TextArea
                 autoSize={{ minRows: 3, maxRows: 5 }}
                 disabled={disable}

@@ -16,7 +16,7 @@ import { message } from "antd";
 export const initialState = {
   blockIds: null,
   data: [],
-  pageSize: 5,
+  pageSize: 10,
   totalPage: 1,
   currentPage: 1,
   sortOrder: "descend",

@@ -100,7 +100,12 @@ const ExportRequestForm = (props) => {
         Export requests by server
       </Button>
       {showForm && (
-        <Form form={form} onFinish={onSubmit} style={{ marginTop: "20px" }}>
+        <Form
+          form={form}
+          onFinish={onSubmit}
+          style={{ marginTop: "20px" }}
+          layout="vertical"
+        >
           <Row gutter={[16, 16]}>
             <Col span={6}>
               <Form.Item
@@ -113,7 +118,7 @@ const ExportRequestForm = (props) => {
                   },
                 ]}
               >
-                <DatePicker />
+                <DatePicker style={{ width: "100%" }} />
               </Form.Item>
             </Col>
             <Col span={6}>
@@ -127,7 +132,7 @@ const ExportRequestForm = (props) => {
                   },
                 ]}
               >
-                <DatePicker />
+                <DatePicker style={{ width: "100%" }} />
               </Form.Item>
             </Col>
             <Col span={6}>

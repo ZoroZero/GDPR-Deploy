@@ -17,14 +17,14 @@ import { Can } from "permission/can";
 const columns = [
   {
     title: "Number",
-    width: 50,
+    width: "3%",
     dataIndex: "Number",
     key: "number",
     fixed: "left",
   },
   {
     title: "Status",
-    width: 100,
+    width: "5%",
     dataIndex: "Status",
     key: "status",
     fixed: "left",
@@ -39,7 +39,7 @@ const columns = [
   },
   {
     title: "Created Date",
-    width: 200,
+    width: "20%",
     dataIndex: "CreatedDate",
     key: "created-date",
     fixed: "left",
@@ -49,21 +49,21 @@ const columns = [
     title: "Updated Date",
     dataIndex: "UpdatedDate",
     key: "updated-date",
-    width: 200,
+    width: "20%",
     sorter: true,
   },
   {
     title: "Server",
     dataIndex: "Server",
     key: "server",
-    width: 150,
+    width: "15%",
     sorter: true,
   },
   {
     title: "Title",
     dataIndex: "Title",
     key: "title",
-    width: 300,
+    width: "30%",
     render: (data) => (
       <div>
         <div>
@@ -197,7 +197,7 @@ const MainPage = (props) => {
         </Col>
       </Row>
       <Row gutter={[16, 16]} justify="center">
-        <Col span={12} offset={6}>
+        <Col span={10} offset={6}>
           <Pagination
             total={totalPage * pageSize}
             current={currentPage}

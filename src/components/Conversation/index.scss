@@ -132,9 +132,10 @@
 .msg-self .timestamp {
   text-align: right;
 }
- .msg-right{
-   text-align: right;
- }
- .msg-self .reply-btn{
-   float: right;
- }
+.msg-right {
+  text-align: right;
+}
+.msg-self .reply-btn {
+  float: right;
+  background: #d9e4dc;
+}
