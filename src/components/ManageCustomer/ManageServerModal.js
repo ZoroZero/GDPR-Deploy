@@ -44,8 +44,8 @@ const ManageServerModal = (props) => {
       );
       setPage(2);
       setKeyUpdate(!keyUpdate);
-      dispatch(getServersCustomer(props.record.Id, ""));
-      dispatch(getOtherServers(option, props.record.Id, 1, ""));
+      dispatch(getServersCustomer(props.record.Id, keyword));
+      dispatch(getOtherServers(option, props.record.Id, 1, keyword));
     }
   }, [shouldGetData, props.record, option.status]);
 
