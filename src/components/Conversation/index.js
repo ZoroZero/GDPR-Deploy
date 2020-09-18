@@ -4,7 +4,8 @@ import { useSelector } from "react-redux";
 import socket from "socket/socket";
 import { getAllMessageApi } from "api/requests";
 import "./index.scss";
-import InfinteScrollReverse from "react-infinite-scroll-reverse";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import Message from "components/Message";
 
 const ConversationBox = (props) => {
@@ -44,14 +45,14 @@ const ConversationBox = (props) => {
     getAllMessageApi(requestId)
       .then((res) => {
         console.log(res);
-        setLstMsg(res.data);
+        setLstMsg(res.data.reverse());
       })
       .catch((error) => {
         console.log(error);
       });
   }
   function updateLstMsg(data) {
-    setLstMsg([...lstMsg, data]);
+    setLstMsg([data, ...lstMsg]);
   }
 
   function onSendMessage(val) {
@@ -92,6 +93,8 @@ const ConversationBox = (props) => {
           height: "500px",
           border: "1px solid #339966",
           overflowY: "auto",
+          display: "flex",
+          flexDirection: "column-reverse",
         }}
       >
         {lstMsgCard}
@@ -115,7 +118,7 @@ const ConversationBox = (props) => {
             </div>
           </div>
           <button className="reply-btn" onClick={() => setReplyToMsg(null)}>
-            close
+            <FontAwesomeIcon icon={faTimes} />
           </button>
         </article>
       )}
