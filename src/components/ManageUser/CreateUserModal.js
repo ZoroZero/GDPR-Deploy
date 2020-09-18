@@ -187,6 +187,7 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
               message: "Please input your username!",
               whitespace: true,
             },
+            { min: 5, message: "Username must be minimum 5 characters." }
           ]}
         >
           <Input />
@@ -241,7 +242,7 @@ const CreateUserModal = (pros) => {
 
   const onCreate = (values) => {
     console.log("Received values of form: ", values);
-    insertUsersApi({ ...values, role: values.rolelist[0] })
+    insertUsersApi({ ...values, role: values.rolelist[0], firstname: values.firstname.trim(), lastname: values.lastname.trim(), username: values.username.trim() })
       .then((res) => {
         console.log("res from insert", res);
         if (res.status === 201) {
@@ -257,7 +258,7 @@ const CreateUserModal = (pros) => {
   };
 
   return (
-    <div>
+    <>
       <Button
         type="primary"
         onClick={() => {
@@ -273,7 +274,7 @@ const CreateUserModal = (pros) => {
           setVisible(false);
         }}
       />
-    </div>
+    </>
   );
 };
 

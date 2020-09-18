@@ -44,6 +44,8 @@ const UserSetting = (pros) => {
     updateAccountApi({
       ...values,
       UserId: id,
+      FirstName: values.FirstName.trim(),
+      LastName: values.LastName.trim()
     })
       .then((res) => {
         console.log("res from update account", res);
