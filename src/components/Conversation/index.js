@@ -4,14 +4,15 @@ import { useSelector } from "react-redux";
 import socket from "socket/socket";
 import { getAllMessageApi } from "api/requests";
 import "./index.scss";
-import InfinteScrollReverse from "react-infinite-scroll-reverse";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import Message from "components/Message";
 
 const ConversationBox = (props) => {
   const [form] = Form.useForm();
   const [lstMsg, setLstMsg] = useState([]);
   const [replyToMsg, setReplyToMsg] = useState(null);
-  const { token, userId } = useSelector((state) => state.app);
+  const { token, userId, avatar } = useSelector((state) => state.app);
 
   useEffect(() => {
     fetchOldMessage(props.request.Id);
@@ -44,15 +45,14 @@ const ConversationBox = (props) => {
     getAllMessageApi(requestId)
       .then((res) => {
         console.log(res);
-        setLstMsg(res.data);
+        setLstMsg(res.data.reverse());
       })
       .catch((error) => {
         console.log(error);
       });
   }
   function updateLstMsg(data) {
-    console.log(data);
-    setLstMsg([...lstMsg, data]);
+    setLstMsg([data, ...lstMsg]);
   }
 
   function onSendMessage(val) {
@@ -60,6 +60,8 @@ const ConversationBox = (props) => {
       ...val,
       requestId: props.request.Id,
       ReplyId: replyToMsg ? replyToMsg.Id : null,
+      ReplyMsg: replyToMsg,
+      avatar: avatar,
       headers: {
         Authorization: token,
       },
@@ -71,7 +73,14 @@ const ConversationBox = (props) => {
   }
 
   const lstMsgCard = lstMsg.map((val, index) => {
-    return <Message msg={val} key={val.Id} setReplyToMsg={setReplyToMsg} />;
+    return (
+      <Message
+        msg={val}
+        key={val.Id}
+        setReplyToMsg={setReplyToMsg}
+        focus={index === lstMsg.length - 1}
+      />
+    );
   });
 
   return (
@@ -84,6 +93,8 @@ const ConversationBox = (props) => {
           height: "500px",
           border: "1px solid #339966",
           overflowY: "auto",
+          display: "flex",
+          flexDirection: "column-reverse",
         }}
       >
         {lstMsgCard}
@@ -93,11 +104,12 @@ const ConversationBox = (props) => {
           <div className="msg-box">
             <img
               className="user-img"
-              src="//gravatar.com/avatar/00034587632094500000000000000000?d=retro"
+              src={`${process.env.REACT_APP_BASE_URL}/api/users/thumbnails/${replyToMsg.Avatar}`}
             />
             <div className="flr">
               <span className="timestamp">
-                <span className="username">{replyToMsg.FirstName}</span>&bull;
+                <span className="username">{replyToMsg.User.FirstName}</span>
+                &bull;
                 <span className="posttime">{replyToMsg.CreatedDate}</span>
               </span>
               <div className="messages">
@@ -106,7 +118,7 @@ const ConversationBox = (props) => {
             </div>
           </div>
           <button className="reply-btn" onClick={() => setReplyToMsg(null)}>
-            close
+            <FontAwesomeIcon icon={faTimes} />
           </button>
         </article>
       )}

@@ -19,7 +19,15 @@ const ApproveRequestForm = (props) => {
   return (
     <>
       <Form form={form}>
-        <Form.Item name="Description">
+        <Form.Item
+          name="Description"
+          rules={[
+            {
+              required: true,
+              message: "Please input some description!",
+            },
+          ]}
+        >
           <Input.TextArea
             autoSize={{ minRows: 3, maxRows: 5 }}
             placeholder="Type the description..."
