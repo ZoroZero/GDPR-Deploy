@@ -22,9 +22,11 @@ function ExportServer(props){
     const { lstServer } = useSelector(
         (state) => state.serverManagement
     );
+    const shouldGetData = props.visible
     useEffect(() => {
-        dispatch(getListServerOptions());
-      }, []);
+        if(shouldGetData)
+            dispatch(getListServerOptions());
+      }, [shouldGetData]);
 
 
     const options = lstServer.filter((value) => value.IpAddress.includes(keyword))

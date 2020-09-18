@@ -69,7 +69,7 @@ function AddEditServerModal(props) {
                 })
                 .catch((err) => {
                     console.log("Add error", err); 
-                    message.error("Something went wrong")
+                    message.error("Something went wrong.\nYour server name or ip is already existed. Please check again")
                 }) 
                 // .finally(() => {
                    
@@ -96,7 +96,7 @@ function AddEditServerModal(props) {
             })
             .catch((err) => {
                 console.log("Update error", err); 
-                message.error("Something went wrong")
+                message.error("Something went wrong.\nYour server name or ip is already existed. Please check again")
             })
         }
     };
