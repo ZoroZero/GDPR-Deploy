@@ -185,7 +185,8 @@ function AddCustomerModal(props) {
           >
             <DatePicker
               key={updateKey}
-              showTime onChange={(value) => setEndDate(value)}
+              showTime
+              onChange={(value) => setEndDate(value)}
               disabledDate={
                 d => { return !d || (beginDate && !d.isAfter(moment(beginDate).format('YYYY-MM-DD HH:mm:ss'))) }
               }

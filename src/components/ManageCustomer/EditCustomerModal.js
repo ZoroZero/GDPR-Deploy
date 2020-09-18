@@ -31,6 +31,12 @@ function EditCustomerModal(props) {
   useEffect(() => {
     if (shouldGetData) {
       {
+        setEndDate(props.record.ContractEndDate
+          ? moment(props.record.ContractEndDate, "DD/MM/YY HH:mm:ss")
+          : null);
+        setBeginDate(props.record.ContractBeginDate
+          ? moment(props.record.ContractBeginDate, "DD/MM/YYYY HH:mm:ss")
+          : null);
         form.setFieldsValue({
           ContractBeginDate: props.record.ContractBeginDate
             ? moment(props.record.ContractBeginDate, "DD/MM/YYYY HH:mm:ss")
@@ -148,7 +154,10 @@ function EditCustomerModal(props) {
                 },
               ]}
             >
-              <DatePicker showTime style={{ width: "100%" }} />
+              <DatePicker showTime
+                onChange={(value) => setBeginDate(value)}
+                disabledDate={d => !d || (endDate && !d.isBefore(moment(endDate).format('YYYY-MM-DD HH:mm:ss')))}
+                style={{ width: "100%" }} />
             </Form.Item>
             <Form.Item
               label="Contract end date"
@@ -164,7 +173,13 @@ function EditCustomerModal(props) {
                 },
               ]}
             >
-              <DatePicker showTime style={{ width: "100%" }} />
+              <DatePicker showTime
+                style={{ width: "100%" }}
+                onChange={(value) => setEndDate(value)}
+                disabledDate={
+                  d => { return !d || (beginDate && !d.isAfter(moment(beginDate).format('YYYY-MM-DD HH:mm:ss'))) }
+                }
+              />
             </Form.Item>
           </Form.Item>
           <Form.Item
