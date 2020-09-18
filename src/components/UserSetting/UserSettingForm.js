@@ -45,7 +45,7 @@ const UserSetting = (pros) => {
       ...values,
       UserId: id,
       FirstName: values.FirstName.trim(),
-      LastName: values.LastName.trim()
+      LastName: values.LastName.trim(),
     })
       .then((res) => {
         console.log("res from update account", res);
@@ -136,6 +136,10 @@ const UserSetting = (pros) => {
             required: true,
             message: "Please input Firstname!",
           },
+          {
+            pattern: "(?=[0-9a-zA-Z](.*))",
+            message: "Firstname must not null",
+          },
         ]}
       >
         <Input />
@@ -148,6 +152,10 @@ const UserSetting = (pros) => {
           {
             required: true,
             message: "Please input Lastname!",
+          },
+          {
+            pattern: "(?=[0-9a-zA-Z](.*))",
+            message: "Lastname must not null",
           },
         ]}
       >

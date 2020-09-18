@@ -242,6 +242,10 @@ const CollectionCreateForm = ({
               required: true,
               message: "Please input Firstname!",
             },
+            {
+              pattern: "(?=[0-9a-zA-Z](.*))",
+              message: "Firstname must not null",
+            },
           ]}
         >
           <Input />
@@ -254,6 +258,10 @@ const CollectionCreateForm = ({
             {
               required: true,
               message: "Please input Lastname!",
+            },
+            {
+              pattern: "(?=[0-9a-zA-Z](.*))",
+              message: "Lastname must not null",
             },
           ]}
         >
@@ -285,8 +293,6 @@ const UpdateUserModal = (pros) => {
       ...values,
       role: values.rolelist[0],
       IsActive: switchState,
-      firstname: values.firstname.trim(), 
-      lastname: values.lastname.trim()
     })
       .then((res) => {
         if (res.status === 200) {
