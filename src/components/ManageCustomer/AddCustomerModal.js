@@ -190,6 +190,7 @@ function AddCustomerModal(props) {
         </Form.Item>
         <Form.Item name="IsActive">
           <Switch
+            key={updateKey}
             checkedChildren="Active"
             unCheckedChildren="InActive"
             defaultChecked="Active"

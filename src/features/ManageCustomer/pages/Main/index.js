@@ -285,6 +285,7 @@ function MainPage() {
               Id: record.Id,
               FirstName: record.FirstName,
               LastName: record.LastName,
+              IsActive: record.IsActive,
             });
           }}
         >

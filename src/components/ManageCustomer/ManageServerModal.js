@@ -32,7 +32,8 @@ const ManageServerModal = (props) => {
   const [page, setPage] = useState(2);
   const [keyword, setKeyword] = useState("");
   const [keyUpdate, setKeyUpdate] = useState(true);
-  const [totalOtherServers, setTotalOtherServers] = useState(0)
+  const [customerStatus, setCustomerStatus] = useState()
+
 
   useEffect(() => {
     if (shouldGetData) {
@@ -43,16 +44,23 @@ const ManageServerModal = (props) => {
           loading: false,
         })
       );
+      setCustomerStatus(props.record.IsActive);
       setPage(2);
+
+      console.log("set customer status", props.record.IsActive)
+
       setKeyUpdate(!keyUpdate);
+
+
       dispatch(getServersCustomer(props.record.Id, keyword));
-      dispatch(getOtherServers(option, props.record.Id, 1, keyword));
+      if (props.record.IsActive) dispatch(getOtherServers(option, props.record.Id, 1, keyword));
 
     }
   }, [shouldGetData, props.record, option.status]);
 
   const handleOk = () => {
     props.setModalVisible(false);
+    setKeyword("")
     if (deletedOwnedServers.length > 0) {
       dispatch(deleteServersOfCustomer(deletedOwnedServers, props.record.Id));
     }
@@ -63,6 +71,7 @@ const ManageServerModal = (props) => {
 
   const handleCancel = () => {
     props.setModalVisible(false);
+    setKeyword("")
   };
 
   const handleStatusChange = (e) => {
@@ -117,7 +126,7 @@ const ManageServerModal = (props) => {
       })
     );
     dispatch(getServersCustomer(props.record.Id, newKeyword));
-    dispatch(getOtherServers(option, props.record.Id, 1, newKeyword));
+    if (props.record.IsActive) { dispatch(getOtherServers(option, props.record.Id, 1, newKeyword)); }
     newKeyword ? setKeyword(newKeyword) : setKeyword("");
     setPage(2);
   }
@@ -135,11 +144,12 @@ const ManageServerModal = (props) => {
 
             <Checkbox
               key={keyUpdate}
+              disabled={!record.IsActive || !customerStatus}
               defaultChecked={true}
               onChange={(e) => handleUncheck(record.Id, e.target.checked)}
             />
           }
-          title={record.Name}
+          title={record.IsActive ? <Text > {record.Name} </Text> : <Text style={{ color: "darkgrey" }}>{record.Name} (Inactive)</Text>}
           description={<Text> {record.IpAddress}</Text>}
         />
       ),
@@ -167,7 +177,7 @@ const ManageServerModal = (props) => {
         forceRender={true}
         onOk={handleOk}
         onCancel={handleCancel}
-        width={600}
+        width={800}
       >
         <Row>
           <Col span={10} offset={7}>
@@ -192,10 +202,10 @@ const ManageServerModal = (props) => {
               marginLeft: "20px",
             }}
           >
-            <Radio value="all" style={{ fontSize: "small" }}>
+            <Radio value="all" style={{ fontSize: "small" }} disabled={!customerStatus}>
               All
             </Radio>
-            <Radio value="available"> Available </Radio>
+            <Radio value="available" disabled={!customerStatus}> Available </Radio>
           </Radio.Group>
         </Row>
 
@@ -223,50 +233,52 @@ const ManageServerModal = (props) => {
                 hasMore={otherServers.hasMore}
                 useWindow={false}
               >
-                <List
-                  dataSource={otherServers.data}
-                  renderItem={(record) => (
-                    <List.Item key={record.Id}>
-                      <List.Item.Meta
-                        avatar={
+                {!customerStatus && <Text style={{ color: "red" }}> Please active customer to assign new servers! </Text>}
+                {customerStatus &&
+                  <List
+                    dataSource={otherServers.data}
+                    renderItem={(record) => (
+                      <List.Item key={record.Id}>
+                        <List.Item.Meta
+                          avatar={
 
-                          <Checkbox
-                            disabled={!record.FirstNameCustomer}
-                            key={keyUpdate}
-                            defaultChecked={false}
-                            onChange={(e) =>
-                              handleCheck(record.Id, e.target.checked)
-                            }
-                            disabled={record.FirstNameCustomer}
-                          />
+                            <Checkbox
+                              disabled={!record.FirstNameCustomer}
+                              key={keyUpdate}
+                              defaultChecked={false}
+                              onChange={(e) =>
+                                handleCheck(record.Id, e.target.checked)
+                              }
+                              disabled={record.FirstNameCustomer}
+                            />
 
-                        }
-                        title={record.Name}
-                        description={
-                          <>
-                            <Text style={{ align: "left" }}>
-                              {record.IpAddress}
-                            </Text>{" "}
-                            {record.FirstNameCustomer ? (
-                              <Text style={{ color: "blue", align: "right" }}>
-                                {record.FirstNameCustomer}{" "}
-                                {record.LastNameCustomer}{" "}
-                              </Text>
-                            ) : (
-                                ""
-                              )}
-                          </>
-                        }
-                      />
-                    </List.Item>
-                  )}
-                >
-                  {otherServers.loading && otherServers.hasMore && (
-                    <div className="demo-loading-container">
-                      <Spin />
-                    </div>
-                  )}
-                </List>
+                          }
+                          title={record.Name}
+                          description={
+                            <>
+                              <Text style={{ align: "left" }}>
+                                {record.IpAddress}
+                              </Text>{" "}
+                              {record.FirstNameCustomer ? (
+                                <Text style={{ color: "blue", align: "right" }}>
+                                  {record.FirstNameCustomer}{" "}
+                                  {record.LastNameCustomer}{" "}
+                                </Text>
+                              ) : (
+                                  ""
+                                )}
+                            </>
+                          }
+                        />
+                      </List.Item>
+                    )}
+                  >
+                    {otherServers.loading && otherServers.hasMore && (
+                      <div className="demo-loading-container">
+                        <Spin />
+                      </div>
+                    )}
+                  </List>}
               </InfiniteScroll>
             </div>
           </Col>
