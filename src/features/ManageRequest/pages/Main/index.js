@@ -17,17 +17,23 @@ import { Can } from "permission/can";
 const columns = [
   {
     title: "Number",
-    width: "3%",
+    // width: "3%",
     dataIndex: "Number",
     key: "number",
-    fixed: "left",
+    // fixed: "left",
   },
   {
     title: "Status",
-    width: "5%",
+    // width: "5%",
     dataIndex: "Status",
     key: "status",
-    fixed: "left",
+    // fixed: "left",
+    filterMultiple: false,
+    filters: [
+      { text: "pending", value: "pending" },
+      { text: "approved", value: "approved" },
+      { text: "closed", value: "closed" },
+    ],
     render: (data) =>
       !data.IsApproved && !data.IsClosed ? (
         <Tag color="blue">Pending</Tag>
@@ -39,7 +45,7 @@ const columns = [
   },
   {
     title: "Created Date",
-    width: "20%",
+    // width: "20%",
     dataIndex: "CreatedDate",
     key: "created-date",
     fixed: "left",
@@ -49,21 +55,21 @@ const columns = [
     title: "Updated Date",
     dataIndex: "UpdatedDate",
     key: "updated-date",
-    width: "20%",
+    // width: "20%",
     sorter: true,
   },
   {
     title: "Server",
     dataIndex: "Server",
     key: "server",
-    width: "15%",
+    // width: "15%",
     sorter: true,
   },
   {
     title: "Title",
     dataIndex: "Title",
     key: "title",
-    width: "30%",
+    // width: "30%",
     render: (data) => (
       <div>
         <div>
@@ -81,21 +87,21 @@ const columns = [
     title: "Request From",
     dataIndex: "StartDate",
     key: "request-from",
-    width: 120,
+    // width: 120,
     sorter: true,
   },
   {
     title: "Request To",
     dataIndex: "EndDate",
     key: "request-to",
-    width: 120,
+    // width: 120,
     sorter: true,
   },
   {
     title: "Action",
     key: "operation",
     dataIndex: "link",
-    fixed: "right",
+    // fixed: "right",
     render: (data) => (
       <Link to={data}>
         <Button>Detail</Button>
@@ -113,14 +119,16 @@ const MainPage = (props) => {
     pageSize,
     sortBy,
     sortOrder,
+    filterKeys,
   } = useSelector((state) => state.requestManagement);
   const { loading } = useSelector((state) => state.app);
   const [searchKey, setSearchKey] = useState("");
 
   useEffect(() => {
     fetchData();
-  }, [currentPage, pageSize, sortBy, sortOrder, searchKey]);
+  }, [currentPage, pageSize, sortBy, sortOrder, searchKey, filterKeys]);
 
+  console.log(sortBy);
   function fetchData(
     params = {
       pageNumber: currentPage,
@@ -128,16 +136,21 @@ const MainPage = (props) => {
       sortColumn: sortBy,
       sortOrder: sortOrder,
       keyword: searchKey,
+      filterKeys: filterKeys,
     }
   ) {
+    console.log(params);
     dispatch(getListRequests({ ...params }));
   }
 
   function onTableChange(pagination, filters, sorter) {
+    console.log(filters);
+    console.log(sorter);
     dispatch(
       setSortTable({
-        sortBy: sorter.field,
-        sortOrder: sorter.order,
+        sortBy: sorter.field ? sorter.field : sortBy,
+        sortOrder: sorter.order ? sorter.order : sortOrder,
+        filterKeys: filters.status ? filters.status.join(",") : "",
       })
     );
   }

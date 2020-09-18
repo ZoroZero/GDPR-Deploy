@@ -25,6 +25,7 @@ export const initialState = {
   lstServer: [],
   requestDetail: {},
   requestLogs: [],
+  filterKeys: "",
 };
 
 const slice = createSlice({
@@ -45,6 +46,7 @@ const slice = createSlice({
     setSortTable: (state, action) => {
       state.sortBy = action.payload.sortBy;
       state.sortOrder = action.payload.sortOrder;
+      state.filterKeys = action.payload.filterKeys;
     },
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload.currentPage;
