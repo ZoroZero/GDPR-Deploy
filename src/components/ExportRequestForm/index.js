@@ -137,14 +137,24 @@ const ExportRequestForm = (props) => {
             </Col>
             <Col span={6}>
               <Form.Item label="Requester" name="createdBy">
-                <Select showSearch onSearch={onSearchRequester}>
+                <Select
+                  showSearch
+                  onSearch={onSearchRequester}
+                  mode="multiple"
+                  allowClear
+                >
                   {userOptionsSelection}
                 </Select>
               </Form.Item>
             </Col>
             <Col span={6}>
               <Form.Item label="Approver" name="approvedBy">
-                <Select showSearch onSearch={onSearchApprover}>
+                <Select
+                  showSearch
+                  onSearch={onSearchApprover}
+                  mode="multiple"
+                  allowClear
+                >
                   {approverOptionsSelection}
                 </Select>
               </Form.Item>
