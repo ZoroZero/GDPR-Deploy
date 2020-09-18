@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, DatePicker, Button, notification, Switch, message } from "antd";
+import { Modal, Form, Input, DatePicker, Button, Switch, message } from "antd";
 import { createServerApi, updateServerApi } from 'api/server';
 import { SERVER_CONSTANTS } from "constants/ManageServer/server";
 import { GLOBAL_CONSTANTS } from 'constants/global'
 import moment from 'moment';
 import { useDispatch, useSelector } from "react-redux";
 import { setRefresh } from 'features/ManageServer/slice';
-import { getDefaultErrorMessage } from "@casl/ability";
+// import { getDefaultErrorMessage } from "@casl/ability";
 
 
 function AddEditServerModal(props) {
@@ -133,7 +133,7 @@ function AddEditServerModal(props) {
                                 name='IpAddress'
                                 rules={[
                                     {required: true,message: "Please input the ip address of server!"},
-                                    {pattern: "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", message: "Ip format is not correct"}]}>
+                                    {pattern: "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", message: "Ip format is not correct"}]}>
                         <Input />
                     </Form.Item>
                     
