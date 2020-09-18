@@ -36,7 +36,6 @@ function AddCustomerModal(props) {
     if (shouldGetData) {
       setUpdateKey2(!updateKey2)
       setUpdateKey(updateKey + 1)
-      console.log("USE EFFECT ")
       form.setFieldsValue({
         FirstName: null,
         LastName: null,
@@ -61,7 +60,6 @@ function AddCustomerModal(props) {
 
   async function onFinish(values) {
     props.setModalVisible(false);
-    console.log(values);
     try {
       await createCustomerApi(values);
       await dispatch(setPagination({ ...pagination, current: 1 }));

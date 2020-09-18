@@ -73,7 +73,6 @@ function MainPage() {
   const rowSelection = {
     selectedRowKeys,
     onChange: (newSelectedRowKeys) => {
-      console.log("selectedRowKeys changed: ", newSelectedRowKeys);
       setSelectedRowKeys(newSelectedRowKeys);
     },
   };
@@ -90,7 +89,6 @@ function MainPage() {
 
 
   useEffect(() => {
-    console.log("USE EFFECT INDEX", pagination);
     fetch(
       pagination.current > 0 ? pagination.current : 1,
       pagination.pageSize,
@@ -102,7 +100,6 @@ function MainPage() {
   }, [refresh, sortColumn, sortOrder, filterValue]);
 
   async function fetch(current, pageSize, sortColumn, sortOrder, keyword, filterValue) {
-    console.log("FETCH DATA INDEX", filterValue);
     dispatch(setLoading(true));
     await dispatch(
       getCustomerList({
@@ -133,7 +130,6 @@ function MainPage() {
   }
 
   async function handleMenuClick(value) {
-    console.log("handle menu click", value);
     if (value.key == 'delete') {
       await deleteCustomersApi({ deletedCustomers: selectedRowKeys });
       dispatch(setRefresh(!refresh));
@@ -167,7 +163,6 @@ function MainPage() {
   }
 
   async function handleSortChange(pag, filters, sorter) {
-    console.log("filter", filters.IsActive)
     if (filters) {
       await dispatch(setPagination({ ...pagination, current: 1 }));
       dispatch(setFilter(filters.IsActive))
@@ -180,7 +175,6 @@ function MainPage() {
   }
 
   function handlePageChange(pageNumber, pageSize) {
-    console.log("handle page change", pageNumber, pageSize);
     fetch(pageNumber, pageSize, sortColumn, sortOrder, keyword, filterValue);
   }
 

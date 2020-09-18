@@ -29,7 +29,6 @@ function EditCustomerModal(props) {
   useEffect(() => {
     if (shouldGetData) {
       {
-        console.log("USE EFFECT", props);
         form.setFieldsValue({
           ContractBeginDate: props.record.ContractBeginDate
             ? moment(props.record.ContractBeginDate, "DD/MM/YYYY HH:mm:ss")

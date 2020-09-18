@@ -36,12 +36,10 @@ const slice = createSlice({
   reducers: {
 
     setData: (state, action) => {
-      console.log("SET DATA", action.payload);
       state.data = action.payload;
     },
 
     setPagination: (state, action) => {
-      console.log(action.payload);
       state.pagination = action.payload;
     },
 
