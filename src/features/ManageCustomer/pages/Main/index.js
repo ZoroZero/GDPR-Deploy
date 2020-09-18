@@ -373,6 +373,7 @@ function MainPage() {
             pageSizeOptions={pageOptions}
             showTotal={(total) => showTotal(total)}
             showSizeChanger={true}
+            disabled={!pagination.total > 0}
             showQuickJumper
             defaultCurrent={1}
             current={pagination.current}
