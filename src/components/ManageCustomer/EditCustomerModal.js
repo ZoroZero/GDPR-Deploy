@@ -25,6 +25,8 @@ function EditCustomerModal(props) {
   const [form] = Form.useForm();
   const contactPointId = props.record.ContactPointId;
   const shouldGetData = props.modalVisible !== false;
+  const [beginDate, setBeginDate] = useState();
+  const [endDate, setEndDate] = useState();
 
   useEffect(() => {
     if (shouldGetData) {
@@ -76,6 +78,8 @@ function EditCustomerModal(props) {
   const handleCancel = () => {
     props.setModalVisible(false);
   };
+
+
 
   return (
     <div>

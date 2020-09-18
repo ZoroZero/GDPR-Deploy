@@ -32,9 +32,13 @@ function AddCustomerModal(props) {
   const shouldGetData = props.modalVisible !== false;
   const [updateKey, setUpdateKey] = useState(1);
   const [updateKey2, setUpdateKey2] = useState(false);
+  const [endDate, setEndDate] = useState()
+  const [beginDate, setBeginDate] = useState()
 
   useEffect(() => {
     if (shouldGetData) {
+      setBeginDate(null);
+      setEndDate(null);
       setUpdateKey2(!updateKey2)
       setUpdateKey(updateKey + 1)
       form.setFieldsValue({
@@ -46,6 +50,7 @@ function AddCustomerModal(props) {
         Description: "",
         IsActive: true,
       });
+
       dispatch(getContactPointList());
     }
   }, [shouldGetData]);
@@ -57,6 +62,7 @@ function AddCustomerModal(props) {
 
   const handleCancel = () => {
     props.setModalVisible(false);
+
   };
 
   async function onFinish(values) {
@@ -156,7 +162,12 @@ function AddCustomerModal(props) {
               },
             ]}
           ><DatePicker
-              showTime disabledDate={d => !d || d.isBefore(moment().format('YYYY-MM-DD HH:mm:ss'))} style={{ width: "100%" }} />
+              key={updateKey}
+              showTime
+              onChange={(value) => setBeginDate(value)}
+              disabledDate={d => !d || (endDate && !d.isBefore(moment(endDate).format('YYYY-MM-DD HH:mm:ss')))}
+
+              style={{ width: "100%" }} />
           </Form.Item>
           <Form.Item
             label="Contract end date"
@@ -173,7 +184,12 @@ function AddCustomerModal(props) {
             ]}
           >
             <DatePicker
-              showTime disabledDate={d => !d || d.isBefore(moment().format('YYYY-MM-DD HH:mm:ss'))} style={{ width: "100%" }} />
+              key={updateKey}
+              showTime onChange={(value) => setEndDate(value)}
+              disabledDate={
+                d => { return !d || (beginDate && !d.isAfter(moment(beginDate).format('YYYY-MM-DD HH:mm:ss'))) }
+              }
+              style={{ width: "100%" }} />
           </Form.Item>
         </Form.Item>
         <Form.Item

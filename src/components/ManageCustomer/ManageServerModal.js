@@ -250,6 +250,7 @@ const ManageServerModal = (props) => {
                 hasMore={otherServers.hasMore}
                 useWindow={false}
               >
+                {!customerStatus && <></>}
                 {customerStatus &&
                   <List
                     dataSource={otherServers.data}
