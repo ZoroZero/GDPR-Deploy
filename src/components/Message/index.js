@@ -1,51 +1,62 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faReply } from "@fortawesome/free-solid-svg-icons";
 import { getRepliedMsgApi } from "api/requests";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 
 const Message = (props) => {
+  const ref = useRef(null);
   const { userId } = useSelector((state) => state.app);
   const val = props.msg;
   const [repliedMsg, setRepliedMsg] = useState(null);
 
-  useEffect(() => {
-    if (val.ReplyId) {
-      fetchRepliedMsg(val.ReplyId);
-    }
-  }, [val.ReplyId]);
+  // useEffect(() => {
+  //   if (val.ReplyId) {
+  //     fetchRepliedMsg(val.ReplyId);
+  //   }
+  // }, [val.ReplyId]);
 
-  function fetchRepliedMsg(ReplyId) {
-    getRepliedMsgApi(ReplyId).then((res) => {
-      setRepliedMsg(res.data);
-    });
-  }
+  // function fetchRepliedMsg(ReplyId) {
+  //   getRepliedMsgApi(ReplyId).then((res) => {
+  //     setRepliedMsg(res.data);
+  //   });
+  // }
+
+  useEffect(() => {
+    if (props.focus) {
+      ref.current.focus();
+    }
+  }, [props.focus]);
 
   let replyMsg = null;
-  if (repliedMsg)
+  if (
+    val.ReplyMsg &&
+    val.ReplyMsg.Id &&
+    val.ReplyMsg.User &&
+    val.ReplyMsg.User.Id
+  )
     replyMsg = (
       <div className="flr">
-        {/* <span className={ val.User.Id === userId ?"msg-right": "msg"}>Reply to</span> */}
         <span className="timestamp">
           <span>Reply to: </span>
-          <span className="username">{repliedMsg.FirstName}</span>&bull;
-          <span className="posttime">{repliedMsg.CreatedDate}</span>
+          <span className="username">{val.ReplyMsg.User.FirstName}</span>&bull;
+          <span className="posttime">{val.ReplyMsg.CreatedDate}</span>
         </span>
         <div className="messages">
           <p className={val.User.Id === userId ? "msg-right" : "msg"}>
-            {repliedMsg.Content}
+            {val.ReplyMsg.Content}
           </p>
         </div>
       </div>
     );
   function setReplyToMsg() {
-    if (repliedMsg) {
-      props.setReplyToMsg(repliedMsg);
+    if (val.ReplyMsg && val.ReplyMsg.Id) {
+      props.setReplyToMsg(val.ReplyMsg);
     } else {
       props.setReplyToMsg({
         Id: val.Id,
         CreatedDate: val.CreatedDate,
-        FirstName: val.User.FirstName,
+        User: { FirstName: val.User.FirstName, Id: val.User.Id },
         Content: val.Content,
         Avatar: val.Avatar,
       });
@@ -53,7 +64,7 @@ const Message = (props) => {
   }
 
   return (
-    <div>
+    <div ref={ref}>
       <article
         className={`msg-container ${
           val.User.Id === userId ? "msg-self" : "msg-remote"
@@ -83,4 +94,12 @@ const Message = (props) => {
   );
 };
 
-export default Message;
+function areEqual(prevProps, nextProps) {
+  return (
+    prevProps.msg.Id === nextProps.msg.Id &&
+    prevProps.msg.ReplyId === nextProps.msg.ReplyId &&
+    prevProps.focus === nextProps.focus
+  );
+}
+
+export default React.memo(Message, areEqual);

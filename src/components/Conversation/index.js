@@ -51,7 +51,6 @@ const ConversationBox = (props) => {
       });
   }
   function updateLstMsg(data) {
-    console.log(data);
     setLstMsg([...lstMsg, data]);
   }
 
@@ -60,6 +59,7 @@ const ConversationBox = (props) => {
       ...val,
       requestId: props.request.Id,
       ReplyId: replyToMsg ? replyToMsg.Id : null,
+      ReplyMsg: replyToMsg,
       avatar: avatar,
       headers: {
         Authorization: token,
@@ -72,7 +72,14 @@ const ConversationBox = (props) => {
   }
 
   const lstMsgCard = lstMsg.map((val, index) => {
-    return <Message msg={val} key={val.Id} setReplyToMsg={setReplyToMsg} />;
+    return (
+      <Message
+        msg={val}
+        key={val.Id}
+        setReplyToMsg={setReplyToMsg}
+        focus={index === lstMsg.length - 1}
+      />
+    );
   });
 
   return (
@@ -98,7 +105,8 @@ const ConversationBox = (props) => {
             />
             <div className="flr">
               <span className="timestamp">
-                <span className="username">{replyToMsg.FirstName}</span>&bull;
+                <span className="username">{replyToMsg.User.FirstName}</span>
+                &bull;
                 <span className="posttime">{replyToMsg.CreatedDate}</span>
               </span>
               <div className="messages">
