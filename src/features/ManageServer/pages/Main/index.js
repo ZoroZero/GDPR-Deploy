@@ -300,14 +300,6 @@ function MainPage() {
             <AddEditServerModal request={editRequest} modalVisible={modalVisible} 
                                 setModalVisible={setModalVisible} setEditRequest={setEditRequest}>
             </AddEditServerModal>
-
-            {/* <Button disabled={checkingRows.length===0} type="primary" style={{margin: '0px 4px 0px 8px'}} onClick={()=>{handleSetStatus(true)}}>
-                Activate all
-            </Button>
-            <Button disabled={checkingRows.length===0} type="primary" style={{ margin: '0px 4px 0px 4px'}}  onClick={()=>{handleSetStatus(false)}}>
-                Deactivate all
-            </Button> */}
-
             </div>
             <Dropdown overlay={actionMenu} disabled={selectingServerIdList.length===0} >
                         <Button style={{margin: '10px 0px 0px 0px'}}>

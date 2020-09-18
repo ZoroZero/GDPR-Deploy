@@ -7,6 +7,7 @@ import moment from 'moment';
 import { useDispatch, useSelector } from "react-redux";
 import { setRefresh } from 'features/ManageServer/slice';
 // import { getDefaultErrorMessage } from "@casl/ability";
+const { RangePicker } = DatePicker;
 
 
 function AddEditServerModal(props) {
@@ -22,8 +23,7 @@ function AddEditServerModal(props) {
             form.setFieldsValue({ 
                 ServerName: null,
                 IpAddress: null,
-                StartDate: null,
-                EndDate: null
+                Time: [null, null],
             });
 
             setTitle(props.request && props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE?'Update server information' : 'Creat new server')
@@ -38,8 +38,7 @@ function AddEditServerModal(props) {
         form.setFieldsValue({
             ServerName: props.request.data.Name,
             IpAddress: props.request.data.IpAddress,
-            StartDate: moment(props.request.data.StartDate, GLOBAL_CONSTANTS.TIME_FORMAT),
-            EndDate: moment(props.request.data.EndDate, GLOBAL_CONSTANTS.TIME_FORMAT)
+            Time: [moment(props.request.data.StartDate, GLOBAL_CONSTANTS.TIME_FORMAT), moment(props.request.data.EndDate, GLOBAL_CONSTANTS.TIME_FORMAT)]
         });
 
         setActive(props.request.data.IsActive)
@@ -56,8 +55,8 @@ function AddEditServerModal(props) {
             return createServerApi({
                     serverName: values.ServerName.trim(),
                     ipAddress: values.IpAddress,
-                    startDate: values.StartDate.format(GLOBAL_CONSTANTS.TIME_FORMAT),
-                    endDate: values.EndDate.format(GLOBAL_CONSTANTS.TIME_FORMAT)
+                    startDate: values.Time[0].format(GLOBAL_CONSTANTS.TIME_FORMAT),
+                    endDate: values.Time[1].format(GLOBAL_CONSTANTS.TIME_FORMAT)
                 })
                 .then((res) => {
                     console.log("Sucessfully add new server", res)
@@ -71,9 +70,6 @@ function AddEditServerModal(props) {
                     console.log("Add error", err); 
                     message.error("Something went wrong.\nYour server name or ip is already existed. Please check again")
                 }) 
-                // .finally(() => {
-                   
-                // })    
         }
         else if(props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE){
             const id = props.request.data.Id
@@ -82,8 +78,8 @@ function AddEditServerModal(props) {
                 id: id,
                 serverName: values.ServerName.trim(),
                 ipAddress: values.IpAddress,
-                startDate: values.StartDate.format(GLOBAL_CONSTANTS.TIME_FORMAT),
-                endDate: values.EndDate.format(GLOBAL_CONSTANTS.TIME_FORMAT),
+                startDate: values.Time[0].format(GLOBAL_CONSTANTS.TIME_FORMAT),
+                endDate: values.Time[1].format(GLOBAL_CONSTANTS.TIME_FORMAT),
                 status: active
             })
             .then((res) => {
@@ -101,6 +97,34 @@ function AddEditServerModal(props) {
         }
     };
     
+    function range(start, end) {
+        const result = [];
+        for (let i = start; i < end; i++) {
+          result.push(i);
+        }
+        return result;
+    }
+
+    function disabledDate(current) {
+        // Can not select days before today and today
+        return current && current < moment().endOf('day');
+    }
+
+    function disabledRangeTime(_, type) {
+        if (type === 'start') {
+          return {
+            disabledHours: () => range(0, 60).splice(4, 20),
+            disabledMinutes: () => range(30, 60),
+            disabledSeconds: () => [55, 56],
+          };
+        }
+        return {
+          disabledHours: () => range(0, 60).splice(20, 4),
+          disabledMinutes: () => range(0, 31),
+          disabledSeconds: () => [55, 56],
+        };
+    }
+
     return (    
         <Modal
             title= {title}
@@ -137,8 +161,9 @@ function AddEditServerModal(props) {
                         <Input />
                     </Form.Item>
                     
-                    <Form.Item>
-                        <Form.Item label="Start date" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} 
+                    <Form.Item name='Time' label='Time' rules={[
+                                    {required: true,message: "Please input the ip address of server!"} ]} style={{ display: 'inline-block', width: "100%", height: 'auto'}}>
+                        {/* <Form.Item label="Start date" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} 
                                     name='StartDate'
                                     rules={[{
                                         required: true,
@@ -154,7 +179,16 @@ function AddEditServerModal(props) {
                                         message: "Please input the end date of server!"
                                     }]}>
                             <DatePicker showTime disabledDate={d => !d || d.isBefore(moment().format('YYYY-MM-DD HH:mm:ss'))} style={{  width: '100%' }}/>
-                        </Form.Item>
+                        </Form.Item> */}
+                        <RangePicker
+                            disabledDate={disabledDate}
+                            disabledTime={disabledRangeTime}
+                            showTime={{
+                                hideDisabledOptions: true,
+                                defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('11:59:59', 'HH:mm:ss')],
+                            }}
+                            format="YYYY-MM-DD HH:mm:ss"
+                            style={{ width: "100%"}}/>
                     </Form.Item>
                     
                     {props.request && props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE &&

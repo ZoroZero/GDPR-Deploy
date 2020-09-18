@@ -308,7 +308,7 @@ const UpdateUserModal = (pros) => {
   };
 
   return (
-    <div>
+    <>
       <Button
         type="primary"
         // size={"small"}
@@ -329,7 +329,7 @@ const UpdateUserModal = (pros) => {
         switchState={switchState}
         setSwitchState={setSwitchState}
       />
-    </div>
+    </>
   );
 };
 
