@@ -32,6 +32,7 @@ const ManageServerModal = (props) => {
   const [page, setPage] = useState(2);
   const [keyword, setKeyword] = useState("");
   const [keyUpdate, setKeyUpdate] = useState(true);
+  const [totalOtherServers, setTotalOtherServers] = useState(0)
 
   useEffect(() => {
     if (shouldGetData) {
@@ -46,6 +47,7 @@ const ManageServerModal = (props) => {
       setKeyUpdate(!keyUpdate);
       dispatch(getServersCustomer(props.record.Id, keyword));
       dispatch(getOtherServers(option, props.record.Id, 1, keyword));
+
     }
   }, [shouldGetData, props.record, option.status]);
 
@@ -122,7 +124,7 @@ const ManageServerModal = (props) => {
 
   const columnsOwned = [
     {
-      title: "Owned Servers",
+      title: servers.length > 0 ? <Text> Owned Servers ({servers.length})</Text> : <Text>Owned Servers (0)</Text>,
       dataIndex: "Id",
       key: "Id",
       align: "center",
@@ -210,7 +212,7 @@ const ManageServerModal = (props) => {
             <div style={{ height: "54px", textAlignLast: "center" }}>
               <Text style={{ color: "rgba(0, 0 ,0 ,0.85)", fontWeight: "600" }}>
                 {" "}
-                Other Servers{" "}
+                Other Servers ({otherServers.total})
               </Text>
             </div>
             <div className="demo-infinite-container">

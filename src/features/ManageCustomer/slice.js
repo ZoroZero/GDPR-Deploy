@@ -12,7 +12,7 @@ export const initialState = {
   data: [],
   deletedData: [],
   servers: [],
-  otherServers: { data: [], loading: false, hasMore: true },
+  otherServers: { data: [], loading: false, hasMore: true, total: 0 },
   pagination: {
     total: 0,
     current: 1,
@@ -160,6 +160,7 @@ export const getOtherServers = (option, id, page, keyword) => (dispatch, getStat
             data: getState().customerManagement.otherServers.data.concat(res),
             hasMore: res.length > 0,
             loading: false,
+            total: res.length > 0 ? res[0].Total : 0
           })
         );
 
