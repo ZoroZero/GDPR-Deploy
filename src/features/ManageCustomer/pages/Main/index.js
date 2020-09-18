@@ -24,6 +24,7 @@ import {
   setPagination,
   setFilter,
   setSort,
+  getOtherServers,
   setSearch,
   setRefresh,
   getCustomerList,
@@ -280,6 +281,7 @@ function MainPage() {
       render: (text, record) => (
         <Button
           onClick={() => {
+            // if (record.IsActive) dispatch(getOtherServers({ status: 'available' }, record.Id, 1, ''))
             setModalManageVisible(true);
             setDataManage({
               Id: record.Id,

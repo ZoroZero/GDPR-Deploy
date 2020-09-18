@@ -10,7 +10,7 @@ import {
   addServersForCustomer,
   setOtherServers,
   setDeletedOwnedServers,
-  setAddedServers,
+  setAddedServers, setServers, setLoading
 } from "../../features/ManageCustomer/slice";
 import InfiniteScroll from "react-infinite-scroller";
 
@@ -24,6 +24,7 @@ const ManageServerModal = (props) => {
     otherServers,
     deletedOwnedServers,
     addedServers,
+    // loading,
   } = useSelector((state) => state.customerManagement);
   const shouldGetData = props.modalVisible !== false;
   const [option, setOption] = useState({
@@ -54,12 +55,14 @@ const ManageServerModal = (props) => {
 
       dispatch(getServersCustomer(props.record.Id, keyword));
       if (props.record.IsActive) dispatch(getOtherServers(option, props.record.Id, 1, keyword));
-
     }
   }, [shouldGetData, props.record, option.status]);
 
   const handleOk = () => {
+
     props.setModalVisible(false);
+    dispatch(setServers([]));
+    dispatch(setOtherServers([]));
     setKeyword("")
     if (deletedOwnedServers.length > 0) {
       dispatch(deleteServersOfCustomer(deletedOwnedServers, props.record.Id));
@@ -71,6 +74,9 @@ const ManageServerModal = (props) => {
 
   const handleCancel = () => {
     props.setModalVisible(false);
+    dispatch(setServers([]));
+    dispatch(setOtherServers([]));
+
     setKeyword("")
   };
 
@@ -118,6 +124,7 @@ const ManageServerModal = (props) => {
   }
 
   async function handleSearchChange(newKeyword) {
+    newKeyword = newKeyword.trim()
     dispatch(
       setOtherServers({
         data: [],
@@ -210,21 +217,31 @@ const ManageServerModal = (props) => {
         </Row>
 
         <Row style={{ border: "1px solid", marginTop: "15px" }}>
-          <Col span={12} style={{ padding: "10px" }}>
-            <Table
+          <Col span={12} style={{ padding: "10px", textAlignLast: "center" }}>
+            {!(servers.length > 0) && <>
+              <div style={{ height: "54px" }}>
+                <Text style={{ color: "rgba(0, 0 ,0 ,0.85)", fontWeight: "600" }}>
+                  {" "}
+                Owned Servers ({servers.total})
+              </Text>
+              </div><Text style={{ color: "green" }}> Has not yet been assigned any server! </Text> </>
+            }
+            {servers.length > 0 && <Table
               columns={columnsOwned}
               pagination={false}
               dataSource={servers}
               scroll={{ y: 360 }}
-            />
+            />}
           </Col>
-          <Col span={12} style={{ padding: "10px" }}>
-            <div style={{ height: "54px", textAlignLast: "center" }}>
+          <Col span={12} style={{ padding: "10px", textAlignLast: "center" }}>
+            <div style={{ height: "54px" }}>
               <Text style={{ color: "rgba(0, 0 ,0 ,0.85)", fontWeight: "600" }}>
                 {" "}
                 Other Servers ({otherServers.total})
               </Text>
+
             </div>
+            {!customerStatus && <Text style={{ color: "red" }}> Please active customer to assign new servers! </Text>}
             <div className="demo-infinite-container">
               <InfiniteScroll
                 initialLoad={false}
@@ -233,7 +250,6 @@ const ManageServerModal = (props) => {
                 hasMore={otherServers.hasMore}
                 useWindow={false}
               >
-                {!customerStatus && <Text style={{ color: "red" }}> Please active customer to assign new servers! </Text>}
                 {customerStatus &&
                   <List
                     dataSource={otherServers.data}

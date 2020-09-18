@@ -151,10 +151,11 @@ export const getServersCustomer = (id, keyword) => (dispatch) => {
 };
 
 export const getOtherServers = (option, id, page, keyword) => (dispatch, getState) => {
+  // dispatch(setLoading(true));
   return new Promise((resolve, reject) => {
     return getOtherServersApi(option, id, page, keyword)
       .then((res) => {
-
+        // dispatch(setLoading(false));
         dispatch(
           setOtherServers({
             data: getState().customerManagement.otherServers.data.concat(res),
