@@ -89,6 +89,7 @@ function MainPage() {
 
 
   useEffect(() => {
+
     fetch(
       pagination.current > 0 ? pagination.current : 1,
       pagination.pageSize,
@@ -147,9 +148,7 @@ function MainPage() {
     }
   };
 
-  async function handleFilterChange(newFilterValue) {
-    dispatch(setFilter(newFilterValue));
-  }
+
 
   async function handleSearchChange(newKeyword) {
     newKeyword = String(newKeyword).trim();
@@ -163,9 +162,11 @@ function MainPage() {
   }
 
   async function handleSortChange(pag, filters, sorter) {
-    if (filters) {
+    if (filters.IsActive != filterValue) {
+
       await dispatch(setPagination({ ...pagination, current: 1 }));
       dispatch(setFilter(filters.IsActive))
+      setSelectedRowKeys([])
     }
     if (sorter) {
       var newSortColumn = sorter.column ? sorter.column.dataIndex : "CreatedDate";
