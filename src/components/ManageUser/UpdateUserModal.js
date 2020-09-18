@@ -285,6 +285,8 @@ const UpdateUserModal = (pros) => {
       ...values,
       role: values.rolelist[0],
       IsActive: switchState,
+      firstname: values.firstname.trim(), 
+      lastname: values.lastname.trim()
     })
       .then((res) => {
         if (res.status === 200) {

@@ -18,6 +18,7 @@ import {
   setRefresh,
 } from "features/ManageCustomer/slice";
 import { useSelector, useDispatch } from "react-redux";
+import moment from 'moment';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -157,7 +158,7 @@ function AddCustomerModal(props) {
               },
             ]}
           ><DatePicker
-              showTime style={{ width: "100%" }} />
+              showTime disabledDate={d => !d || d.isBefore(moment().format('YYYY-MM-DD HH:mm:ss'))} style={{ width: "100%" }} />
           </Form.Item>
           <Form.Item
             label="Contract end date"
@@ -174,7 +175,7 @@ function AddCustomerModal(props) {
             ]}
           >
             <DatePicker
-              showTime style={{ width: "100%" }} />
+              showTime disabledDate={d => !d || d.isBefore(moment().format('YYYY-MM-DD HH:mm:ss'))} style={{ width: "100%" }} />
           </Form.Item>
         </Form.Item>
         <Form.Item
