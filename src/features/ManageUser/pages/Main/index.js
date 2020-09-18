@@ -234,7 +234,7 @@ function MainPage() {
   }
   function search(SearchKeyw) {
     setSelectedRowKeys([]);
-    setSearchKey(SearchKeyw);
+    setSearchKey(SearchKeyw.trim());
     setPageNo(1);
   }
   function handleTableChange(pagination, filters, sorter) {
