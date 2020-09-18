@@ -54,7 +54,7 @@ function AddEditServerModal(props) {
         console.log(values);
         if(props.request.type === SERVER_CONSTANTS.ADD_SERVER_TYPE){
             return createServerApi({
-                    serverName: values.ServerName,
+                    serverName: values.ServerName.trim(),
                     ipAddress: values.IpAddress,
                     startDate: values.StartDate.format(GLOBAL_CONSTANTS.TIME_FORMAT),
                     endDate: values.EndDate.format(GLOBAL_CONSTANTS.TIME_FORMAT)
@@ -80,7 +80,7 @@ function AddEditServerModal(props) {
             console.log(active);
             return updateServerApi({
                 id: id,
-                serverName: values.ServerName,
+                serverName: values.ServerName.trim(),
                 ipAddress: values.IpAddress,
                 startDate: values.StartDate.format(GLOBAL_CONSTANTS.TIME_FORMAT),
                 endDate: values.EndDate.format(GLOBAL_CONSTANTS.TIME_FORMAT),
@@ -131,10 +131,9 @@ function AddEditServerModal(props) {
 
                     <Form.Item label="IP Address"
                                 name='IpAddress'
-                                rules={[{
-                                    required: true,
-                                    message: "Please input the ip address of server!"
-                                }]}>
+                                rules={[
+                                    {required: true,message: "Please input the ip address of server!"},
+                                    {pattern: "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", message: "Ip format is not correct"}]}>
                         <Input />
                     </Form.Item>
                     

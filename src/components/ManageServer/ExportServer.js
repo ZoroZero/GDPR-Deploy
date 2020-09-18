@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, DatePicker, Button, Modal,  Menu, Dropdown, message, Select } from "antd";
+import { Form, Input, DatePicker, Button, Modal,  Menu, Dropdown, Select } from "antd";
 import { DownOutlined } from '@ant-design/icons';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
@@ -9,14 +9,13 @@ import { VerticalAlignBottomOutlined } from '@ant-design/icons'
 import { getListServerOptions } from "features/ManageServer/slice";
 import { useDispatch, useSelector } from "react-redux";
 const { Option } = Select;
-const { RangePicker } = DatePicker;
 function ExportServer(props){ 
     
     const dispatch = useDispatch()
     const [form] = Form.useForm();
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     // const fileExtension = '.xlsx';
-    const [csvData, setCSVData] = useState([])
+    const [csvData, setCSVData] = useState(null)
     const [keyword, setkeyword] = useState("");
     const fileName = SERVER_CONSTANTS.SERVER_EXPORT_FILE; 
     const { lstServer } = useSelector(
@@ -39,6 +38,25 @@ function ExportServer(props){
     });
 
     function exportToXLSX(csvData, fileName, type)  {
+        if(csvData.length === 0){
+            csvData = [{
+                Name: null,
+                IpAddress: null,
+                StartDate: null,
+                EndDate: null,
+                IsActive: null,
+                CreatedBy: null,
+                CreatedDate: null,
+                UpdatedBy: null,
+                UpdatedDate: null,
+                DeletedBy: null,
+                DeletedDate: null,
+                IsDeleted: null,
+                OwnerId: null,
+                OwnerName:null,
+                Total: null,
+            }]
+        }
         const ws = XLSX.utils.json_to_sheet(csvData);
         const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
         const excelBuffer = XLSX.write(wb, { bookType: type, type: 'array' });
@@ -51,7 +69,7 @@ function ExportServer(props){
         // props.setLoading(true);
         return exportServerListApi(
             {
-                serverName: values.ServerName,
+                serverName: values.ServerName.trim(),
                 ipAddressList: values.IpAddress? values.IpAddress.join(','): undefined,
                 startDate: values.FromDate? values.FromDate.format("YYYY-MM-DD HH:mm:ss"): undefined,
                 endDate: values.ToDate? values.ToDate.format("YYYY-MM-DD HH:mm:ss"): undefined
@@ -131,7 +149,7 @@ function ExportServer(props){
 
                 <Form.Item>
                     <Button form="exportForm" key="submit" type="primary" htmlType="submit" style={{margin: '0px 8px'}}>Filter</Button>
-                    <Dropdown overlay={menu} disabled={!csvData[0]} style={{margin: '0px 8px'}}>
+                    <Dropdown overlay={menu} disabled={!csvData} style={{margin: '0px 8px'}}>
                         <Button>
                             <VerticalAlignBottomOutlined /> Export <DownOutlined />
                         </Button>
