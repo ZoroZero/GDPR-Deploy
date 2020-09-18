@@ -10,7 +10,7 @@ import { SERVER_CONSTANTS } from 'constants/ManageServer/server';
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import ExportServer from 'components/ManageServer/ExportServer';
 import ImportServer from "components/ManageServer/ImportServer";
-import { DownOutlined } from '@ant-design/icons'
+import { DownOutlined, UploadOutlined } from '@ant-design/icons'
 
 MainPage.propTypes = {};
 
@@ -301,6 +301,7 @@ function MainPage() {
                                 setModalVisible={setModalVisible} setEditRequest={setEditRequest}>
             </AddEditServerModal>
             </div>
+
             <Dropdown overlay={actionMenu} disabled={selectingServerIdList.length===0} >
                         <Button style={{margin: '10px 0px 0px 0px'}}>
                             Action <DownOutlined />
