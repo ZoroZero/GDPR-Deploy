@@ -158,7 +158,7 @@ function AddCustomerModal(props) {
               },
             ]}
           ><DatePicker
-              showTime disabledDate={d => !d || d.isBefore(moment().format('YYYY-MM-DD HH:mm:ss'))} style={{ width: "100%" }} />
+              showTime style={{ width: "100%" }} />
           </Form.Item>
           <Form.Item
             label="Contract end date"
