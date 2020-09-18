@@ -94,7 +94,7 @@ const RequestForm = (props) => {
                 },
               ]}
             >
-              <Input disabled={disable} />
+              <Input disabled={disable} style={{ fontWeight: "bold" }} />
             </Form.Item>
           </Col>
         </Row>
@@ -113,7 +113,7 @@ const RequestForm = (props) => {
               <DatePicker
                 showTime
                 disabled={disable}
-                style={{ width: "100%" }}
+                style={{ width: "100%", fontWeight: "bold" }}
               />
             </Form.Item>
           </Col>
@@ -131,7 +131,7 @@ const RequestForm = (props) => {
               <DatePicker
                 showTime
                 disabled={disable}
-                style={{ width: "100%" }}
+                style={{ width: "100%", fontWeight: "bold" }}
               />
             </Form.Item>
           </Col>
@@ -152,7 +152,12 @@ const RequestForm = (props) => {
                 },
               ]}
             >
-              <Select showSearch onSearch={onSearchServer} disabled={disable}>
+              <Select
+                showSearch
+                onSearch={onSearchServer}
+                disabled={disable}
+                style={{ fontWeight: "bold" }}
+              >
                 {options}
               </Select>
             </Form.Item>
@@ -173,6 +178,7 @@ const RequestForm = (props) => {
               <Input.TextArea
                 autoSize={{ minRows: 3, maxRows: 5 }}
                 disabled={disable}
+                style={{ fontWeight: "bold" }}
               />
             </Form.Item>
           </Col>

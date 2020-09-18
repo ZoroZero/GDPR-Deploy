@@ -20,6 +20,7 @@ const Message = (props) => {
       setRepliedMsg(res.data);
     });
   }
+
   let replyMsg = null;
   if (repliedMsg)
     replyMsg = (
@@ -46,6 +47,7 @@ const Message = (props) => {
         CreatedDate: val.CreatedDate,
         FirstName: val.User.FirstName,
         Content: val.Content,
+        Avatar: val.Avatar,
       });
     }
   }
@@ -61,7 +63,7 @@ const Message = (props) => {
         <div className="msg-box">
           <img
             className="user-img"
-            src="//gravatar.com/avatar/00034587632094500000000000000000?d=retro"
+            src={`${process.env.REACT_APP_BASE_URL}/api/users/thumbnails/${val.Avatar}`}
           />
           <div className="flr">
             <span className="timestamp">

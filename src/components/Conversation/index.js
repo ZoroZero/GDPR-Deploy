@@ -11,7 +11,7 @@ const ConversationBox = (props) => {
   const [form] = Form.useForm();
   const [lstMsg, setLstMsg] = useState([]);
   const [replyToMsg, setReplyToMsg] = useState(null);
-  const { token, userId } = useSelector((state) => state.app);
+  const { token, userId, avatar } = useSelector((state) => state.app);
 
   useEffect(() => {
     fetchOldMessage(props.request.Id);
@@ -60,6 +60,7 @@ const ConversationBox = (props) => {
       ...val,
       requestId: props.request.Id,
       ReplyId: replyToMsg ? replyToMsg.Id : null,
+      avatar: avatar,
       headers: {
         Authorization: token,
       },
@@ -93,7 +94,7 @@ const ConversationBox = (props) => {
           <div className="msg-box">
             <img
               className="user-img"
-              src="//gravatar.com/avatar/00034587632094500000000000000000?d=retro"
+              src={`${process.env.REACT_APP_BASE_URL}/api/users/thumbnails/${replyToMsg.Avatar}`}
             />
             <div className="flr">
               <span className="timestamp">
