@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { message } from "antd";
 import "./index.scss";
 import UserSetting from "../../../../components/UserSetting/UserSettingForm.js";
+import UserSettingPassword from "../../../../components/UserSetting/UserSettingPasswordForm.js";
 import { getAccountDetailApi } from "api/user";
 import { useSelector, useDispatch } from "react-redux";
 import { setRecord } from "../../slice";
@@ -40,6 +41,7 @@ function MainPage() {
   return (
     <div>
       <UserSetting onSubmitModal={refetch} />
+      <UserSettingPassword onSubmitModal={refetch} />
     </div>
   );
 }

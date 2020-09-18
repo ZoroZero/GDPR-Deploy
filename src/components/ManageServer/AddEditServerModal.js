@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, DatePicker, Button, notification, Switch } from "antd";
+import { Modal, Form, Input, DatePicker, Button, notification, Switch, message } from "antd";
 import { createServerApi, updateServerApi } from 'api/server';
 import { SERVER_CONSTANTS } from "constants/ManageServer/server";
+import { GLOBAL_CONSTANTS } from 'constants/global'
 import moment from 'moment';
+import { useDispatch, useSelector } from "react-redux";
+import { setRefresh } from 'features/ManageServer/slice';
+
 
 function AddEditServerModal(props) {
-
+    const { refresh } = useSelector((state) => state.serverManagement)
+    const dispatch = useDispatch()
     const [form] = Form.useForm();
     const [title, setTitle] = useState('Create new server');
     const [active, setActive] = useState(true);
@@ -29,12 +34,17 @@ function AddEditServerModal(props) {
         form.setFieldsValue({
             ServerName: props.request.data.Name,
             IpAddress: props.request.data.IpAddress,
-            StartDate: moment(props.request.data.StartDate),
-            EndDate: moment(props.request.data.EndDate)
+            StartDate: moment(props.request.data.StartDate, GLOBAL_CONSTANTS.TIME_FORMAT),
+            EndDate: moment(props.request.data.EndDate, GLOBAL_CONSTANTS.TIME_FORMAT)
         });
 
-        setActive(props.request.data.Status === '1')
+        setActive(props.request.data.IsActive)
     };
+
+    const handleClose = () => {
+        props.setEditRequest(null);
+        props.setModalVisible(false);
+    }
 
     const onFinish = values => {
         console.log(values);
@@ -42,20 +52,24 @@ function AddEditServerModal(props) {
             return createServerApi({
                     serverName: values.ServerName,
                     ipAddress: values.IpAddress,
-                    startDate: values.StartDate.format("YYYY-MM-DD hh:mm:ss"),
-                    endDate: values.EndDate.format("YYYY-MM-DD hh:mm:ss")
+                    startDate: values.StartDate.format(GLOBAL_CONSTANTS.TIME_FORMAT),
+                    endDate: values.EndDate.format(GLOBAL_CONSTANTS.TIME_FORMAT)
                 })
                 .then((res) => {
                     console.log("Sucessfully add new server", res)
-                    openNotification(`Sucessfully add new server at ${res.createAt}`)
+                    message.success("Sucessfully add new server")
+                    // openNotification(`Sucessfully add new server at ${res.createAt}`)
                     props.setModalVisible(false)
-                    form.resetFields();
+                    form.resetFields()
+                    dispatch(setRefresh(!refresh));
                 })
-                .catch((err) => console.log(err)) 
-                .finally(() => {
-                    props.setEditRequest(null);
-                    props.setRefreshPage(true);
-                })    
+                .catch((err) => {
+                    console.log("Add error", err); 
+                    message.error("Something went wrong")
+                }) 
+                // .finally(() => {
+                   
+                // })    
         }
         else if(props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE){
             const id = props.request.data.Id
@@ -64,58 +78,44 @@ function AddEditServerModal(props) {
                 id: id,
                 serverName: values.ServerName,
                 ipAddress: values.IpAddress,
-                startDate: values.StartDate.format("YYYY-MM-DD hh:mm:ss"),
-                endDate: values.EndDate.format("YYYY-MM-DD hh:mm:ss"),
+                startDate: values.StartDate.format(GLOBAL_CONSTANTS.TIME_FORMAT),
+                endDate: values.EndDate.format(GLOBAL_CONSTANTS.TIME_FORMAT),
                 status: active
             })
             .then((res) => {
                 console.log("Sucessfully update server information", res)
-                openNotification(`Sucessfully update server information at ${res.updateAt}`)
+                // openNotification(`Sucessfully update server information at ${res.updateAt}`)
+                message.success("Successfully update server information")
                 props.setModalVisible(false)
                 form.resetFields();
+                dispatch(setRefresh(!refresh));
             })
-            .catch((err) => console.log(err))
-            .finally(() => {
-                props.setEditRequest(null);
-                props.setRefreshPage(true);
-                }
-            ) 
+            .catch((err) => {
+                console.log("Update error", err); 
+                message.error("Something went wrong")
+            })
         }
-        
-    };
-
-    const openNotification = (message) => {
-        notification.open({
-          message: message,
-          description: null,
-          onClick: () => {
-            console.log('Notification Clicked!');
-          },
-        });
     };
     
     return (    
         <Modal
             title= {title}
             centered
-            
             visible={props.modalVisible}
-            onCancel={()=>{props.setModalVisible(false)}}
+            onCancel={handleClose}
             okButtonProps={{ style: { display: 'none' } }}
             cancelButtonProps={{ style: { display: 'none' } }}
             forceRender={true} 
             footer={[
                 <Button form="myForm" key="submit" type="primary" htmlType="submit">
                     Submit
-                </Button>
-                ,
-                <Button key="cancel" onClick={()=>{props.setModalVisible(false)}}>
+                </Button>,
+                <Button key="cancel" onClick={handleClose}>
                     Cancel
                 </Button>
             ]}>
                 <Form  form={form} onFinish={onFinish} id="myForm"
                     layout="vertical">
-
                     <Form.Item label="Server name"
                             name='ServerName'
                             rules={[{
@@ -161,7 +161,6 @@ function AddEditServerModal(props) {
                         </Form.Item>
                     }
                 </Form>
-
         </Modal>)
 }
 

@@ -89,12 +89,27 @@ export const updateUsersApi = (id, data) => {
   });
 };
 
-export const updateAccountApi = (id, data) => {
+export const updateAccountApi = (data) => {
   return new Promise((resolve, reject) => {
-    console.log("id", id);
+    // console.log("id", id);
     console.log("data", data);
     return axios
-      .put(`/api/users/account/${id}`, { ...data })
+      .put(`/api/users/account/update`, { ...data })
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((error) => {
+        reject(error.response);
+      });
+  });
+};
+
+export const updateAccountPassApi = (data) => {
+  return new Promise((resolve, reject) => {
+    // console.log("id", id);
+    console.log("data", data);
+    return axios
+      .put(`/api/users/password/update`, { ...data })
       .then((res) => {
         resolve(res);
       })

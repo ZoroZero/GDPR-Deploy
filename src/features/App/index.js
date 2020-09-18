@@ -96,6 +96,7 @@ function App(props) {
         );
       })
       .catch((error) => {
+        handleLogout()
         message.error(error.data.message);
       });
   });
@@ -113,6 +114,7 @@ function App(props) {
             style={{ minHeight: "100vh" }}
             trigger={null}
             collapsible
+
             collapsed={collapsed}
           >
             <Link to="/">

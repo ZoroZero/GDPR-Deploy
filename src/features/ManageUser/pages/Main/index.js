@@ -39,6 +39,8 @@ const { confirm } = Modal;
 const { Search } = Input;
 
 function MainPage() {
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
   function showPromiseConfirm(row) {
     confirm({
       title: "Do you want to delete user " + row.UserName,
@@ -46,7 +48,17 @@ function MainPage() {
       content: "Warning: The delete user cannot be recover",
       onOk() {
         return new Promise((resolve, reject) => {
-          deleteUsersApi(row.Id);
+          deleteUsersApi(row.Id)
+            .then((res) => {
+              if (res.status === 200) {
+                // message.success(res.statusText);
+              } else {
+                message.error(res.statusText);
+              }
+            })
+            .catch((error) => {
+              message.error(error.data.message);
+            });
           setTimeout(Math.random() > 0.5 ? resolve : reject, 2000);
         })
           .catch(() => console.log("Oops errors!"))
@@ -78,10 +90,10 @@ function MainPage() {
       dataIndex: "UserName",
       sorter: true,
     },
-    {
-      title: "HashPasswd",
-      dataIndex: "HashPasswd",
-    },
+    // {
+    //   title: "HashPasswd",
+    //   dataIndex: "HashPasswd",
+    // },
     {
       title: "Role",
       dataIndex: "RoleName",
@@ -140,11 +152,17 @@ function MainPage() {
     console.log("click", e);
     if (e.key == "active") {
       message.warning("Active all selected items");
-      await acdeacListUsersApi({ listid: exportData.join(","), isactive: 1 });
+      await acdeacListUsersApi({
+        listid: selectedRowKeys.join(","),
+        isactive: 1,
+      });
       refetch();
     } else if (e.key == "deactive") {
       message.warning("Deactive all selected items");
-      await acdeacListUsersApi({ listid: exportData.join(","), isactive: 0 });
+      await acdeacListUsersApi({
+        listid: selectedRowKeys.join(","),
+        isactive: 0,
+      });
       refetch();
     }
   }
@@ -177,19 +195,19 @@ function MainPage() {
       SortOrder: SortOrder,
       Role: Role,
     });
-  }, [PageSize, Role]);
-  function onChange(pageNumber) {
-    dispatch(setPageNo({ PageNo: pageNumber }));
-    console.log("onchangepage");
-    fetch({
-      PageNo: pageNumber,
-      PageSize: PageSize,
-      SearchKey: SearchKey,
-      SortBy: SortBy,
-      SortOrder: SortOrder,
-      Role: Role,
-    });
-  }
+  }, [PageNo, PageSize, Role]);
+  // function onChange(pageNumber) {
+  //   dispatch(setPageNo({ PageNo: pageNumber }));
+  //   console.log("onchangepage");
+  //   fetch({
+  //     PageNo: pageNumber,
+  //     PageSize: PageSize,
+  //     SearchKey: SearchKey,
+  //     SortBy: SortBy,
+  //     SortOrder: SortOrder,
+  //     Role: Role,
+  //   });
+  // }
   function refetch() {
     fetch({
       PageNo: PageNo,
@@ -204,6 +222,7 @@ function MainPage() {
     return `Total ${total} items`;
   }
   function search(SearchKeyw) {
+    setSelectedRowKeys([]);
     dispatch(setSearchKey({ SearchKey: SearchKeyw }));
     dispatch(setPageNo({ PageNo: 1 }));
     fetch({
@@ -219,7 +238,7 @@ function MainPage() {
     if (pageSize !== PageSize && PageNo > Math.ceil(total / pageSize)) {
       console.log("Total1", total);
       dispatch(setPageSize({ PageSize: pageSize }));
-      dispatch(setPageNo(Math.ceil(total / pageSize)));
+      dispatch(setPageNo({ PageNo: Math.ceil(total / pageSize) }));
 
       // fetch({
       //   PageNo: Math.ceil(total / pageSize),
@@ -232,6 +251,7 @@ function MainPage() {
     } else {
       console.log("Total2", total);
       dispatch(setPageSize({ PageSize: pageSize }));
+      dispatch(setPageNo({ PageNo: current }));
       // fetch({
       //   PageNo: current,
       //   PageSize: pageSize,
@@ -278,6 +298,36 @@ function MainPage() {
     }
   }
 
+  // Handle change in page number
+  const handlePageChange = (pageNumber, pageSize) => {
+    if (pageSize !== PageSize && PageNo > Math.ceil(total / pageSize)) {
+      console.log("Total1", total);
+      dispatch(setPageSize({ PageSize: pageSize }));
+      dispatch(setPageNo({ PageNo: Math.ceil(total / pageSize) }));
+
+      // fetch({
+      //   PageNo: Math.ceil(total / pageSize),
+      //   PageSize: pageSize,
+      //   SearchKey: SearchKey,
+      //   SortBy: SortBy,
+      //   SortOrder: SortOrder,
+      //   Role: Role,
+      // });
+    } else {
+      console.log("Total2", total);
+      dispatch(setPageSize({ PageSize: pageSize }));
+      dispatch(setPageNo({ PageNo: pageNumber }));
+      // fetch({
+      //   PageNo: current,
+      //   PageSize: pageSize,
+      //   SearchKey: SearchKey,
+      //   SortBy: SortBy,
+      //   SortOrder: SortOrder,
+      //   Role: Role,
+      // });
+    }
+  };
+
   const fetch = (params) => {
     setLoading(true);
     return getUsersApi(params)
@@ -298,18 +348,25 @@ function MainPage() {
   };
 
   // Handle row selected
+  // const rowSelection = {
+  //   onChange: (selectedRowKeys, selectedRows) => {
+  //     setSelectedRowKeys(selectedRowKeys);
+  //   },
+  //   onSelect: (record, selected, selectedRows) => {
+  //     // console.log(record, selected, selectedRows);
+  //   },
+  //   onSelectAll: (selected, selectedRows, changeRows) => {
+  //     // console.log(selected, selectedRows, changeRows);
+  //   },
+  // };
   const rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      setExportData(selectedRowKeys);
-    },
-    onSelect: (record, selected, selectedRows) => {
-      // console.log(record, selected, selectedRows);
-    },
-    onSelectAll: (selected, selectedRows, changeRows) => {
-      // console.log(selected, selectedRows, changeRows);
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys) => {
+      console.log("selectedRowKeys changed: ", newSelectedRowKeys);
+      setSelectedRowKeys(newSelectedRowKeys);
     },
   };
-  const hasSelected = exportData.length > 0;
+  const hasSelected = selectedRowKeys.length > 0;
   return (
     <div>
       <Row>
@@ -347,12 +404,13 @@ function MainPage() {
           <Pagination
             showQuickJumper
             showSizeChanger
-            onShowSizeChange={onShowSizeChange}
+            // onShowSizeChange={onShowSizeChange}
+            onChange={handlePageChange}
             current={PageNo}
             total={total}
             showTotal={showTotal}
             pageSize={PageSize}
-            onChange={onChange}
+            // onChange={onChange}
           />
         </Col>
       </Row>

@@ -1,13 +1,12 @@
 /* TODO: 
-- disable day before begin day
 */
 import React, { useEffect, useState } from "react";
 import {
   Modal,
+  Button,
   Form,
   Input,
   DatePicker,
-  Button,
   notification,
   Select,
   Switch,
@@ -25,18 +24,22 @@ const { TextArea } = Input;
 
 function AddCustomerModal(props) {
   const dispatch = useDispatch();
-  const { refresh, pagination, keyword, contactPoints } = useSelector(
+  const { refresh, pagination, contactPoints } = useSelector(
     (state) => state.customerManagement
   );
   const [form] = Form.useForm();
-
   const shouldGetData = props.modalVisible !== false;
+  const [updateKey, setUpdateKey] = useState(1);
+  const [updateKey2, setUpdateKey2] = useState(false);
 
   useEffect(() => {
     if (shouldGetData) {
+      setUpdateKey2(!updateKey2)
+      setUpdateKey(updateKey + 1)
+      console.log("USE EFFECT ")
       form.setFieldsValue({
-        FirstName: "",
-        LastName: "",
+        FirstName: null,
+        LastName: null,
         ContactPointId: null,
         ContractBeginDate: null,
         ContractEndDate: null,
@@ -48,14 +51,16 @@ function AddCustomerModal(props) {
   }, [shouldGetData]);
 
   const handleOk = () => {
-    props.setModalVisible(false);
+
     form.submit();
   };
 
   const handleCancel = () => {
     props.setModalVisible(false);
   };
+
   async function onFinish(values) {
+    props.setModalVisible(false);
     console.log(values);
     try {
       await createCustomerApi(values);
@@ -83,25 +88,35 @@ function AddCustomerModal(props) {
       centered
       visible={props.modalVisible}
       forceRender={true}
-      onOk={handleOk}
+      footer={[
+        <Button form="myForm" key="submit" type="primary" htmlType="submit">
+          Submit
+                </Button>
+        ,
+        <Button key="cancel" onClick={() => { props.setModalVisible(false) }}>
+          Cancel
+ </Button>]}
+      // onOk={handleOk}
       onCancel={handleCancel}
-
     >
       <Form form={form} onFinish={onFinish} name="myForm" layout="vertical">
         <Form.Item
+          key={updateKey}
           label="First name"
           name="FirstName"
           rules={[
+
             {
               required: true,
               message: "Please enter your first name!",
-            },
+
+            }
           ]}
         >
           <Input />
         </Form.Item>
-
         <Form.Item
+          key={updateKey2}
           label="Last name"
           name="LastName"
           rules={[
@@ -113,7 +128,6 @@ function AddCustomerModal(props) {
         >
           <Input />
         </Form.Item>
-
         <Form.Item label="Contact Point" name="ContactPointId">
           <Select
             showSearch
@@ -142,10 +156,9 @@ function AddCustomerModal(props) {
                 required: false,
               },
             ]}
-          >
-            <DatePicker showTime style={{ width: "100%" }} />
+          ><DatePicker
+              showTime style={{ width: "100%" }} />
           </Form.Item>
-
           <Form.Item
             label="Contract end date"
             style={{
@@ -160,7 +173,8 @@ function AddCustomerModal(props) {
               },
             ]}
           >
-            <DatePicker showTime style={{ width: "100%" }} />
+            <DatePicker
+              showTime style={{ width: "100%" }} />
           </Form.Item>
         </Form.Item>
         <Form.Item
@@ -181,6 +195,12 @@ function AddCustomerModal(props) {
             defaultChecked="Active"
           ></Switch>
         </Form.Item>
+
+        {/* <Form.Item> */}
+        {/* <Button type="primary" htmlType="submit" >
+            Submit
+            </Button>
+        </Form.Item> */}
       </Form>
     </Modal>
   );

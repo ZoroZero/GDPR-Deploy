@@ -1,10 +1,11 @@
 import axios from "axios/auth.instance";
+const FormData = require('form-data');
 
-export const listServerApi = () => {
+export const getAllServerApi = () => {
   return new Promise((resolve, reject) => {
     return axios({
       method: "get",
-      url: "/api/servers",
+      url: "/api/servers/all",
     })
       .then((res) => {
         resolve(res.data);
@@ -77,7 +78,6 @@ export const updateServerApi = (data) => {
         reject(error);
       });
   });  
-
 }
 
 export const deleteServerApi = (data) => {
@@ -98,6 +98,23 @@ export const deleteServerApi = (data) => {
   });
 }
 
+export const updateMultipleStatusApi = (data) => {
+  return new Promise((resolve, reject) => {
+    console.log("Send data", data)
+    return axios
+      .put(`/api/servers/multi`, {
+          status: data.status,
+          listServer: data.listServer
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });  
+}
+
 
 export const exportServerListApi = (data) => {
   return new Promise((resolve, reject) => {
@@ -106,7 +123,7 @@ export const exportServerListApi = (data) => {
       .get(`/api/servers/export`, {
           params: {
             serverName: data.serverName,
-            serverIp: data.ipAddress,
+            serverIpList: data.ipAddressList,
             startDate: data.startDate,
             endDate: data.endDate
           }
@@ -118,4 +135,20 @@ export const exportServerListApi = (data) => {
         reject(error);
       });
   });
+}
+
+export const importServerListApi = (data) => {
+  console.log(data);
+  return new Promise((resolve, reject) => {
+    return axios
+      .post(`/api/servers/import`, {
+        listServer : data.data
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  }); 
 }

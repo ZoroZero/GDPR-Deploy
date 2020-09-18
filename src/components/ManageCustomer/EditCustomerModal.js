@@ -5,15 +5,13 @@ import {
   Form,
   Input,
   DatePicker,
-  Button,
   notification,
   Select,
   Switch,
 } from "antd";
 import { updateCustomerApi } from "api/customer";
-import { getContactPointList } from "../../features/ManageCustomer/slice";
+import { getContactPointList, setRefresh } from "../../features/ManageCustomer/slice";
 import moment from "moment";
-import { setRefresh } from "features/ManageCustomer/slice";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -24,11 +22,10 @@ function EditCustomerModal(props) {
     (state) => state.customerManagement
   );
   const [isActive, setIsActive] = useState(props.record.IsActive);
-
   const [form] = Form.useForm();
   const contactPointId = props.record.ContactPointId;
-  const contactPointEmail = props.record.contactPointEmail;
   const shouldGetData = props.modalVisible !== false;
+
   useEffect(() => {
     if (shouldGetData) {
       {
@@ -84,7 +81,7 @@ function EditCustomerModal(props) {
   return (
     <div>
       <Modal
-        title="Update new Customer"
+        title="Update Customer"
         centered
         visible={props.modalVisible}
         forceRender={true}
@@ -108,7 +105,6 @@ function EditCustomerModal(props) {
           >
             <Input />
           </Form.Item>
-
           <Form.Item
             label="Last name"
             name="LastName"
@@ -120,7 +116,6 @@ function EditCustomerModal(props) {
           >
             <Input />
           </Form.Item>
-
           <Form.Item label="Contact Point" name="ContactPointId">
             <Select
               showSearch
@@ -135,7 +130,7 @@ function EditCustomerModal(props) {
             >
               {contactPoints.length > 0 &&
                 contactPoints.map((item) => (
-                  <Option key={item.Id}> {item.Email} </Option>
+                  <Option disabled={item.IsActive} key={item.Id}> {item.Email} </Option>
                 ))}
             </Select>
           </Form.Item>
@@ -152,7 +147,6 @@ function EditCustomerModal(props) {
             >
               <DatePicker showTime style={{ width: "100%" }} />
             </Form.Item>
-
             <Form.Item
               label="Contract end date"
               style={{
@@ -198,6 +192,4 @@ function EditCustomerModal(props) {
 }
 
 export default EditCustomerModal;
-/*FIXME:
-- update am pm ?
-*/
+

@@ -5,7 +5,6 @@ import "./index.scss";
 
 import NotFound from "../../components/NotFound";
 import MainPage from "./pages/Main";
-import DetailPage from "./pages/Detail";
 import { AbilityContext } from "permission/can";
 import { useAbility } from "@casl/react";
 
@@ -18,8 +17,7 @@ function Customer() {
     <Suspense fallback={<div>Loading ...</div>}>
       <Switch>
         <Route exact path={match.url} component={MainPage} />
-        <Route exact path={`${match.url}/:customerId`} component={DetailPage} />
-        <Route component={NotFound} />
+d        <Route component={NotFound} />
       </Switch>
     </Suspense>
   );

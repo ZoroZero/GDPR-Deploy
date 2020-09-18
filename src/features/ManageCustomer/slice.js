@@ -7,13 +7,10 @@ import {
   deleteServersOfCustomerApi,
   addServersForCustomerApi,
 } from "api/customer";
-import { loading, stopLoading } from "features/App/slice";
-import { act } from "react-dom/test-utils";
-import { useSelector } from "react-redux";
 
 export const initialState = {
-  blockIds: null,
   data: [],
+  deletedData: [],
   servers: [],
   otherServers: { data: [], loading: false, hasMore: true },
   pagination: {
@@ -26,6 +23,7 @@ export const initialState = {
   sortColumn: "CreatedDate",
   sortOrder: "descend",
   keyword: "",
+  filterValue: [],
   refresh: false,
   contactPoints: [],
   loading: false,
@@ -36,9 +34,6 @@ const slice = createSlice({
   initialState,
 
   reducers: {
-    setFilter: (state, action) => {
-      state.blockIds = action.payload.blockIds;
-    },
 
     setData: (state, action) => {
       console.log("SET DATA", action.payload);
@@ -57,6 +52,10 @@ const slice = createSlice({
 
     setSearch: (state, action) => {
       state.keyword = action.payload;
+    },
+
+    setFilter: (state, action) => {
+      state.filterValue = action.payload;
     },
 
     setRefresh: (state, action) => {
@@ -86,6 +85,10 @@ const slice = createSlice({
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
+
+    setDeletedData: (state, action) => {
+      state.deletedData = action.payload;
+    },
   },
 });
 
@@ -102,6 +105,7 @@ export const {
   setDeletedOwnedServers,
   setAddedServers,
   setLoading,
+  setDeletedData,
 } = slice.actions;
 export default slice.reducer;
 
