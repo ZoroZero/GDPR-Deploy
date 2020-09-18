@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, DatePicker, Button, Modal,  Menu, Dropdown, message, Select, Checkbox } from "antd";
+import { Form, Input, DatePicker, Button, Modal,  Menu, Dropdown, message, Select } from "antd";
 import { DownOutlined } from '@ant-design/icons';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
-import { SERVER_CONSTANTS } from 'constants/ManageServer/server';
 import { VerticalAlignBottomOutlined } from '@ant-design/icons'
 import { exportCustomerListApi } from 'api/customer';
 import { useSelector, useDispatch } from "react-redux";
@@ -38,6 +37,27 @@ function ExportCustomerModal(props){
 
     function exportToXLSX(csvData, fileName, type)  {
         if(csvData){
+            if(csvData.length === 0){
+                csvData = [{
+                    FirstName: null,
+                    LastName:null,
+                    ContactPointEmail: null,
+                    ContactPointId: null,
+                    ContractBeginDate:null,
+                    ContractEndDate: null,
+                    Description: null,
+                    IsActive: null,
+                    ContactPointStatus: null,
+                    CreatedBy:null,
+                    CreatedDate: null,
+                    UpdatedBy:null,
+                    UpdatedDate: null,
+                    DeletedBy:null,
+                    DeletedDate: null,
+                    IsDeleted: null,
+                    Total: null,
+                }]
+            }
             const ws = XLSX.utils.json_to_sheet(csvData);
             const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
             const excelBuffer = XLSX.write(wb, { bookType: type, type: 'array' });
@@ -55,7 +75,7 @@ function ExportCustomerModal(props){
         }
         return exportCustomerListApi(
             {
-                customerName: values.Name,
+                customerName: values.Name.trim(),
                 contactPoint: values.ContactPoint,
                 startDate: values.StartDate? values.StartDate.format("YYYY-MM-DD hh:mm:ss"): undefined,
                 endDate: values.EndDate? values.EndDate.format("YYYY-MM-DD hh:mm:ss"): undefined,
@@ -81,13 +101,9 @@ function ExportCustomerModal(props){
     }
 
     const statusOptions = [
-        { label: 'Active', value: '1' },
-        { label: 'Inactive', value: '0' },
-      ];
-    
-    function onChange(checkedValues) {
-        console.log('checked = ', checkedValues);
-    }
+        <Option value={'1'} key={'active'}>Active</Option>,
+        <Option value={'0'} key={'inactive'}>Inactive</Option>
+    ]
 
     const menu = (
         <Menu onClick={handleMenuClick}>
@@ -128,6 +144,7 @@ function ExportCustomerModal(props){
                             showSearch
                             placeholder="Select a contact point"
                             optionFilterProp="children"
+                            mode="multiple"
                             filterOption={(input, option) =>
                             option.children
                                 .toString()
@@ -138,6 +155,7 @@ function ExportCustomerModal(props){
                             contactPoints.map((item) => (
                                 <Option key={item.Id}> {item.Email} </Option>
                             ))}
+                            
                         </Select>
                     </Form.Item>
                 </Form.Item> 
@@ -154,13 +172,16 @@ function ExportCustomerModal(props){
                     </Form.Item>
                 </Form.Item>
 
-                <Form.Item label="Status" style={{ display: 'inline-block', margin: '0px 8px 8px 8px' }}
+                <Form.Item label="Status" style={{margin: '0px 8px 8px 8px' }}
                                 name='Status'>
-                        <Checkbox.Group options={statusOptions} defaultValue={['1']} onChange={onChange}/>
+                        {/* <Checkbox.Group options={statusOptions} defaultValue={['1']} onChange={onChange}/> */}
+                        <Select placeholder="Select a status" mode="multiple" style={{ display: 'inline-block', width: 'calc(50% - 16px)', margin: '0 8px'  }} >
+                                {statusOptions}
+                        </Select>
                 </Form.Item>
                 
                 <Form.Item>
-                    <Button form="exportForm" key="submit" type="primary" htmlType="submit" style={{margin: '0px 8px'}}>Filter</Button>
+                    <Button form="exportForm" key="submit" type="primary" htmlType="submit" style={{margin: '0px 8px 0px 0px'}}>Filter</Button>
                     {/* <Button disabled={!props.csvData[0]} variant="warning" onClick={handleExport}>Export</Button> */}
                     <Dropdown overlay={menu} disabled={!csvData} style={{margin: '0px 8px'}}>
                         <Button>

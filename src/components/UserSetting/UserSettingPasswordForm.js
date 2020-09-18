@@ -155,7 +155,7 @@ const UserSettingPassword = (pros) => {
         }}
       >
         <Button type="primary" htmlType="submit">
-          Change PassWord
+          Change Password
         </Button>
       </Form.Item>
     </Form>

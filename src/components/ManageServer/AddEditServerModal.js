@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, DatePicker, Button, notification, Switch, message } from "antd";
+import { Modal, Form, Input, DatePicker, Button, Switch, message } from "antd";
 import { createServerApi, updateServerApi } from 'api/server';
 import { SERVER_CONSTANTS } from "constants/ManageServer/server";
 import { GLOBAL_CONSTANTS } from 'constants/global'
 import moment from 'moment';
 import { useDispatch, useSelector } from "react-redux";
 import { setRefresh } from 'features/ManageServer/slice';
+// import { getDefaultErrorMessage } from "@casl/ability";
 
 
 function AddEditServerModal(props) {
@@ -14,20 +15,23 @@ function AddEditServerModal(props) {
     const [form] = Form.useForm();
     const [title, setTitle] = useState('Create new server');
     const [active, setActive] = useState(true);
-
+    const shouldGetData = props.modalVisible !== false;
     useEffect(() => {
-        console.log("Request", props.request);
-        form.setFieldsValue({ 
-            ServerName: '',
-            IpAddress: '',
-            StartDate: '',
-            EndDate: ''
-         });
+        if(shouldGetData){
+            console.log("Request", props.request);
+            form.setFieldsValue({ 
+                ServerName: null,
+                IpAddress: null,
+                StartDate: null,
+                EndDate: null
+            });
 
-        setTitle(props.request && props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE?'Update server information' : 'Creat new server')
-        if(props.request && props.request.data)
-            onFill()
-      }, [props.request]);
+            setTitle(props.request && props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE?'Update server information' : 'Creat new server')
+            if(props.request && props.request.data){
+                onFill()
+            }
+        }
+      }, [shouldGetData]);
 
     const onFill = () => {
         console.log(props)
@@ -50,7 +54,7 @@ function AddEditServerModal(props) {
         console.log(values);
         if(props.request.type === SERVER_CONSTANTS.ADD_SERVER_TYPE){
             return createServerApi({
-                    serverName: values.ServerName,
+                    serverName: values.ServerName.trim(),
                     ipAddress: values.IpAddress,
                     startDate: values.StartDate.format(GLOBAL_CONSTANTS.TIME_FORMAT),
                     endDate: values.EndDate.format(GLOBAL_CONSTANTS.TIME_FORMAT)
@@ -65,7 +69,7 @@ function AddEditServerModal(props) {
                 })
                 .catch((err) => {
                     console.log("Add error", err); 
-                    message.error("Something went wrong")
+                    message.error("Something went wrong.\nYour server name or ip is already existed. Please check again")
                 }) 
                 // .finally(() => {
                    
@@ -76,7 +80,7 @@ function AddEditServerModal(props) {
             console.log(active);
             return updateServerApi({
                 id: id,
-                serverName: values.ServerName,
+                serverName: values.ServerName.trim(),
                 ipAddress: values.IpAddress,
                 startDate: values.StartDate.format(GLOBAL_CONSTANTS.TIME_FORMAT),
                 endDate: values.EndDate.format(GLOBAL_CONSTANTS.TIME_FORMAT),
@@ -92,7 +96,7 @@ function AddEditServerModal(props) {
             })
             .catch((err) => {
                 console.log("Update error", err); 
-                message.error("Something went wrong")
+                message.error("Something went wrong.\nYour server name or ip is already existed. Please check again")
             })
         }
     };
@@ -127,10 +131,9 @@ function AddEditServerModal(props) {
 
                     <Form.Item label="IP Address"
                                 name='IpAddress'
-                                rules={[{
-                                    required: true,
-                                    message: "Please input the ip address of server!"
-                                }]}>
+                                rules={[
+                                    {required: true,message: "Please input the ip address of server!"},
+                                    {pattern: "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", message: "Ip format is not correct"}]}>
                         <Input />
                     </Form.Item>
                     
@@ -141,7 +144,7 @@ function AddEditServerModal(props) {
                                         required: true,
                                         message: "Please input the start date of server!"
                                     }]}>
-                            <DatePicker showTime  style={{  width: '100%' }}/>
+                            <DatePicker showTime  disabledDate={d => !d || d.isBefore(moment().format('YYYY-MM-DD HH:mm:ss'))} style={{  width: '100%' }}/>
                         </Form.Item>
 
                         <Form.Item label="End date" style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 8px' }}
@@ -150,7 +153,7 @@ function AddEditServerModal(props) {
                                         required: true,
                                         message: "Please input the end date of server!"
                                     }]}>
-                            <DatePicker showTime style={{  width: '100%' }}/>
+                            <DatePicker showTime disabledDate={d => !d || d.isBefore(moment().format('YYYY-MM-DD HH:mm:ss'))} style={{  width: '100%' }}/>
                         </Form.Item>
                     </Form.Item>
                     
