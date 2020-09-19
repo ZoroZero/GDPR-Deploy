@@ -118,10 +118,11 @@ function MainPage() {
       title: "IsActive",
       dataIndex: "IsActive",
       key: "IsActive",
-      // filters: [
-      //   { text: "Active", value: "Active" },
-      //   { text: "InActive", value: "InActive" },
-      // ],
+      filterMultiple: false,
+      filters: [
+        { text: "Active", value: true },
+        { text: "InActive", value: false },
+      ],
       render: (val) =>
         val ? <Tag color="green">Active</Tag> : <Tag color="red">InActive</Tag>,
     },
@@ -200,6 +201,7 @@ function MainPage() {
   const [SortBy, setSortBy] = useState("");
   const [SortOrder, setSortOrder] = useState("ascend");
   const [Role, setRole] = useState("");
+  const [IsActive, setIsActive] = useState(undefined);
   const [PageNo, setPageNo] = useState(1);
   const [PageSize, setPageSize] = useState(10);
   const dispatch = useDispatch();
@@ -217,8 +219,9 @@ function MainPage() {
       SortBy: SortBy,
       SortOrder: SortOrder,
       Role: Role,
+      IsActive: IsActive
     });
-  }, [PageNo, PageSize, SearchKey, SortBy, SortOrder, Role]);
+  }, [PageNo, PageSize, SearchKey, SortBy, SortOrder, Role, IsActive]);
   function refetch() {
     fetch({
       PageNo: PageNo,
@@ -227,6 +230,7 @@ function MainPage() {
       SortBy: SortBy,
       SortOrder: SortOrder,
       Role: Role,
+      IsActive: IsActive
     });
   }
   function showTotal(total) {
@@ -238,6 +242,7 @@ function MainPage() {
     setPageNo(1);
   }
   function handleTableChange(pagination, filters, sorter) {
+    console.log("filter",filters);
     if (sorter.length !== 0) {
       setSortBy(sorter.field);
       setSortOrder(sorter.order);
@@ -247,6 +252,12 @@ function MainPage() {
       setPageNo(1);
     } else {
       setRole("");
+    }
+    if (filters.IsActive !== null) {
+      setIsActive(filters.IsActive[0]);
+      setPageNo(1);
+    } else {
+      setIsActive(undefined);
     }
   }
 
