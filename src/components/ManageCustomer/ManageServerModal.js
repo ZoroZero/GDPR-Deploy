@@ -10,7 +10,7 @@ import {
   addServersForCustomer,
   setOtherServers,
   setDeletedOwnedServers,
-  setAddedServers,
+  setAddedServers, setServers, setLoading
 } from "../../features/ManageCustomer/slice";
 import InfiniteScroll from "react-infinite-scroller";
 
@@ -24,6 +24,7 @@ const ManageServerModal = (props) => {
     otherServers,
     deletedOwnedServers,
     addedServers,
+    // loading,
   } = useSelector((state) => state.customerManagement);
   const shouldGetData = props.modalVisible !== false;
   const [option, setOption] = useState({
@@ -32,6 +33,8 @@ const ManageServerModal = (props) => {
   const [page, setPage] = useState(2);
   const [keyword, setKeyword] = useState("");
   const [keyUpdate, setKeyUpdate] = useState(true);
+  const [customerStatus, setCustomerStatus] = useState()
+
 
   useEffect(() => {
     if (shouldGetData) {
@@ -42,15 +45,25 @@ const ManageServerModal = (props) => {
           loading: false,
         })
       );
+      setCustomerStatus(props.record.IsActive);
       setPage(2);
+
+      console.log("set customer status", props.record.IsActive)
+
       setKeyUpdate(!keyUpdate);
-      dispatch(getServersCustomer(props.record.Id, ""));
-      dispatch(getOtherServers(option, props.record.Id, 1, ""));
+
+
+      dispatch(getServersCustomer(props.record.Id, keyword));
+      if (props.record.IsActive) dispatch(getOtherServers(option, props.record.Id, 1, keyword));
     }
   }, [shouldGetData, props.record, option.status]);
 
   const handleOk = () => {
+
     props.setModalVisible(false);
+    dispatch(setServers([]));
+    dispatch(setOtherServers([]));
+    setKeyword("")
     if (deletedOwnedServers.length > 0) {
       dispatch(deleteServersOfCustomer(deletedOwnedServers, props.record.Id));
     }
@@ -61,6 +74,10 @@ const ManageServerModal = (props) => {
 
   const handleCancel = () => {
     props.setModalVisible(false);
+    dispatch(setServers([]));
+    dispatch(setOtherServers([]));
+
+    setKeyword("")
   };
 
   const handleStatusChange = (e) => {
@@ -107,6 +124,7 @@ const ManageServerModal = (props) => {
   }
 
   async function handleSearchChange(newKeyword) {
+    newKeyword = newKeyword.trim()
     dispatch(
       setOtherServers({
         data: [],
@@ -115,14 +133,14 @@ const ManageServerModal = (props) => {
       })
     );
     dispatch(getServersCustomer(props.record.Id, newKeyword));
-    dispatch(getOtherServers(option, props.record.Id, 1, newKeyword));
+    if (props.record.IsActive) { dispatch(getOtherServers(option, props.record.Id, 1, newKeyword)); }
     newKeyword ? setKeyword(newKeyword) : setKeyword("");
     setPage(2);
   }
 
   const columnsOwned = [
     {
-      title: "Owned Servers",
+      title: servers.length > 0 ? <Text> Owned Servers ({servers.length})</Text> : <Text>Owned Servers (0)</Text>,
       dataIndex: "Id",
       key: "Id",
       align: "center",
@@ -133,11 +151,12 @@ const ManageServerModal = (props) => {
 
             <Checkbox
               key={keyUpdate}
+              disabled={!record.IsActive || !customerStatus}
               defaultChecked={true}
               onChange={(e) => handleUncheck(record.Id, e.target.checked)}
             />
           }
-          title={record.Name}
+          title={record.IsActive ? <Text > {record.Name} </Text> : <Text style={{ color: "darkgrey" }}>{record.Name} (Inactive)</Text>}
           description={<Text> {record.IpAddress}</Text>}
         />
       ),
@@ -165,7 +184,7 @@ const ManageServerModal = (props) => {
         forceRender={true}
         onOk={handleOk}
         onCancel={handleCancel}
-        width={600}
+        width={800}
       >
         <Row>
           <Col span={10} offset={7}>
@@ -190,29 +209,39 @@ const ManageServerModal = (props) => {
               marginLeft: "20px",
             }}
           >
-            <Radio value="all" style={{ fontSize: "small" }}>
+            <Radio value="all" style={{ fontSize: "small" }} disabled={!customerStatus}>
               All
             </Radio>
-            <Radio value="available"> Available </Radio>
+            <Radio value="available" disabled={!customerStatus}> Available </Radio>
           </Radio.Group>
         </Row>
 
         <Row style={{ border: "1px solid", marginTop: "15px" }}>
-          <Col span={12} style={{ padding: "10px" }}>
-            <Table
+          <Col span={12} style={{ padding: "10px", textAlignLast: "center" }}>
+            {!(servers.length > 0) && <>
+              <div style={{ height: "54px" }}>
+                <Text style={{ color: "rgba(0, 0 ,0 ,0.85)", fontWeight: "600" }}>
+                  {" "}
+                Owned Servers ({servers.total})
+              </Text>
+              </div><Text style={{ color: "green" }}> Has not yet been assigned any server! </Text> </>
+            }
+            {servers.length > 0 && <Table
               columns={columnsOwned}
               pagination={false}
               dataSource={servers}
               scroll={{ y: 360 }}
-            />
+            />}
           </Col>
-          <Col span={12} style={{ padding: "10px" }}>
-            <div style={{ height: "54px", textAlignLast: "center" }}>
+          <Col span={12} style={{ padding: "10px", textAlignLast: "center" }}>
+            <div style={{ height: "54px" }}>
               <Text style={{ color: "rgba(0, 0 ,0 ,0.85)", fontWeight: "600" }}>
                 {" "}
-                Other Servers{" "}
+                Other Servers ({otherServers.total})
               </Text>
+
             </div>
+            {!customerStatus && <Text style={{ color: "red" }}> Please active customer to assign new servers! </Text>}
             <div className="demo-infinite-container">
               <InfiniteScroll
                 initialLoad={false}
@@ -221,50 +250,52 @@ const ManageServerModal = (props) => {
                 hasMore={otherServers.hasMore}
                 useWindow={false}
               >
-                <List
-                  dataSource={otherServers.data}
-                  renderItem={(record) => (
-                    <List.Item key={record.Id}>
-                      <List.Item.Meta
-                        avatar={
+                {!customerStatus && <></>}
+                {customerStatus &&
+                  <List
+                    dataSource={otherServers.data}
+                    renderItem={(record) => (
+                      <List.Item key={record.Id}>
+                        <List.Item.Meta
+                          avatar={
 
-                          <Checkbox
-                            disabled={!record.FirstNameCustomer}
-                            key={keyUpdate}
-                            defaultChecked={false}
-                            onChange={(e) =>
-                              handleCheck(record.Id, e.target.checked)
-                            }
-                            disabled={record.FirstNameCustomer}
-                          />
+                            <Checkbox
+                              disabled={!record.FirstNameCustomer}
+                              key={keyUpdate}
+                              defaultChecked={false}
+                              onChange={(e) =>
+                                handleCheck(record.Id, e.target.checked)
+                              }
+                              disabled={record.FirstNameCustomer}
+                            />
 
-                        }
-                        title={record.Name}
-                        description={
-                          <>
-                            <Text style={{ align: "left" }}>
-                              {record.IpAddress}
-                            </Text>{" "}
-                            {record.FirstNameCustomer ? (
-                              <Text style={{ color: "blue", align: "right" }}>
-                                {record.FirstNameCustomer}{" "}
-                                {record.LastNameCustomer}{" "}
-                              </Text>
-                            ) : (
-                                ""
-                              )}
-                          </>
-                        }
-                      />
-                    </List.Item>
-                  )}
-                >
-                  {otherServers.loading && otherServers.hasMore && (
-                    <div className="demo-loading-container">
-                      <Spin />
-                    </div>
-                  )}
-                </List>
+                          }
+                          title={record.Name}
+                          description={
+                            <>
+                              <Text style={{ align: "left" }}>
+                                {record.IpAddress}
+                              </Text>{" "}
+                              {record.FirstNameCustomer ? (
+                                <Text style={{ color: "blue", align: "right" }}>
+                                  {record.FirstNameCustomer}{" "}
+                                  {record.LastNameCustomer}{" "}
+                                </Text>
+                              ) : (
+                                  ""
+                                )}
+                            </>
+                          }
+                        />
+                      </List.Item>
+                    )}
+                  >
+                    {otherServers.loading && otherServers.hasMore && (
+                      <div className="demo-loading-container">
+                        <Spin />
+                      </div>
+                    )}
+                  </List>}
               </InfiniteScroll>
             </div>
           </Col>

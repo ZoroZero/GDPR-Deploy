@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Pagination, Input, Button, Modal, Tag, Menu, Dropdown, message, Row, Col } from "antd";
+import { Table, Pagination, Input, Button, Modal, Tag, Menu, Dropdown, message, Row, Col, Space } from "antd";
 // import { UploadOutlined } from '@ant-design/icons';
 import "./index.scss";
 import { getServersApi, deleteServerApi, updateMultipleStatusApi } from "api/server";
@@ -10,7 +10,7 @@ import { SERVER_CONSTANTS } from 'constants/ManageServer/server';
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import ExportServer from 'components/ManageServer/ExportServer';
 import ImportServer from "components/ManageServer/ImportServer";
-import { DownOutlined } from '@ant-design/icons'
+import { DownOutlined, UploadOutlined } from '@ant-design/icons'
 
 MainPage.propTypes = {};
 
@@ -65,25 +65,25 @@ function MainPage() {
         {
             title: "Ip address",
             dataIndex: "IpAddress",
-            width: "10%",
+            width: "12%",
             sorter: true,
         },
         {
             title: "Start Date",
             dataIndex: "StartDate",
-            width: "10%",
+            width: "12%",
             sorter: true,
         },
         {
             title: "End Date",
             dataIndex: "EndDate",
             sorter: true,
-            width: "10%",
+            width: "12%",
         },
         {
             title: "Status",
             dataIndex: "IsActive",
-            width: "10%",
+            width: "12%",
             render: (val) => val? <Tag color="green">Active</Tag> : <Tag color="red">InActive</Tag>,
             filters: [
                 { text: 'Active', value: '1' },
@@ -93,24 +93,28 @@ function MainPage() {
         {
             title: "Owner",
             dataIndex: "OwnerName",
-            width: "10%",
+            width: "12%",
             sorter: true,
         },
         {
-            title: 'Edit',
+            title: 'Action',
             key: 'operation',
             width: "10%",
-            render: (record) => <Button type="primary" 
-                    onClick={() => {setEditRequest({
-                        type: SERVER_CONSTANTS.UPDATE_SERVER_TYPE, 
-                        data: record})}}>Edit</Button>,
+            render: (record) => 
+                    <Space size="middle" style={{ display: "flex" }}>
+                        <Button type="primary" 
+                        onClick={() => {setEditRequest({
+                            type: SERVER_CONSTANTS.UPDATE_SERVER_TYPE, 
+                            data: record})}}>Edit</Button> 
+                        <Button danger type="primary" onClick={() => {showDeleteModal(record)} }>Delete</Button>
+                    </Space>
           },
-          {
-            title: 'Delete',
-            key: 'operation',
-            width: "10%",
-            render: (record) => <Button danger type="primary" onClick={() => {showDeleteModal(record)} }>Delete</Button>,
-          }
+        //   {
+        //     title: 'Delete',
+        //     key: 'operation',
+        //     width: "10%",
+        //     render: (record) => ,
+        //   }
     ];
 
     // Handle change in page number
@@ -121,6 +125,7 @@ function MainPage() {
             newPageNum =  Math.ceil(pagination.pageSize*pagination.page/pageSize)
         setPagination({page: newPageNum, pageSize: pageSize})
         console.log("Fetch after pagination change");
+        setSelectingServerIdList([])
     }
 
     // Fetch data
@@ -154,8 +159,7 @@ function MainPage() {
     }
 
     // Handle table change: sort, filter
-    const handleTableChange = (pagination, filters, sorter) => {
-        // console.log('params', sorter);
+    const handleTableChange = (pagi, filters, sorter) => {
         console.log('Filters; ',filters);
         var newSortColumn = sorter.column? sorter.column.dataIndex: 'Name'
         var newSortOrder = sorter.order ==='descend'?'descend':'ascend'
@@ -163,8 +167,12 @@ function MainPage() {
         setSorter({sortColumn: newSortColumn, sortOrder: newSortOrder })
         // Filter
         var filterKeys = filters.IsActive? filters.IsActive.join(): SERVER_CONSTANTS.DEFAULT_FILTER_KEYS
+        if(filter.filterKeys!==filterKeys){
+            setPagination({page: 1, pageSize: pagination.pageSize})
+        }
         setFilter({filterColumn: filter.filterColumn, filterKeys: filterKeys})
         // console.log("Fetch after sort change");
+        setSelectingServerIdList([])
     }
 
     //Handle search 
@@ -296,15 +304,8 @@ function MainPage() {
             <AddEditServerModal request={editRequest} modalVisible={modalVisible} 
                                 setModalVisible={setModalVisible} setEditRequest={setEditRequest}>
             </AddEditServerModal>
-
-            {/* <Button disabled={checkingRows.length===0} type="primary" style={{margin: '0px 4px 0px 8px'}} onClick={()=>{handleSetStatus(true)}}>
-                Activate all
-            </Button>
-            <Button disabled={checkingRows.length===0} type="primary" style={{ margin: '0px 4px 0px 4px'}}  onClick={()=>{handleSetStatus(false)}}>
-                Deactivate all
-            </Button> */}
-
             </div>
+
             <Dropdown overlay={actionMenu} disabled={selectingServerIdList.length===0} >
                         <Button style={{margin: '10px 0px 0px 0px'}}>
                             Action <DownOutlined />
@@ -315,7 +316,12 @@ function MainPage() {
                 placeholder="Input search text"
                 enterButton="Search"
                 size="large"
-                onSearch={value => handleSearchServer(value.trim())}/>
+                onSearch={value => handleSearchServer(value.trim())}
+                style = {{
+                    float: 'right',
+                    marginBottom: '10px',
+                    width: '400px',
+                }}/>
 
             <Table
                 columns={columns}
@@ -328,7 +334,8 @@ function MainPage() {
             <Row>
                 <Col span={12} offset={6}>
                     <Pagination
-                        showQuickJumper 
+                        showQuickJumper
+                        showSizeChanger 
                         total={total}
                         current ={pagination.page}
                         pageSize={pagination.pageSize}

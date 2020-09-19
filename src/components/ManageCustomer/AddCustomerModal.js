@@ -18,6 +18,7 @@ import {
   setRefresh,
 } from "features/ManageCustomer/slice";
 import { useSelector, useDispatch } from "react-redux";
+import moment from 'moment';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -31,12 +32,15 @@ function AddCustomerModal(props) {
   const shouldGetData = props.modalVisible !== false;
   const [updateKey, setUpdateKey] = useState(1);
   const [updateKey2, setUpdateKey2] = useState(false);
+  const [endDate, setEndDate] = useState()
+  const [beginDate, setBeginDate] = useState()
 
   useEffect(() => {
     if (shouldGetData) {
+      setBeginDate(null);
+      setEndDate(null);
       setUpdateKey2(!updateKey2)
       setUpdateKey(updateKey + 1)
-      console.log("USE EFFECT ")
       form.setFieldsValue({
         FirstName: null,
         LastName: null,
@@ -46,6 +50,7 @@ function AddCustomerModal(props) {
         Description: "",
         IsActive: true,
       });
+
       dispatch(getContactPointList());
     }
   }, [shouldGetData]);
@@ -57,11 +62,11 @@ function AddCustomerModal(props) {
 
   const handleCancel = () => {
     props.setModalVisible(false);
+
   };
 
   async function onFinish(values) {
     props.setModalVisible(false);
-    console.log(values);
     try {
       await createCustomerApi(values);
       await dispatch(setPagination({ ...pagination, current: 1 }));
@@ -142,7 +147,7 @@ function AddCustomerModal(props) {
           >
             {contactPoints.length > 0 &&
               contactPoints.map((item) => (
-                <Option key={item.Id}> {item.Email} </Option>
+                <Option disabled={!item.IsActive} key={item.Id}> {item.Email} </Option>
               ))}
           </Select>
         </Form.Item>
@@ -157,7 +162,12 @@ function AddCustomerModal(props) {
               },
             ]}
           ><DatePicker
-              showTime style={{ width: "100%" }} />
+              key={updateKey}
+              showTime
+              onChange={(value) => setBeginDate(value)}
+              disabledDate={d => !d || (endDate && !d.isBefore(moment(endDate).format('YYYY-MM-DD HH:mm:ss')))}
+
+              style={{ width: "100%" }} />
           </Form.Item>
           <Form.Item
             label="Contract end date"
@@ -174,7 +184,13 @@ function AddCustomerModal(props) {
             ]}
           >
             <DatePicker
-              showTime style={{ width: "100%" }} />
+              key={updateKey}
+              showTime
+              onChange={(value) => setEndDate(value)}
+              disabledDate={
+                d => { return !d || (beginDate && !d.isAfter(moment(beginDate).format('YYYY-MM-DD HH:mm:ss'))) }
+              }
+              style={{ width: "100%" }} />
           </Form.Item>
         </Form.Item>
         <Form.Item
@@ -190,6 +206,7 @@ function AddCustomerModal(props) {
         </Form.Item>
         <Form.Item name="IsActive">
           <Switch
+            key={updateKey}
             checkedChildren="Active"
             unCheckedChildren="InActive"
             defaultChecked="Active"

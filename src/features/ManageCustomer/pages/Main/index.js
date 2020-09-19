@@ -24,6 +24,7 @@ import {
   setPagination,
   setFilter,
   setSort,
+  getOtherServers,
   setSearch,
   setRefresh,
   getCustomerList,
@@ -72,7 +73,6 @@ function MainPage() {
   const rowSelection = {
     selectedRowKeys,
     onChange: (newSelectedRowKeys) => {
-      console.log("selectedRowKeys changed: ", newSelectedRowKeys);
       setSelectedRowKeys(newSelectedRowKeys);
     },
   };
@@ -89,7 +89,7 @@ function MainPage() {
 
 
   useEffect(() => {
-    console.log("USE EFFECT INDEX", pagination);
+
     fetch(
       pagination.current > 0 ? pagination.current : 1,
       pagination.pageSize,
@@ -101,7 +101,6 @@ function MainPage() {
   }, [refresh, sortColumn, sortOrder, filterValue]);
 
   async function fetch(current, pageSize, sortColumn, sortOrder, keyword, filterValue) {
-    console.log("FETCH DATA INDEX", filterValue);
     dispatch(setLoading(true));
     await dispatch(
       getCustomerList({
@@ -132,7 +131,6 @@ function MainPage() {
   }
 
   async function handleMenuClick(value) {
-    console.log("handle menu click", value);
     if (value.key == 'delete') {
       await deleteCustomersApi({ deletedCustomers: selectedRowKeys });
       dispatch(setRefresh(!refresh));
@@ -150,9 +148,7 @@ function MainPage() {
     }
   };
 
-  async function handleFilterChange(newFilterValue) {
-    dispatch(setFilter(newFilterValue));
-  }
+
 
   async function handleSearchChange(newKeyword) {
     newKeyword = String(newKeyword).trim();
@@ -166,10 +162,11 @@ function MainPage() {
   }
 
   async function handleSortChange(pag, filters, sorter) {
-    console.log("filter", filters.IsActive)
-    if (filters) {
+    if (filters.IsActive != filterValue) {
+
       await dispatch(setPagination({ ...pagination, current: 1 }));
       dispatch(setFilter(filters.IsActive))
+      setSelectedRowKeys([])
     }
     if (sorter) {
       var newSortColumn = sorter.column ? sorter.column.dataIndex : "CreatedDate";
@@ -179,7 +176,6 @@ function MainPage() {
   }
 
   function handlePageChange(pageNumber, pageSize) {
-    console.log("handle page change", pageNumber, pageSize);
     fetch(pageNumber, pageSize, sortColumn, sortOrder, keyword, filterValue);
   }
 
@@ -280,11 +276,13 @@ function MainPage() {
       render: (text, record) => (
         <Button
           onClick={() => {
+            // if (record.IsActive) dispatch(getOtherServers({ status: 'available' }, record.Id, 1, ''))
             setModalManageVisible(true);
             setDataManage({
               Id: record.Id,
               FirstName: record.FirstName,
               LastName: record.LastName,
+              IsActive: record.IsActive,
             });
           }}
         >
@@ -376,6 +374,7 @@ function MainPage() {
             pageSizeOptions={pageOptions}
             showTotal={(total) => showTotal(total)}
             showSizeChanger={true}
+            disabled={!pagination.total > 0}
             showQuickJumper
             defaultCurrent={1}
             current={pagination.current}

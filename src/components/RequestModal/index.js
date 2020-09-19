@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Modal } from "antd";
+import { Button, Modal, Row } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 import { setModal } from "features/ManageRequest/slice";
 import RequestForm from "components/CreateRequestForm";
@@ -21,6 +21,9 @@ const RequestModal = (props) => {
         footer={null}
         onCancel={() => onSetModal(false)}
       >
+        <Row justify="center">
+          <h2>Create new request</h2>
+        </Row>
         <RequestForm />
       </Modal>
     </>

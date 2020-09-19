@@ -25,11 +25,18 @@ function EditCustomerModal(props) {
   const [form] = Form.useForm();
   const contactPointId = props.record.ContactPointId;
   const shouldGetData = props.modalVisible !== false;
+  const [beginDate, setBeginDate] = useState();
+  const [endDate, setEndDate] = useState();
 
   useEffect(() => {
     if (shouldGetData) {
       {
-        console.log("USE EFFECT", props);
+        setEndDate(props.record.ContractEndDate
+          ? moment(props.record.ContractEndDate, "DD/MM/YY HH:mm:ss")
+          : null);
+        setBeginDate(props.record.ContractBeginDate
+          ? moment(props.record.ContractBeginDate, "DD/MM/YYYY HH:mm:ss")
+          : null);
         form.setFieldsValue({
           ContractBeginDate: props.record.ContractBeginDate
             ? moment(props.record.ContractBeginDate, "DD/MM/YYYY HH:mm:ss")
@@ -77,6 +84,8 @@ function EditCustomerModal(props) {
   const handleCancel = () => {
     props.setModalVisible(false);
   };
+
+
 
   return (
     <div>
@@ -130,7 +139,7 @@ function EditCustomerModal(props) {
             >
               {contactPoints.length > 0 &&
                 contactPoints.map((item) => (
-                  <Option disabled={item.IsActive} key={item.Id}> {item.Email} </Option>
+                  <Option disabled={!item.IsActive} key={item.Id}> {item.Email} </Option>
                 ))}
             </Select>
           </Form.Item>
@@ -145,7 +154,10 @@ function EditCustomerModal(props) {
                 },
               ]}
             >
-              <DatePicker showTime style={{ width: "100%" }} />
+              <DatePicker showTime
+                onChange={(value) => setBeginDate(value)}
+                disabledDate={d => !d || (endDate && !d.isBefore(moment(endDate).format('YYYY-MM-DD HH:mm:ss')))}
+                style={{ width: "100%" }} />
             </Form.Item>
             <Form.Item
               label="Contract end date"
@@ -161,7 +173,13 @@ function EditCustomerModal(props) {
                 },
               ]}
             >
-              <DatePicker showTime style={{ width: "100%" }} />
+              <DatePicker showTime
+                style={{ width: "100%" }}
+                onChange={(value) => setEndDate(value)}
+                disabledDate={
+                  d => { return !d || (beginDate && !d.isAfter(moment(beginDate).format('YYYY-MM-DD HH:mm:ss'))) }
+                }
+              />
             </Form.Item>
           </Form.Item>
           <Form.Item

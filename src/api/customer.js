@@ -154,7 +154,6 @@ export const updateCustomerApi = (newData, id) => {
 
 export const getServersCustomerApi = (id, keyword) => {
   return new Promise((resolve, reject) => {
-    console.log(id);
     const token = checkToken();
     return axios
       .get("/customers/servers", {
@@ -224,40 +223,38 @@ export const addServersForCustomerApi = (addedServers, customerId) => {
 };
 
 export const exportCustomerListApi = (data) => {
-    return new Promise((resolve, reject) => {
-        console.log("Data for export", data);
-        return axios
-          .get(`/customers/export`, {
-              params: {
-                CustomerName: data.customerName,
-                ContactPoint: data.contactPoint,
-                ContractBeginDate: data.startDate,
-                ContractEndDate: data.endDate,
-                IsActive: data.status
-              }
-          })
-          .then((res) => {
-            resolve(res.data);
-          })
-          .catch((error) => {
-            reject(error);
-          });
+  return new Promise((resolve, reject) => {
+    return axios
+      .get(`/customers/export`, {
+        params: {
+          CustomerName: data.customerName,
+          ContactPoint: data.contactPoint,
+          ContractBeginDate: data.startDate,
+          ContractEndDate: data.endDate,
+          IsActive: data.status
+        }
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
       });
+  });
 }
 
-export const importCustomerListApi = ( data ) => {
-    console.log('Data for import', data);
-    
-    return new Promise((resolve, reject) => {
-        return axios
-        .post(`/customers/import`, {
-            CustomerList: data.data
-        })
-        .then((res) => {
-            resolve(res.data);
-        })
-        .catch((error) => {
-            reject(error);
-        });
-    }); 
+export const importCustomerListApi = (data) => {
+
+  return new Promise((resolve, reject) => {
+    return axios
+      .post(`/customers/import`, {
+        CustomerList: data.data
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
 }

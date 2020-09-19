@@ -255,7 +255,11 @@ function MainPage() {
     if (pageSize !== PageSize && PageNo > Math.ceil(total / pageSize)) {
       console.log("Total1", total);
       setPageSize(pageSize);
-      setPageNo(Math.ceil(total / pageSize));
+      if (Math.ceil(total / pageSize) !== 0) {
+        setPageNo(Math.ceil(total / pageSize));
+      } else {
+        setPageNo(1);
+      }
     } else {
       console.log("Total2", total);
       setPageSize(pageSize);

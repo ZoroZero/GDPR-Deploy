@@ -100,7 +100,12 @@ const ExportRequestForm = (props) => {
         Export requests by server
       </Button>
       {showForm && (
-        <Form form={form} onFinish={onSubmit} style={{ marginTop: "20px" }}>
+        <Form
+          form={form}
+          onFinish={onSubmit}
+          style={{ marginTop: "20px" }}
+          layout="vertical"
+        >
           <Row gutter={[16, 16]}>
             <Col span={6}>
               <Form.Item
@@ -113,7 +118,7 @@ const ExportRequestForm = (props) => {
                   },
                 ]}
               >
-                <DatePicker />
+                <DatePicker style={{ width: "100%" }} />
               </Form.Item>
             </Col>
             <Col span={6}>
@@ -127,19 +132,29 @@ const ExportRequestForm = (props) => {
                   },
                 ]}
               >
-                <DatePicker />
+                <DatePicker style={{ width: "100%" }} />
               </Form.Item>
             </Col>
             <Col span={6}>
               <Form.Item label="Requester" name="createdBy">
-                <Select showSearch onSearch={onSearchRequester}>
+                <Select
+                  showSearch
+                  onSearch={onSearchRequester}
+                  mode="multiple"
+                  allowClear
+                >
                   {userOptionsSelection}
                 </Select>
               </Form.Item>
             </Col>
             <Col span={6}>
               <Form.Item label="Approver" name="approvedBy">
-                <Select showSearch onSearch={onSearchApprover}>
+                <Select
+                  showSearch
+                  onSearch={onSearchApprover}
+                  mode="multiple"
+                  allowClear
+                >
                   {approverOptionsSelection}
                 </Select>
               </Form.Item>

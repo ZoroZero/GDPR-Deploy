@@ -39,10 +39,10 @@ function MainPage() {
   };
 
   return (
-    <div>
+    <>
       <UserSetting onSubmitModal={refetch} />
       <UserSettingPassword onSubmitModal={refetch} />
-    </div>
+    </>
   );
 }
 

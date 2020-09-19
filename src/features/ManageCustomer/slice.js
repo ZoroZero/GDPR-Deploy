@@ -12,7 +12,7 @@ export const initialState = {
   data: [],
   deletedData: [],
   servers: [],
-  otherServers: { data: [], loading: false, hasMore: true },
+  otherServers: { data: [], loading: false, hasMore: true, total: 0 },
   pagination: {
     total: 0,
     current: 1,
@@ -36,12 +36,10 @@ const slice = createSlice({
   reducers: {
 
     setData: (state, action) => {
-      console.log("SET DATA", action.payload);
       state.data = action.payload;
     },
 
     setPagination: (state, action) => {
-      console.log(action.payload);
       state.pagination = action.payload;
     },
 
@@ -151,15 +149,17 @@ export const getServersCustomer = (id, keyword) => (dispatch) => {
 };
 
 export const getOtherServers = (option, id, page, keyword) => (dispatch, getState) => {
+  // dispatch(setLoading(true));
   return new Promise((resolve, reject) => {
     return getOtherServersApi(option, id, page, keyword)
       .then((res) => {
-
+        // dispatch(setLoading(false));
         dispatch(
           setOtherServers({
             data: getState().customerManagement.otherServers.data.concat(res),
             hasMore: res.length > 0,
             loading: false,
+            total: res.length > 0 ? res[0].Total : 0
           })
         );
 

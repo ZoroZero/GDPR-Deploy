@@ -26,6 +26,8 @@ const RequestForm = (props) => {
     (state) => state.requestManagement
   );
   const [keyword, setkeyword] = useState("");
+  const [endDate, setEndDate] = useState();
+  const [beginDate, setBeginDate] = useState();
 
   useEffect(() => {
     form.resetFields();
@@ -80,6 +82,7 @@ const RequestForm = (props) => {
         name="request-form"
         style={{ paddingTop: "30px" }}
         onFinish={onSubmitForm}
+        layout="vertical"
       >
         <Row gutter={[16, 16]}>
           <Col span={24}>
@@ -93,29 +96,36 @@ const RequestForm = (props) => {
                 },
               ]}
             >
-              <Input disabled={disable} />
+              <Input disabled={disable} style={{ fontWeight: "bold" }} />
             </Form.Item>
           </Col>
         </Row>
         <Row gutter={[16, 16]}>
-          <Col span={18}>
+          <Col span={12}>
             <Form.Item
               label="From Date"
               name="startDate"
               rules={[
                 {
                   required: true,
-                  message: "Please input end date!",
+                  message: "Please input start date!",
                 },
               ]}
             >
-              <DatePicker showTime disabled={disable} />
+              <DatePicker
+                showTime
+                disabled={disable}
+                onChange={(value) => setBeginDate(value)}
+                disabledDate={(d) =>
+                  !d ||
+                  (endDate &&
+                    !d.isBefore(moment(endDate).format("YYYY-MM-DD HH:mm:ss")))
+                }
+                style={{ width: "100%", fontWeight: "bold" }}
+              />
             </Form.Item>
           </Col>
-        </Row>
-
-        <Row gutter={[16, 16]}>
-          <Col span={18}>
+          <Col span={12}>
             <Form.Item
               label="To Date"
               name="endDate"
@@ -126,10 +136,28 @@ const RequestForm = (props) => {
                 },
               ]}
             >
-              <DatePicker showTime disabled={disable} />
+              <DatePicker
+                showTime
+                disabled={disable}
+                onChange={(value) => setEndDate(value)}
+                disabledDate={(d) => {
+                  return (
+                    !d ||
+                    (beginDate &&
+                      !d.isAfter(
+                        moment(beginDate).format("YYYY-MM-DD HH:mm:ss")
+                      ))
+                  );
+                }}
+                style={{ width: "100%", fontWeight: "bold" }}
+              />
             </Form.Item>
           </Col>
         </Row>
+
+        {/* <Row gutter={[16, 16]}>
+          
+        </Row> */}
         <Row gutter={[16, 16]}>
           <Col span={24}>
             <Form.Item
@@ -142,7 +170,12 @@ const RequestForm = (props) => {
                 },
               ]}
             >
-              <Select showSearch onSearch={onSearchServer} disabled={disable}>
+              <Select
+                showSearch
+                onSearch={onSearchServer}
+                disabled={disable}
+                style={{ fontWeight: "bold" }}
+              >
                 {options}
               </Select>
             </Form.Item>
@@ -150,10 +183,20 @@ const RequestForm = (props) => {
         </Row>
         <Row gutter={[16, 16]}>
           <Col span={24}>
-            <Form.Item name="description" label="Description">
+            <Form.Item
+              name="description"
+              label="Description"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input some description!",
+                },
+              ]}
+            >
               <Input.TextArea
                 autoSize={{ minRows: 3, maxRows: 5 }}
                 disabled={disable}
+                style={{ fontWeight: "bold" }}
               />
             </Form.Item>
           </Col>
