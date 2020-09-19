@@ -11,7 +11,7 @@ import {
   Tag,
   message,
   Menu,
-  Dropdown,
+  Dropdown
 } from "antd";
 import {
   ExclamationCircleOutlined,
@@ -309,6 +309,8 @@ function MainPage() {
     <div>
       <Row>
         <Col span={8}>
+          <Space>
+        <CreateUserModal onSubmitModal={refetch} />
           <Dropdown overlay={menu} disabled={!hasSelected}>
             <Button>
               Multi actions <DownOutlined />
@@ -317,9 +319,10 @@ function MainPage() {
           <span style={{ marginLeft: 8 }}>
             {hasSelected ? `Selected ${selectedRowKeys.length} items` : ""}
           </span>
+          </Space>
         </Col>
         <Col span={8}>
-          <CreateUserModal onSubmitModal={refetch} />
+          
         </Col>
         <Col span={8}>
           <Search
