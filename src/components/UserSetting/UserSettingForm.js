@@ -85,9 +85,9 @@ const UserSetting = (pros) => {
         <Row type="flex" justify="center" align="middle">
           <Col span={8}></Col>
           <Col span={8}>
-            <Row>
+            {/* <Row>
               <Avatar size={150} style={{ padding: 0 }} src={imageUrl} />
-            </Row>
+            </Row> */}
             <Row>
               <UploadAvatarDynamic onsub={pros.onSubmitModal} />
             </Row>
