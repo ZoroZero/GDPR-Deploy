@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Table, Pagination, Input, Button, Modal, Tag, Menu, Dropdown, message, Row, Col, Space } from "antd";
 // import { UploadOutlined } from '@ant-design/icons';
 import "./index.scss";
-import { getServersApi, deleteServerApi, updateMultipleStatusApi } from "api/server";
+import { getServersApi, deleteServerApi, updateMultipleStatusApi, recoverServerApi } from "api/server";
 import { useDispatch, useSelector } from "react-redux";
 import { setRefresh } from "features/ManageServer/slice";
 import AddEditServerModal from "components/ManageServer/AddEditServerModal"; 
@@ -82,12 +82,16 @@ function MainPage() {
         },
         {
             title: "Status",
-            dataIndex: "IsActive",
             width: "12%",
-            render: (val) => val? <Tag color="green">Active</Tag> : <Tag color="red">InActive</Tag>,
+            key: 'Status',
+            render: (record) => {
+                if(record.IsDeleted)
+                    return <Tag color="gray">Deleted</Tag>
+                return (record.IsActive?<Tag color="green">Active</Tag> : <Tag color="red">InActive</Tag>)},
             filters: [
                 { text: 'Active', value: '1' },
                 { text: 'InActive', value: '0' },
+                { text: 'Deleted', value: 'deleted' },
               ],
         },
         {
@@ -106,7 +110,8 @@ function MainPage() {
                         onClick={() => {setEditRequest({
                             type: SERVER_CONSTANTS.UPDATE_SERVER_TYPE, 
                             data: record})}}>Edit</Button> 
-                        <Button danger type="primary" onClick={() => {showDeleteModal(record)} }>Delete</Button>
+                        {record.IsDeleted?<Button danger type="primary" onClick={() => {showRecoverModal(record)} }>Recover</Button>
+                        :<Button danger type="primary" onClick={() => {showDeleteModal(record)} }>Delete</Button>}
                     </Space>
           },
         //   {
@@ -155,7 +160,6 @@ function MainPage() {
         console.log(data)
         setTotal(total)
         setData(data);
-        // dispatch(setData({data: data}))
     }
 
     // Handle table change: sort, filter
@@ -166,11 +170,30 @@ function MainPage() {
         // dispatch(setSort({sortColumn: newSortColumn, sortOrder: newSortOrder }));
         setSorter({sortColumn: newSortColumn, sortOrder: newSortOrder })
         // Filter
-        var filterKeys = filters.IsActive? filters.IsActive.join(): SERVER_CONSTANTS.DEFAULT_FILTER_KEYS
+        let filterColumn = SERVER_CONSTANTS.DEFAULT_FILTER_COLUMN
+        let filterKeys = SERVER_CONSTANTS.DEFAULT_FILTER_KEYS
+        if(filters.Status){
+            if(filters.Status.includes('deleted')){
+                if(filters.Status.length === 1){
+                    filterColumn = 'Deleted'
+                }
+                else{
+                    filterColumn = 'Status+Deleted'
+                    filterKeys = filters.Status.filter(x => x !== 'deleted').join(',')
+                }
+            }   
+            else{
+                filterColumn = 'Status'
+                filterKeys = filters.Status.join(',')
+            }
+        }
+        console.log("New filter column", filterColumn);
+        console.log("New filter keys", filterKeys)
+        // var filterKeys = filters.Status? filters.Status.join(): SERVER_CONSTANTS.DEFAULT_FILTER_KEYS
         if(filter.filterKeys!==filterKeys){
             setPagination({page: 1, pageSize: pagination.pageSize})
         }
-        setFilter({filterColumn: filter.filterColumn, filterKeys: filterKeys})
+        setFilter({filterColumn: filterColumn, filterKeys: filterKeys})
         // console.log("Fetch after sort change");
         setSelectingServerIdList([])
     }
@@ -196,7 +219,7 @@ function MainPage() {
         confirm({
           title: "Do you want to delete server " + record.Name,
           icon: <ExclamationCircleOutlined />,
-          content: "Warning: The delete user cannot be recover",
+          content: "Warning: The deletion will affect customers",
           onOk() {
             handleDeleteServer(record.Id)    
           },
@@ -209,6 +232,28 @@ function MainPage() {
         return deleteServerApi({id: id})
         .then((res) => {
             console.log("Delete response", res)
+            dispatch(setRefresh(!refresh));
+        })
+        .catch(() => console.log("Oops errors!"));    
+    }
+
+    // Show delete modal
+    const showRecoverModal = (record) => {
+        confirm({
+          title: "Do you want to recover server " + record.Name,
+          icon: <ExclamationCircleOutlined />,
+          content: "Warning: You need to edit start date and end date of server",
+          onOk() {
+            handleRecoverServer(record.Id)    
+          },
+          onCancel() {},
+        });
+    }
+
+    const handleRecoverServer = (id) => {
+        return recoverServerApi({id: id})
+        .then((res) => {
+            console.log("Recover response", res)
             dispatch(setRefresh(!refresh));
         })
         .catch(() => console.log("Oops errors!"));    
@@ -232,12 +277,6 @@ function MainPage() {
             // setCheckingRows(selectedRows);
             setSelectingServerIdList(selectedRowKeys)
         },
-        onSelect: (record, selected, selectedRows) => {
-            // console.log(record, selected, selectedRows);
-        },
-        onSelectAll: (selected, selectedRows, changeRows) => {
-            // console.log(selected, selectedRows, changeRows);
-        },
     };
 
     // Show total record
@@ -252,19 +291,19 @@ function MainPage() {
             status: status
         })
         .then(res => {
-            console.log("Multiple update", res);
+            // console.log("Multiple update", res);
             message.success('Successfully change status of servers')
             dispatch(setRefresh(!refresh));
         })
         .catch(err =>{
-            console.log("Activate all err", err);
+            // console.log("Activate all err", err);
             message.error('Something went wrong')
         })
     }
 
     // Handle action menu onClick
     const handleMenuClick = (e) => {
-        console.log(e)
+        // console.log(e)
         handleSetStatus(e.key ==='activate')
     }
 
@@ -277,9 +316,6 @@ function MainPage() {
             <Menu.Item key="deactivate">
                 Deactivate all
             </Menu.Item>
-            {/* <Menu.Item key="delete">
-                Delete all
-            </Menu.Item> */}
         </Menu>
     );
 

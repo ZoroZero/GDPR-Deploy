@@ -17,6 +17,7 @@ export const getAllServerApi = () => {
 };
 
 export const getServersApi = (data) => {
+  console.log("Send params", data);
   return new Promise((resolve, reject) => {
     return axios
       .get(`/api/servers`, {
@@ -151,4 +152,21 @@ export const importServerListApi = (data) => {
         reject(error);
       });
   }); 
+}
+
+
+export const recoverServerApi = (data) => {
+  return new Promise((resolve, reject) => {
+    console.log("Recover data", data)
+    return axios
+      .put(`/api/servers/recover`, {
+          id: data.id
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
 }

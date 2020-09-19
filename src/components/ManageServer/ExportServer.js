@@ -51,13 +51,10 @@ function ExportServer(props){
                 UpdatedDate: null,
                 DeletedBy: null,
                 DeletedDate: null,
-                IsDeleted: null,
-                OwnerId: null,
-                OwnerName:null,
-                Total: null,
+                IsDeleted: null
             }]
         }
-        const ws = XLSX.utils.json_to_sheet(csvData);
+        const ws = XLSX.utils.json_to_sheet(csvData.map(({OwnerId, OwnerName, ...data}) => data));
         const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
         const excelBuffer = XLSX.write(wb, { bookType: type, type: 'array' });
         const data = new Blob([excelBuffer], {type: fileType});

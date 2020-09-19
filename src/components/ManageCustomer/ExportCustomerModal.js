@@ -54,8 +54,7 @@ function ExportCustomerModal(props) {
                     UpdatedDate: null,
                     DeletedBy: null,
                     DeletedDate: null,
-                    IsDeleted: null,
-                    Total: null,
+                    IsDeleted: null
                 }]
             }
             const ws = XLSX.utils.json_to_sheet(csvData);
