@@ -59,7 +59,7 @@ function MainPage() {
             .catch((error) => {
               message.error(error.data.message);
             });
-          setTimeout(Math.random() > 0.5 ? resolve : reject, 2000);
+          setTimeout(Math.random() > 0.5 ? resolve : reject, 200);
         })
           .catch(() => console.log("Oops errors!"))
           .then(() => {
