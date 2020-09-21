@@ -235,6 +235,7 @@ export const onUpdateRequest = (value, requestId) => (dispatch) => {
       })
       .catch((error) => {
         console.log(error);
+        message.error(error.response.data.message);
         reject(error);
       })
       .finally(() => {
