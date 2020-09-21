@@ -5,6 +5,7 @@ import { setRefresh } from 'features/ManageCustomer/slice';
 import { useDispatch, useSelector } from "react-redux";
 import { importCustomerListApi } from 'api/customer';
 import * as XLSX from 'xlsx';
+import { getExtension } from 'utils/helper';
 
 const { Dragger } = Upload;
 
@@ -40,38 +41,48 @@ function ImportCustomerModal(props) {
     // Handle import  
     const handleImport = () => {
         if (importFile) {
-            // Read file
-            var file = importFile.originFileObj
-            var fileReader = new FileReader();
-            fileReader.onload = function (e) {
-                // pre-process data
-                var binary = "";
-                var bytes = new Uint8Array(e.target.result);
-                var length = bytes.byteLength;
-                for (var i = 0; i < length; i++) {
-                    binary += String.fromCharCode(bytes[i]);
-                }
-                // call 'xlsx' to read the file
-                var workbook = XLSX.read(binary, { type: 'binary', cellDates: true, cellStyles: true });
-                var sheet_name_list = workbook.SheetNames;
-                var importData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]], { dateNF: 'yyyy/mm/dd HH:mm:ss' });
+            if(importFile){
+                var file = importFile.originFileObj
+                if(['xlsx', 'csv'].includes(getExtension(file.name))){
+                    // Read file
+                    var fileReader = new FileReader();
+                    fileReader.onload = function (e) {
+                        // pre-process data
+                        var binary = "";
+                        var bytes = new Uint8Array(e.target.result);
+                        var length = bytes.byteLength;
+                        for (var i = 0; i < length; i++) {
+                            binary += String.fromCharCode(bytes[i]);
+                        }
+                        // call 'xlsx' to read the file
+                        var workbook = XLSX.read(binary, { type: 'binary', cellDates: true, cellStyles: true });
+                        var sheet_name_list = workbook.SheetNames;
+                        var importData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]], { dateNF: 'yyyy/mm/dd HH:mm:ss' });
 
-                importCustomerListApi({
-                    data: importData
-                })
-                    .then((res) => {
-                        message.success("Successfully import server list")
-                        dispatch(setRefresh(!refresh))
-                        handleCloseModal()
-                    }).catch((err) => {
-                        message.error("Something went wrong. Please check your file again")
-                    });
-            };
-            fileReader.readAsArrayBuffer(file);
+                        importCustomerListApi({
+                            data: importData
+                        })
+                            .then((res) => {
+                                // message.success("Successfully import server list")
+                                dispatch(setRefresh(!refresh))
+                                handleCloseModal()
+                            }).catch((err) => {
+                                message.error("Some records might be in incorrect format")
+                            }).finally(() => {
+                                message.success("Import server list done")
+                            });
+                    };
+                    fileReader.readAsArrayBuffer(file);
+                }
+            }
+            else{
+                message.error("Wrong file type")
+            }
         }
         else {
             message.error(`No file chosen`);
         }
+        
     }
 
     return (

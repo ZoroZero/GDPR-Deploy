@@ -5,6 +5,7 @@ import { importServerListApi } from 'api/server';
 import * as XLSX from 'xlsx';
 import { setRefresh } from 'features/ManageServer/slice';
 import { useDispatch, useSelector } from 'react-redux';
+import { getExtension } from 'utils/helper';
 
 const { Dragger } = Upload;
 
@@ -35,34 +36,40 @@ function ImportServer(props){
         console.log(importFile)
         if(importFile){
           var file = importFile.originFileObj
-            var fileReader = new FileReader();
-            fileReader.onload = function (e) {
-                // pre-process data
-                var binary = "";
-                var bytes = new Uint8Array(e.target.result);
-                var length = bytes.byteLength;
-                for (var i = 0; i < length; i++) {
-                    binary += String.fromCharCode(bytes[i]);
-                }
-                // call 'xlsx' to read the file
-                var workbook = XLSX.read(binary, {type: 'binary', cellDates:true, cellStyles:true});
-                var sheet_name_list = workbook.SheetNames;
-                var importData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]], {dateNF:'yyyy/mm/dd HH:mm:ss'});
+          if(['xlsx', 'csv'].includes(getExtension(file.name))){
+                let fileReader = new FileReader();
+                fileReader.onload = function (e) {
+                    // pre-process data
+                    let binary = "";
+                    let bytes = new Uint8Array(e.target.result);
+                    let length = bytes.byteLength;
+                    for (var i = 0; i < length; i++) {
+                        binary += String.fromCharCode(bytes[i]);
+                    }
+                    // call 'xlsx' to read the file
+                    let workbook = XLSX.read(binary, {type: 'binary', cellDates:true, cellStyles:true});
+                    let sheet_name_list = workbook.SheetNames;
+                    let importData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]], {dateNF:'yyyy/mm/dd HH:mm:ss'});
 
-                importServerListApi({
-                    data: importData
-                })
-                .then((res) => {
-                    console.log('Import customer res',res)
-                    message.success("Successfully import server list")
-                    dispatch(setRefresh(!refresh))
-                    props.setVisible(false)
-                }).catch((err) => {
-                    console.log("Import error", err)
-                    message.error("Something went wrong. Please check your file again")
-                });
-            };
-            fileReader.readAsArrayBuffer(file);
+                    importServerListApi({
+                        data: importData
+                    })
+                    .then((res) => {
+                        console.log('Import customer res',res)
+                        dispatch(setRefresh(!refresh))
+                        props.setVisible(false)
+                    }).catch((err) => {
+                        console.log("Import error", err)
+                        message.error("Some records might be in incorrect format")
+                    }).finally(() => {
+                        message.success("Import server list done")
+                    });
+                };
+                fileReader.readAsArrayBuffer(file);
+            }
+            else{
+                message.error("Wrong file type")
+            }
         }
         else{
           message.error(`No file chosen`);

@@ -20,13 +20,10 @@ const { confirm } = Modal;
 
 function MainPage() {
     const dispatch = useDispatch()
-
     const { refresh } = useSelector((state) => state.serverManagement)
     const [data, setData] = useState([]);
-
     const [loading, setLoading] = useState(false);
     const [total, setTotal ] = useState(0);
-
     const [pagination, setPagination ] = useState({
         page: 1,
         pageSize: 10
@@ -52,7 +49,6 @@ function MainPage() {
     useEffect(() => {
         handleModalActivate()
     }, [editRequest]);
-
 
     // Table columns
     const columns = [
@@ -250,6 +246,7 @@ function MainPage() {
         });
     }
 
+    // Handle recover server
     const handleRecoverServer = (id) => {
         return recoverServerApi({id: id})
         .then((res) => {
@@ -331,15 +328,14 @@ function MainPage() {
                 <ExportServer id='export-server' className='export-server' visible={exporting} setVisible={setExporting}></ExportServer>
             </div>
 
-            <div>
-                
-            <Button type="primary" onClick={()=> setEditRequest(SERVER_CONSTANTS.ADD_SERVER_REQUEST)} style={{ background: 'lawngreen', color: 'black'}}>
-                Create new server
-            </Button>
+            <div>     
+                <Button type="primary" onClick={()=> setEditRequest(SERVER_CONSTANTS.ADD_SERVER_REQUEST)} style={{ background: 'lawngreen', color: 'black'}}>
+                    Create new server
+                </Button>
 
-            <AddEditServerModal request={editRequest} modalVisible={modalVisible} 
-                                setModalVisible={setModalVisible} setEditRequest={setEditRequest}>
-            </AddEditServerModal>
+                <AddEditServerModal request={editRequest} modalVisible={modalVisible} 
+                                    setModalVisible={setModalVisible} setEditRequest={setEditRequest}>
+                </AddEditServerModal>
             </div>
 
             <Dropdown overlay={actionMenu} disabled={selectingServerIdList.length===0} >
@@ -347,6 +343,7 @@ function MainPage() {
                             Action <DownOutlined />
                         </Button>
             </Dropdown>
+            {(selectingServerIdList.length > 0) && <div style={{ display: "inline-block", padding: "0px 20px 0px 20px" }}>  {selectingServerIdList.length} seleted! </div>}
 
             <Search className="search-bar"
                 placeholder="Input search text"
