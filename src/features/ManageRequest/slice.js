@@ -241,6 +241,7 @@ export const exportRequestByServer = (val) => (dispatch) => {
       })
       .catch((error) => {
         message.error("fail");
+        reject(error);
       });
   });
 };

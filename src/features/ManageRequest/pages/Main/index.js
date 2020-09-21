@@ -185,7 +185,7 @@ const MainPage = (props) => {
   return (
     <>
       <Row gutter={[16, 16]} justify="center">
-        <Col>
+        <Col span={24}>
           <Can I="export" a="request">
             <Row>
               <Col span={24}>
