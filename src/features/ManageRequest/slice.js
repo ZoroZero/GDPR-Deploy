@@ -85,7 +85,6 @@ export const getListRequests = (params = {}) => (dispatch) => {
   return new Promise((resolve, reject) => {
     return getListRequestApi(params)
       .then((res) => {
-        console.log(res);
         dispatch(
           setPagination({
             currentPage: res.CurrentPage,
@@ -97,7 +96,6 @@ export const getListRequests = (params = {}) => (dispatch) => {
         resolve();
       })
       .catch((error) => {
-        console.log(error);
         reject(error);
       });
   });
@@ -109,7 +107,6 @@ export const onCreateNewRequest = (data = {}) => (dispatch) => {
     dispatch(loading());
     return createRequestApi(data)
       .then((res) => {
-        console.log(res);
         message.success("success");
         dispatch(setModal({ showModal: false }));
         dispatch(
@@ -137,12 +134,10 @@ export const getListServerOptions = () => (dispatch) => {
   return new Promise((resolve, reject) => {
     return getServerOptionsApi()
       .then((res) => {
-        console.log(res);
         dispatch(setListServer({ lstServer: res.data.data }));
         resolve(res);
       })
       .catch((error) => {
-        console.log(error);
         reject(error);
       });
   });
@@ -152,11 +147,9 @@ export const getListUserOptions = () => {
   return new Promise((resolve, reject) => {
     return getListUserOptionsApi()
       .then((res) => {
-        console.log(res);
         resolve(res);
       })
       .catch((error) => {
-        console.log(error);
         reject(error);
       });
   });
@@ -172,7 +165,6 @@ export const approveRequest = (value) => (dispatch) => {
         resolve();
       })
       .catch((error) => {
-        console.log(error);
         message.error(error.response.data.message);
         reject(error);
       })
@@ -192,7 +184,6 @@ export const cancelRequest = (value) => (dispatch) => {
         resolve();
       })
       .catch((error) => {
-        console.log(error.response);
         message.error(error.response.data.message);
         reject(error);
       })
@@ -206,7 +197,6 @@ export const getRequestDetail = (value) => (dispatch) => {
   return new Promise((resolve, reject) => {
     return getRequestDetailApi(value)
       .then((res) => {
-        console.log(res);
         if (res.data) {
           dispatch(
             setRequestDetail({
@@ -218,7 +208,6 @@ export const getRequestDetail = (value) => (dispatch) => {
         resolve();
       })
       .catch((error) => {
-        console.log(error);
         reject(error);
       });
   });
@@ -234,7 +223,6 @@ export const onUpdateRequest = (value, requestId) => (dispatch) => {
         resolve();
       })
       .catch((error) => {
-        console.log(error);
         message.error(error.response.data.message);
         reject(error);
       })
@@ -248,13 +236,11 @@ export const exportRequestByServer = (val) => (dispatch) => {
   return new Promise((resolve, reject) => {
     return exportRequestApi(val)
       .then((res) => {
-        console.log(res);
         message.success("success");
         resolve(res);
       })
       .catch((error) => {
         message.error("fail");
-        console.log(error);
       });
   });
 };

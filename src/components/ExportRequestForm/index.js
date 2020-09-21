@@ -41,7 +41,6 @@ const ExportRequestForm = (props) => {
   }, []);
 
   function onSubmit(value) {
-    console.log(value);
     let fromDate, toDate;
     if (value.fromDate) {
       fromDate = value.fromDate.format("YYYY-MM-DD hh:mm:ss");
