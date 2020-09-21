@@ -126,7 +126,9 @@ export const exportServerListApi = (data) => {
             serverName: data.serverName,
             serverIpList: data.ipAddressList,
             startDate: data.startDate,
-            endDate: data.endDate
+            endDate: data.endDate,
+            filterColumn: data.filterColumn,
+            filterKeys: data.filterKeys
           }
       })
       .then((res) => {

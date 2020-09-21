@@ -118,7 +118,7 @@ function ExportCustomerModal(props) {
 
     return (
         <Modal
-            title={"Export server list"}
+            title={"Export customer list"}
             centered
             visible={props.visible}
             onCancel={() => { props.setVisible(false); setCSVData(null) }}
@@ -168,16 +168,17 @@ function ExportCustomerModal(props) {
                     </Form.Item>
                 </Form.Item>
 
-                <Form.Item label="Status" style={{ margin: '0px 8px 8px 8px' }}
-                    name='Status'>
-                    {/* <Checkbox.Group options={statusOptions} defaultValue={['1']} onChange={onChange}/> */}
-                    <Select placeholder="Select a status" mode="multiple" style={{ display: 'inline-block', width: 'calc(50% - 16px)', margin: '0 8px' }} >
-                        {statusOptions}
-                    </Select>
-                </Form.Item>
+                <Form.Item>
+                    <Form.Item label="Status" name='Status' style={{ display: 'inline-block', width: 'calc(50% - 16px)', margin: '0 8px' }} >
+                        {/* <Checkbox.Group options={statusOptions} defaultValue={['1']} onChange={onChange}/> */}
+                        <Select placeholder="Select a status" mode="multiple" >
+                            {statusOptions}
+                        </Select>
+                    </Form.Item>
+                </Form.Item>    
 
                 <Form.Item>
-                    <Button form="exportForm" key="submit" type="primary" htmlType="submit" style={{ margin: '0px 8px 0px 0px' }}>Filter</Button>
+                    <Button form="exportForm" key="submit" type="primary" htmlType="submit" style={{margin: '0px 8px'}}>Filter</Button>
                     {/* <Button disabled={!props.csvData[0]} variant="warning" onClick={handleExport}>Export</Button> */}
                     <Dropdown overlay={menu} disabled={!csvData} style={{ margin: '0px 8px' }}>
                         <Button>

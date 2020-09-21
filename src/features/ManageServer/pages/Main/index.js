@@ -324,7 +324,7 @@ function MainPage() {
             </div>
 
             <div>
-                <Button className="action-button" onClick={toggleExport} style={{marginBottom: '20px'}}>Export server list</Button>
+                <Button className="action-button" onClick={toggleExport} style={{marginBottom: '8px'}}>Export server list</Button>
                 <ExportServer id='export-server' className='export-server' visible={exporting} setVisible={setExporting}></ExportServer>
             </div>
 

@@ -64,20 +64,36 @@ function ExportServer(props){
     function onFinish(values) {
         console.log(values);
         // props.setLoading(true);
+        let filterColumn = SERVER_CONSTANTS.DEFAULT_FILTER_COLUMN
+        let filterKeys = SERVER_CONSTANTS.DEFAULT_FILTER_KEYS
+        if(values.Status){
+            if(values.Status.includes('deleted')){
+                if(values.Status.length === 1){
+                    filterColumn = 'Deleted'
+                }
+                else{
+                    filterColumn = 'Status+Deleted'
+                    filterKeys = values.Status.filter(x => x !== 'deleted').join(',')
+                }
+            }   
+            else{
+                filterColumn = 'Status'
+                filterKeys = values.Status.join(',')
+            }
+        }
         return exportServerListApi(
             {
                 serverName: values.ServerName? values.ServerName.trim(): undefined,
-                ipAddressList: values.IpAddress? values.IpAddress.join(','): undefined,
+                ipAddressList: values.IpAddress? values.IpAddress: undefined,
                 startDate: values.FromDate? values.FromDate.format("YYYY-MM-DD HH:mm:ss"): undefined,
-                endDate: values.ToDate? values.ToDate.format("YYYY-MM-DD HH:mm:ss"): undefined
+                endDate: values.ToDate? values.ToDate.format("YYYY-MM-DD HH:mm:ss"): undefined,
+                filterColumn: filterColumn,
+                filterKeys: filterKeys
             }
         )
         .then((res) => {
             console.log(res)
             setCSVData(res.data)
-            // props.setLoading(false);
-            // props.setTableData(res.data,res.total)
-            // dispatch(setPagination({pagination: {page: 1, pageSize: res.total}}))
         }).catch((err) => {console.log(err)});
     }
 
@@ -106,6 +122,12 @@ function ExportServer(props){
         setkeyword(value);
     }
 
+    const statusOptions = [
+        <Option value={'1'} key={'active'}>Active</Option>,
+        <Option value={'0'} key={'inactive'}>Inactive</Option>,
+        <Option value={'deleted'} key={'deleted'}>Deleted</Option>
+    ]
+
     return (
         <Modal
             title= {"Export server list"}
@@ -119,30 +141,40 @@ function ExportServer(props){
             <Form  form={form} id="exportForm"  onFinish={onFinish} 
                 layout="vertical">
                 <Form.Item>
-                    <Form.Item label="Server name"  style={{ display: 'inline-block', width: 'calc(25% - 16px)', margin: '0 8px' }}
+                    <Form.Item label="Server name"  style={{ display: 'inline-block', width: 'calc(50% - 16px)', margin: '0 8px' }}
                             name='ServerName'>
                             <Input  />
                     </Form.Item>
 
-                    <Form.Item label="IP Address"  style={{ display: 'inline-block', width: 'calc(25% - 16px)', margin: '0 8px' }}
+                    <Form.Item label="IP Address"  style={{ display: 'inline-block', width: 'calc(50% - 16px)', margin: '0 8px' }}
                                 name='IpAddress'>
                         <Select showSearch onSearch={onSearchServer} mode="multiple" >
                             {options}
                         </Select>
                         {/* <Input></Input> */}
                     </Form.Item>
+                </Form.Item> 
 
-                    <Form.Item label="From date" style={{ display: 'inline-block', width: 'calc(25% - 16px)', margin: '0 8px'  }} 
+                <Form.Item>
+                    <Form.Item label="From date" style={{ display: 'inline-block', width: 'calc(50% - 16px)', margin: '0 8px'  }} 
                                 name='FromDate'>
                         <DatePicker showTime  style={{  width: '100%' }}/>
                     </Form.Item>
 
-                    <Form.Item label="To date" style={{ display: 'inline-block', width: 'calc(25% - 16px)', margin: '0 8px' }}
+                    <Form.Item label="To date" style={{ display: 'inline-block', width: 'calc(50% - 16px)', margin: '0 8px' }}
                                 name='ToDate'>
                         <DatePicker showTime style={{  width: '100%' }}/>
                         
                     </Form.Item>
-                </Form.Item> 
+                </Form.Item>
+
+                <Form.Item>
+                    <Form.Item label="Status" name='Status' style={{ display: 'inline-block', width: 'calc(50% - 16px)', margin: '0 8px' }}>
+                        <Select placeholder="Select a status" mode="multiple"  >
+                            {statusOptions}
+                        </Select>
+                    </Form.Item>
+                </Form.Item>
 
                 <Form.Item>
                     <Button form="exportForm" key="submit" type="primary" htmlType="submit" style={{margin: '0px 8px'}}>Filter</Button>

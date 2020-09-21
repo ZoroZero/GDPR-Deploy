@@ -295,14 +295,14 @@ function MainPage() {
     <>
       <Row>
         <Col span={8}>
-          <div>
-            <Button onClick={() => setImporting(exporting => !exporting)}>Import customer list</Button>
+          <div style={{ width: '15%', margin: '8px 0 0px 0'}} >
+            <Button onClick={() => setImporting(exporting => !exporting)} >Import customer list</Button>
             <ImportCustomerModal visible={importing} setVisible={setImporting}></ImportCustomerModal>
           </div>
 
 
-          <div>
-            <Button onClick={() => setExporting(exporting => !exporting)} style={{ marginBottom: '20px' }}>Export customer list</Button>
+          <div style={{ width: '15%', margin: '8px 0 8px 0'}} >
+            <Button onClick={() => setExporting(exporting => !exporting)} >Export customer list</Button>
             <ExportCustomerModal id='export-server' className='export-server' visible={exporting} setVisible={setExporting}></ExportCustomerModal>
           </div>
 

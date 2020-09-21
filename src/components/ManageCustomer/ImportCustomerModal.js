@@ -87,7 +87,7 @@ function ImportCustomerModal(props) {
 
     return (
         <Modal
-            title={"Import server list"}
+            title={"Import customer list"}
             centered
             visible={props.visible}
             onCancel={handleCloseModal}
