@@ -13,7 +13,11 @@ const RequestModal = (props) => {
   }
   return (
     <>
-      <Button type="primary" onClick={() => onSetModal(true)}>
+      <Button
+        type="primary"
+        onClick={() => onSetModal(true)}
+        style={{ width: "300px" }}
+      >
         Create new request
       </Button>
       <Modal

@@ -41,12 +41,18 @@ const ExportRequestForm = (props) => {
   }, []);
 
   function onSubmit(value) {
-    console.log(value);
+    let fromDate, toDate;
+    if (value.fromDate) {
+      fromDate = value.fromDate.format("YYYY-MM-DD hh:mm:ss");
+    }
+    if (value.toDate) {
+      toDate = value.toDate.format("YYYY-MM-DD hh:mm:ss");
+    }
     dispatch(
       exportRequestByServer({
         ...value,
-        fromDate: value.fromDate.format("YYYY-MM-DD hh:mm:ss"),
-        toDate: value.toDate.format("YYYY-MM-DD hh:mm:ss"),
+        fromDate: fromDate,
+        toDate: toDate,
       })
     ).then((res) => {
       exportToCSV(res.data, "RequestFile");
@@ -96,7 +102,10 @@ const ExportRequestForm = (props) => {
     });
   return (
     <>
-      <Button onClick={() => setShowForm(!showForm)}>
+      <Button
+        onClick={() => setShowForm(!showForm)}
+        style={{ width: "300px", marginBottom: "20px" }}
+      >
         Export requests by server
       </Button>
       {showForm && (
@@ -108,30 +117,12 @@ const ExportRequestForm = (props) => {
         >
           <Row gutter={[16, 16]}>
             <Col span={6}>
-              <Form.Item
-                label="From Date"
-                name="fromDate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input the start date!",
-                  },
-                ]}
-              >
+              <Form.Item label="From Date" name="fromDate">
                 <DatePicker style={{ width: "100%" }} />
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item
-                label="To Date"
-                name="toDate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input the end date!",
-                  },
-                ]}
-              >
+              <Form.Item label="To Date" name="toDate">
                 <DatePicker style={{ width: "100%" }} />
               </Form.Item>
             </Col>

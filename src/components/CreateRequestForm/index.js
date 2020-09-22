@@ -88,7 +88,7 @@ const RequestForm = (props) => {
           <Col span={24}>
             <Form.Item
               name="title"
-              label="Title(*)"
+              label="Title"
               rules={[
                 {
                   required: true,
