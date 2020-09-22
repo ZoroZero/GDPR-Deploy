@@ -43,7 +43,7 @@ const ManageServerModal = (props) => {
   const [keyword, setKeyword] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [fetch, setFetch] = useState(false);
-
+  const [updateKey, setUpdateKey] = useState(false);
   useEffect(() => {
     if (modalVisible) {
       dispatch(getServersCustomer(props.record.Id, keyword));
@@ -63,6 +63,7 @@ const ManageServerModal = (props) => {
 
   const handleOk = () => {
     setModalVisible(false);
+    setTimeout(setUpdateKey(!updateKey), 100);
     dispatch(setServers([]));
     dispatch(setOtherServers([]));
     setKeyword("");
@@ -87,6 +88,7 @@ const ManageServerModal = (props) => {
   }
   const handleCancel = () => {
     setModalVisible(false);
+    setTimeout(setUpdateKey(!updateKey), 100);
     dispatch(
       setServers({
         data: [],
@@ -177,6 +179,7 @@ const ManageServerModal = (props) => {
         <Row>
           <Col span={10} offset={7}>
             <Search
+              key={updateKey}
               className="search-bar"
               name="search-content"
               placeholder="search any server"
