@@ -9,11 +9,9 @@ export const VerifyAcc = (props) => {
   useEffect(() => {
     (async function () {
       try {
-        console.log(props.match.params.verifyToken);
         const res = await axios.get(
           `/api/users/confirm/${props.match.params.verifyToken}`
         );
-        console.log(res);
         if (res.data.success) {
           setLoading(false);
           setIsSuccess(true);
@@ -22,7 +20,6 @@ export const VerifyAcc = (props) => {
           setIsSuccess(false);
         }
       } catch (error) {
-        console.log(error);
         setLoading(false);
         setIsSuccess(false);
       }

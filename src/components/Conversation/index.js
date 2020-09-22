@@ -36,7 +36,6 @@ const ConversationBox = (props) => {
   }, [props.request.Id]);
 
   socket.once(props.request.Id, (data) => {
-    console.log("Hello");
     updateLstMsg(data);
     form.resetFields();
   });
@@ -44,7 +43,6 @@ const ConversationBox = (props) => {
   function fetchOldMessage(requestId) {
     getAllMessageApi(requestId)
       .then((res) => {
-        console.log(res);
         setLstMsg(res.data.reverse());
       })
       .catch((error) => {
