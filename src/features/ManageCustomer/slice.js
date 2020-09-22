@@ -7,11 +7,13 @@ import {
   deleteServersOfCustomerApi,
   addServersForCustomerApi,
 } from "api/customer";
+import { loading } from "features/App/slice";
 
 export const initialState = {
   data: [],
   deletedData: [],
-  servers: [],
+  servers: { data: [], loading: false, hasMore: true, total: 0 },
+  totalServers: 0,
   otherServers: { data: [], loading: false, hasMore: true, total: 0 },
   pagination: {
     total: 0,
@@ -34,7 +36,6 @@ const slice = createSlice({
   initialState,
 
   reducers: {
-
     setData: (state, action) => {
       state.data = action.payload;
     },
@@ -134,11 +135,25 @@ export const getContactPointList = () => (dispatch) => {
   });
 };
 
-export const getServersCustomer = (id, keyword) => (dispatch) => {
+export const getServersCustomer = (id, keyword) => (dispatch, getState) => {
+  dispatch(
+    setServers({
+      data: [],
+      hasMore: true,
+      loading: true,
+    })
+  );
   return new Promise((resolve, reject) => {
     return getServersCustomerApi(id, keyword)
       .then((res) => {
-        dispatch(setServers(res));
+        dispatch(
+          setServers({
+            data: res,
+            hasMore: false,
+            loading: false,
+            total: res.length,
+          })
+        );
         resolve();
       })
       .catch((error) => {
@@ -148,18 +163,19 @@ export const getServersCustomer = (id, keyword) => (dispatch) => {
   });
 };
 
-export const getOtherServers = (option, id, page, keyword) => (dispatch, getState) => {
-  // dispatch(setLoading(true));
+export const getOtherServers = (option, id, page, keyword) => (
+  dispatch,
+  getState
+) => {
   return new Promise((resolve, reject) => {
     return getOtherServersApi(option, id, page, keyword)
       .then((res) => {
-        // dispatch(setLoading(false));
         dispatch(
           setOtherServers({
             data: getState().customerManagement.otherServers.data.concat(res),
             hasMore: res.length > 0,
             loading: false,
-            total: res.length > 0 ? res[0].Total : 0
+            total: res.length > 0 ? res[0].Total : 0,
           })
         );
 
@@ -172,7 +188,10 @@ export const getOtherServers = (option, id, page, keyword) => (dispatch, getStat
   });
 };
 
-export const deleteServersOfCustomer = (deletedServers, customerId) => (dispatch, getState) => {
+export const deleteServersOfCustomer = (deletedServers, customerId) => (
+  dispatch,
+  getState
+) => {
   return new Promise((resolve, reject) => {
     return deleteServersOfCustomerApi(deletedServers, customerId)
       .then((res) => {
@@ -188,8 +207,10 @@ export const deleteServersOfCustomer = (deletedServers, customerId) => (dispatch
   });
 };
 
-
-export const addServersForCustomer = (addedServers, customerId) => (dispatch, getState) => {
+export const addServersForCustomer = (addedServers, customerId) => (
+  dispatch,
+  getState
+) => {
   return new Promise((resolve, reject) => {
     return addServersForCustomerApi(addedServers, customerId)
       .then((res) => {
@@ -204,5 +225,3 @@ export const addServersForCustomer = (addedServers, customerId) => (dispatch, ge
       });
   });
 };
-
-

@@ -12,14 +12,25 @@ import {
   Col,
   Tag,
   Tooltip,
-  Pagination, Menu, Dropdown
+  Pagination,
+  Menu,
+  Dropdown,
 } from "antd";
-import { ExclamationCircleOutlined, WarningTwoTone, DownOutlined } from "@ant-design/icons";
+import {
+  ExclamationCircleOutlined,
+  WarningTwoTone,
+  DownOutlined,
+} from "@ant-design/icons";
 import "./index.scss";
 import AddCustomerModal from "../../../../components/ManageCustomer/AddCustomerModal";
 import EditCustomerModal from "../../../../components/ManageCustomer/EditCustomerModal";
 import ManageServerModal from "../../../../components/ManageCustomer/ManageServerModal";
-import { deleteCustomerApi, deleteCustomersApi, deactiveCustomersApi, activeCustomersApi } from "api/customer";
+import {
+  deleteCustomerApi,
+  deleteCustomersApi,
+  deactiveCustomersApi,
+  activeCustomersApi,
+} from "api/customer";
 import {
   setPagination,
   setFilter,
@@ -87,9 +98,7 @@ function MainPage() {
 
   const hasSelected = selectedRowKeys.length > 0;
 
-
   useEffect(() => {
-
     fetch(
       pagination.current > 0 ? pagination.current : 1,
       pagination.pageSize,
@@ -100,7 +109,14 @@ function MainPage() {
     );
   }, [refresh, sortColumn, sortOrder, filterValue]);
 
-  async function fetch(current, pageSize, sortColumn, sortOrder, keyword, filterValue) {
+  async function fetch(
+    current,
+    pageSize,
+    sortColumn,
+    sortOrder,
+    keyword,
+    filterValue
+  ) {
     dispatch(setLoading(true));
     await dispatch(
       getCustomerList({
@@ -109,12 +125,11 @@ function MainPage() {
         sortColumn: sortColumn,
         sortOrder: sortOrder,
         keyword: keyword,
-        filterValue: filterValue
+        filterValue: filterValue,
       })
     );
     dispatch(setLoading(false));
   }
-
 
   function showPromiseConfirm(id) {
     confirm({
@@ -126,36 +141,33 @@ function MainPage() {
         deleteCustomerApi({ Id: id });
         dispatch(setRefresh(!refresh));
       },
-      onCancel() { },
+      onCancel() {},
     });
   }
 
   async function handleMenuClick(value) {
-    if (value.key == 'delete') {
+    if (value.key == "delete") {
       await deleteCustomersApi({ deletedCustomers: selectedRowKeys });
       dispatch(setRefresh(!refresh));
-      setSelectedRowKeys([])
+      setSelectedRowKeys([]);
     }
-    if (value.key == 'deactive') {
+    if (value.key == "deactive") {
       await deactiveCustomersApi({ deactivedCustomers: selectedRowKeys });
       dispatch(setRefresh(!refresh));
-      setSelectedRowKeys([])
-    }
-    else {
+      setSelectedRowKeys([]);
+    } else {
       await activeCustomersApi({ activedCustomers: selectedRowKeys });
       dispatch(setRefresh(!refresh));
-      setSelectedRowKeys([])
+      setSelectedRowKeys([]);
     }
-  };
-
-
+  }
 
   async function handleSearchChange(newKeyword) {
     newKeyword = String(newKeyword).trim();
     (await newKeyword)
       ? dispatch(setSearch(newKeyword))
       : dispatch(setSearch(""));
-    setSelectedRowKeys([])
+    setSelectedRowKeys([]);
     await dispatch(setPagination({ ...pagination, current: 1 }));
 
     dispatch(setRefresh(!refresh));
@@ -163,13 +175,14 @@ function MainPage() {
 
   async function handleSortChange(pag, filters, sorter) {
     if (filters.IsActive != filterValue) {
-
       await dispatch(setPagination({ ...pagination, current: 1 }));
-      dispatch(setFilter(filters.IsActive))
-      setSelectedRowKeys([])
+      dispatch(setFilter(filters.IsActive));
+      setSelectedRowKeys([]);
     }
     if (sorter) {
-      var newSortColumn = sorter.column ? sorter.column.dataIndex : "CreatedDate";
+      var newSortColumn = sorter.column
+        ? sorter.column.dataIndex
+        : "CreatedDate";
       var newSortOrder = sorter.order === "ascend" ? "ascend" : "descend";
       dispatch(setSort({ sortColumn: newSortColumn, sortOrder: newSortOrder }));
     }
@@ -187,7 +200,7 @@ function MainPage() {
       title: "Customer Name",
       dataIndex: "FirstName",
       sorter: true,
-      defaultSortOrder: (sortColumn == "FirstName" ? sortOrder : null),
+      defaultSortOrder: sortColumn == "FirstName" ? sortOrder : null,
       render: (text, record) => (
         <p>
           {text} {record.LastName}
@@ -198,24 +211,35 @@ function MainPage() {
       title: "Contact Point",
       dataIndex: "ContactPointEmail",
       sorter: true,
-      defaultSortOrder: (sortColumn == "ContactPointEmail" ? sortOrder : null),
+      defaultSortOrder: sortColumn == "ContactPointEmail" ? sortOrder : null,
 
-      render: (value, record) => (
-
-        record.ContactPointId ? (!record.ContactPointStatus ? <><p> {value} </p> <Tooltip title="Contact Point is inactive!">< WarningTwoTone twoToneColor="orange" /></Tooltip> </> : <p> {value} </p>) : <></>
-      )
+      render: (value, record) =>
+        record.ContactPointId ? (
+          !record.ContactPointStatus ? (
+            <>
+              <p> {value} </p>{" "}
+              <Tooltip title="Contact Point is inactive!">
+                <WarningTwoTone twoToneColor="orange" />
+              </Tooltip>{" "}
+            </>
+          ) : (
+            <p> {value} </p>
+          )
+        ) : (
+          <></>
+        ),
     },
     {
       title: "Contract Begin",
       dataIndex: "ContractBeginDate",
       sorter: true,
-      defaultSortOrder: (sortColumn == "ContractBeginDate" ? sortOrder : null),
+      defaultSortOrder: sortColumn == "ContractBeginDate" ? sortOrder : null,
     },
     {
       title: "Contract End",
       dataIndex: "ContractEndDate",
       sorter: true,
-      defaultSortOrder: (sortColumn == "ContractEndDate" ? sortOrder : null),
+      defaultSortOrder: sortColumn == "ContractEndDate" ? sortOrder : null,
     },
     {
       title: "Description",
@@ -272,22 +296,28 @@ function MainPage() {
       title: "Machines Owner",
       dataIndex: "servers",
       sorter: true,
-      defaultSortOrder: (sortColumn == "servers" ? sortOrder : null),
+      defaultSortOrder: sortColumn == "servers" ? sortOrder : null,
       render: (text, record) => (
-        <Button
-          onClick={() => {
-            // if (record.IsActive) dispatch(getOtherServers({ status: 'available' }, record.Id, 1, ''))
-            setModalManageVisible(true);
-            setDataManage({
-              Id: record.Id,
-              FirstName: record.FirstName,
-              LastName: record.LastName,
-              IsActive: record.IsActive,
-            });
-          }}
-        >
-          Manage {text ? text : 0}
-        </Button>
+        <ManageServerModal
+          // modalVisible={modalManageVisible}
+          record={record}
+          totalServers={text}
+          // setModalVisible={setModalManageVisible}
+        ></ManageServerModal>
+        // <Button
+        //   onClick={() => {
+        //     // if (record.IsActive) dispatch(getOtherServers({ status: 'available' }, record.Id, 1, ''))
+        //     setModalManageVisible(true);
+        //     setDataManage({
+        //       Id: record.Id,
+        //       FirstName: record.FirstName,
+        //       LastName: record.LastName,
+        //       IsActive: record.IsActive,
+        //     });
+        //   }}
+        // >
+        //   Manage {text ? text : 0}
+        // </Button>
       ),
     },
   ];
@@ -296,14 +326,28 @@ function MainPage() {
       <Row>
         <Col span={8}>
           <div>
-            <Button onClick={() => setImporting(exporting => !exporting)}>Import customer list</Button>
-            <ImportCustomerModal visible={importing} setVisible={setImporting}></ImportCustomerModal>
+            <Button onClick={() => setImporting((exporting) => !exporting)}>
+              Import customer list
+            </Button>
+            <ImportCustomerModal
+              visible={importing}
+              setVisible={setImporting}
+            ></ImportCustomerModal>
           </div>
 
-
           <div>
-            <Button onClick={() => setExporting(exporting => !exporting)} style={{ marginBottom: '20px' }}>Export customer list</Button>
-            <ExportCustomerModal id='export-server' className='export-server' visible={exporting} setVisible={setExporting}></ExportCustomerModal>
+            <Button
+              onClick={() => setExporting((exporting) => !exporting)}
+              style={{ marginBottom: "20px" }}
+            >
+              Export customer list
+            </Button>
+            <ExportCustomerModal
+              id="export-server"
+              className="export-server"
+              visible={exporting}
+              setVisible={setExporting}
+            ></ExportCustomerModal>
           </div>
 
           <Button
@@ -323,12 +367,12 @@ function MainPage() {
             modalVisible={modalEditVisible}
             setModalVisible={setModalEditVisible}
           ></EditCustomerModal>
-          <ManageServerModal
+          {/* <ManageServerModal
             record={dataManage}
             modalVisible={modalManageVisible}
             setModalVisible={setModalManageVisible}
           >
-          </ManageServerModal>
+          </ManageServerModal> */}
         </Col>
         <Col span={8} offset={8}>
           <Search
@@ -344,16 +388,17 @@ function MainPage() {
           />
         </Col>
       </Row>
-      <Dropdown
-        overlay={menu}
-        type="primary"
-        disabled={!hasSelected}
-      >
+      <Dropdown overlay={menu} type="primary" disabled={!hasSelected}>
         <Button>
           Actions <DownOutlined />
         </Button>
       </Dropdown>
-      {(selectedRowKeys.length > 0) && <div style={{ display: "inline-block", padding: "0px 20px 0px 20px" }}>  {selectedRowKeys.length} seleted! </div>}
+      {selectedRowKeys.length > 0 && (
+        <div style={{ display: "inline-block", padding: "0px 20px 0px 20px" }}>
+          {" "}
+          {selectedRowKeys.length} seleted!{" "}
+        </div>
+      )}
       <br />
       <br />
       <Table
@@ -365,7 +410,6 @@ function MainPage() {
         onChange={handleSortChange}
         // onFilter={handleFilterChange}
         rowSelection={rowSelection}
-
       />
       <br />
       <Row>
@@ -390,5 +434,3 @@ function MainPage() {
 }
 
 export default MainPage;
-
-
