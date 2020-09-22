@@ -41,11 +41,8 @@ const ManageServerModal = (props) => {
   });
   const [page, setPage] = useState(2);
   const [keyword, setKeyword] = useState("");
-  const [keyUpdate, setKeyUpdate] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [fetch, setFetch] = useState(false);
-  const [totalOtherServers, setTotalOtherServers] = useState(0);
-  const [addedServer, setAddedServer] = useState([]);
 
   useEffect(() => {
     if (modalVisible) {
@@ -239,7 +236,6 @@ const ManageServerModal = (props) => {
                         <List.Item.Meta
                           avatar={
                             <Checkbox
-                              key={keyUpdate}
                               disabled={
                                 !record.IsActive || !props.record.IsActive
                               }
@@ -300,7 +296,6 @@ const ManageServerModal = (props) => {
                           avatar={
                             <Checkbox
                               disabled={!record.FirstNameCustomer}
-                              key={keyUpdate}
                               defaultChecked={false}
                               onChange={(e) =>
                                 handleCheck(record.Id, e.target.checked)
