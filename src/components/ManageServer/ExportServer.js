@@ -62,7 +62,7 @@ function ExportServer(props){
     }
 
     function onFinish(values) {
-        console.log(values);
+        //console.log(values);
         // props.setLoading(true);
         let filterColumn = SERVER_CONSTANTS.DEFAULT_FILTER_COLUMN
         let filterKeys = SERVER_CONSTANTS.DEFAULT_FILTER_KEYS
@@ -92,9 +92,10 @@ function ExportServer(props){
             }
         )
         .then((res) => {
-            console.log(res)
+            //console.log(res)
             setCSVData(res.data)
-        }).catch((err) => {console.log(err)});
+        })
+        // .catch((err) => {//console.log(err)});
     }
 
     const handleExport = (type) => {

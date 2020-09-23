@@ -19,7 +19,7 @@ function AddEditServerModal(props) {
     const shouldGetData = props.modalVisible !== false;
     useEffect(() => {
         if(shouldGetData){
-            console.log("Request", props.request);
+            //console.log("Request", props.request);
             form.setFieldsValue({ 
                 ServerName: null,
                 IpAddress: null,
@@ -34,7 +34,7 @@ function AddEditServerModal(props) {
       }, [shouldGetData]);
 
     const onFill = () => {
-        console.log(props)
+        //console.log(props)
         form.setFieldsValue({
             ServerName: props.request.data.Name,
             IpAddress: props.request.data.IpAddress,
@@ -50,7 +50,7 @@ function AddEditServerModal(props) {
     }
 
     const onFinish = values => {
-        console.log(values);
+        //console.log(values);
         if(props.request.type === SERVER_CONSTANTS.ADD_SERVER_TYPE){
             return createServerApi({
                     serverName: values.ServerName.trim(),
@@ -59,7 +59,7 @@ function AddEditServerModal(props) {
                     endDate: values.Time[1].format(GLOBAL_CONSTANTS.TIME_FORMAT)
                 })
                 .then((res) => {
-                    console.log("Sucessfully add new server", res)
+                    //console.log("Sucessfully add new server", res)
                     message.success("Sucessfully add new server")
                     // openNotification(`Sucessfully add new server at ${res.createAt}`)
                     props.setModalVisible(false)
@@ -67,13 +67,13 @@ function AddEditServerModal(props) {
                     dispatch(setRefresh(!refresh));
                 })
                 .catch((err) => {
-                    console.log("Add error", err); 
+                    //console.log("Add error", err); 
                     message.error("Something went wrong.\nYour server name or ip is already existed. Please check again")
                 }) 
         }
         else if(props.request.type === SERVER_CONSTANTS.UPDATE_SERVER_TYPE){
             const id = props.request.data.Id
-            console.log(active);
+            //console.log(active);
             return updateServerApi({
                 id: id,
                 serverName: values.ServerName.trim(),
@@ -83,7 +83,7 @@ function AddEditServerModal(props) {
                 status: active
             })
             .then((res) => {
-                console.log("Sucessfully update server information", res)
+                //console.log("Sucessfully update server information", res)
                 // openNotification(`Sucessfully update server information at ${res.updateAt}`)
                 message.success("Successfully update server information")
                 props.setModalVisible(false)
@@ -91,7 +91,7 @@ function AddEditServerModal(props) {
                 dispatch(setRefresh(!refresh));
             })
             .catch((err) => {
-                console.log("Update error", err); 
+                //console.log("Update error", err); 
                 message.error("Something went wrong.\nYour server name or ip is already existed. Please check again")
             })
         }

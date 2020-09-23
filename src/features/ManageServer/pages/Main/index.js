@@ -176,7 +176,7 @@ function MainPage() {
 
   // Handle change in page number
   const handlePageChange = (pageNumber, pageSize) => {
-    // console.log(pageNumber);
+    // //console.log(pageNumber);
     var newPageNum = pageNumber;
     if (
       pageSize !== pagination.pageSize &&
@@ -186,13 +186,13 @@ function MainPage() {
         (pagination.pageSize * pagination.page) / pageSize
       );
     setPagination({ page: newPageNum, pageSize: pageSize });
-    console.log("Fetch after pagination change");
+    //console.log("Fetch after pagination change");
     setSelectingServerIdList([]);
   };
 
   // Fetch data
   const fetch = (pagination, sortColumn, sortOrder, keyword, filter) => {
-    // console.log(filter);
+    // //console.log(filter);
     if (!exporting) {
       setLoading(true);
       return getServersApi({
@@ -205,27 +205,27 @@ function MainPage() {
         filterKeys: filter.filterKeys,
       })
         .then((res) => {
-          console.log("Fetch res", res);
+          //console.log("Fetch res", res);
           setLoading(false);
           setTableData(res.data, res.total);
           showTotal(res.total);
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
         });
     }
   };
 
   // Set table data
   const setTableData = (data, total) => {
-    console.log(data);
+    //console.log(data);
     setTotal(total);
     setData(data);
   };
 
   // Handle table change: sort, filter
   const handleTableChange = (pagi, filters, sorter) => {
-    console.log("Filters; ", filters);
+    //console.log("Filters; ", filters);
     var newSortColumn = sorter.column ? sorter.column.dataIndex : "Name";
     var newSortOrder = sorter.order === "descend" ? "descend" : "ascend";
     // dispatch(setSort({sortColumn: newSortColumn, sortOrder: newSortOrder }));
@@ -246,14 +246,14 @@ function MainPage() {
         filterKeys = filters.Status.join(",");
       }
     }
-    console.log("New filter column", filterColumn);
-    console.log("New filter keys", filterKeys);
+    //console.log("New filter column", filterColumn);
+    //console.log("New filter keys", filterKeys);
     // var filterKeys = filters.Status? filters.Status.join(): SERVER_CONSTANTS.DEFAULT_FILTER_KEYS
     if (filter.filterKeys !== filterKeys) {
       setPagination({ page: 1, pageSize: pagination.pageSize });
     }
     setFilter({ filterColumn: filterColumn, filterKeys: filterKeys });
-    // console.log("Fetch after sort change");
+    // //console.log("Fetch after sort change");
     setSelectingServerIdList([]);
   };
 
@@ -263,7 +263,7 @@ function MainPage() {
     setPagination({ page: 1, pageSize: pagination.pageSize });
     // setCheckingRows([])
     setSelectingServerIdList([]);
-    // console.log("Fetch after search");
+    // //console.log("Fetch after search");
   };
 
   // Handle on edit click
@@ -290,10 +290,10 @@ function MainPage() {
   const handleDeleteServer = (id) => {
     return deleteServerApi({ id: id })
       .then((res) => {
-        console.log("Delete response", res);
+        //console.log("Delete response", res);
         dispatch(setRefresh(!refresh));
       })
-      .catch(() => console.log("Oops errors!"));
+      .catch(() => message.error("Oops errors!"));
   };
 
   // Show delete modal
@@ -313,10 +313,10 @@ function MainPage() {
   const handleRecoverServer = (id) => {
     return recoverServerApi({ id: id })
       .then((res) => {
-        console.log("Recover response", res);
+        //console.log("Recover response", res);
         dispatch(setRefresh(!refresh));
       })
-      .catch(() => console.log("Oops errors!"));
+      .catch(() => message.error("Oops errors!"));
   };
 
   // Handle toggle export
@@ -333,11 +333,11 @@ function MainPage() {
   const rowSelection = {
     selectedRowKeys: selectingServerIdList,
     onChange: (selectedRowKeys, selectedRows) => {
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        "selectedRows: ",
-        selectedRows
-      );
+      // //console.log(
+      //   `selectedRowKeys: ${selectedRowKeys}`,
+      //   "selectedRows: ",
+      //   selectedRows
+      // );
       // setCheckingRows(selectedRows);
       setSelectingServerIdList(selectedRowKeys);
     },
@@ -355,19 +355,19 @@ function MainPage() {
       status: status,
     })
       .then((res) => {
-        // console.log("Multiple update", res);
+        // //console.log("Multiple update", res);
         message.success("Successfully change status of servers");
         dispatch(setRefresh(!refresh));
       })
       .catch((err) => {
-        // console.log("Activate all err", err);
+        // //console.log("Activate all err", err);
         message.error("Something went wrong");
       });
   };
 
   // Handle action menu onClick
   const handleMenuClick = (e) => {
-    // console.log(e)
+    // //console.log(e)
     handleSetStatus(e.key === "activate");
   };
 
