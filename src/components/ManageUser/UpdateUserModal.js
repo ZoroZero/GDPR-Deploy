@@ -317,7 +317,7 @@ const UpdateUserModal = (pros) => {
           setVisible(true);
         }}
       >
-        Update
+        Edit
       </Button>
       <CollectionCreateForm
         visible={visible}

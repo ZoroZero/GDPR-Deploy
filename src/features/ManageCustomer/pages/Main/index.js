@@ -276,7 +276,7 @@ function MainPage() {
               setDataEdit(record);
             }}
           >
-            Update
+            Edit
           </Button>
 
           <Button

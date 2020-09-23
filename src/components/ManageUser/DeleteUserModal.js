@@ -29,7 +29,7 @@ export default class UpdateUserModal extends React.Component {
     return (
       <>
         <Button type="primary" onClick={this.showModal}>
-          Update
+          Edit
         </Button>
         <Modal
           visible={visible}
