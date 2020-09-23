@@ -244,6 +244,7 @@ function MainPage() {
   function handleTableChange(pagination, filters, sorter) {
     console.log("filter", filters);
     if (sorter.length !== 0) {
+      setSelectedRowKeys([]);
       setSortBy(sorter.field);
       setSortOrder(sorter.order);
     }
