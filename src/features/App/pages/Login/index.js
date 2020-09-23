@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, Button, message, Checkbox, Row, Col, Card } from "antd";
+import { Form, Input, Button, message, Checkbox, Row, Col, Card, Space } from "antd";
 import "./index.scss";
 import PropTypes from "prop-types";
 import { logout, onLogin } from "features/App/slice";
@@ -36,7 +36,7 @@ function LoginPage(props) {
 
   return (
     <div className="login-container">
-      <div className="login-form-container" style={{ width: "23vw" }}>
+      <div className="login-form-container" style={{ width: "23vw"},{ border: "1px solid gray" }}>
         <Card className="login-form" style={{ padding: "15px 27px 15px 0px" }}>
           <div className="header">
             <img
@@ -86,13 +86,14 @@ function LoginPage(props) {
                 Submit
               </Button>
               <Button
+              type="link" htmlType="button"
                 className="login-form-forgot"
                 onClick={() => {
                   history.push("/forgotpassword");
                 }}
                 style={{ width: "65%" }}
               >
-                Forgot password
+                Forgot password?
               </Button>
             </Form.Item>
           </Form>
