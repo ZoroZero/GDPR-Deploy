@@ -11,7 +11,7 @@ import {
   Tag,
   message,
   Menu,
-  Dropdown
+  Dropdown,
 } from "antd";
 import {
   ExclamationCircleOutlined,
@@ -219,7 +219,7 @@ function MainPage() {
       SortBy: SortBy,
       SortOrder: SortOrder,
       Role: Role,
-      IsActive: IsActive
+      IsActive: IsActive,
     });
   }, [PageNo, PageSize, SearchKey, SortBy, SortOrder, Role, IsActive]);
   function refetch() {
@@ -230,7 +230,7 @@ function MainPage() {
       SortBy: SortBy,
       SortOrder: SortOrder,
       Role: Role,
-      IsActive: IsActive
+      IsActive: IsActive,
     });
   }
   function showTotal(total) {
@@ -242,7 +242,7 @@ function MainPage() {
     setPageNo(1);
   }
   function handleTableChange(pagination, filters, sorter) {
-    console.log("filter",filters);
+    console.log("filter", filters);
     if (sorter.length !== 0) {
       setSortBy(sorter.field);
       setSortOrder(sorter.order);
@@ -309,30 +309,29 @@ function MainPage() {
     <div>
       <Row>
         <Col span={8}>
-          <Space>
-        <CreateUserModal onSubmitModal={refetch} />
-          <Dropdown overlay={menu} disabled={!hasSelected}>
-            <Button>
-              Multi actions <DownOutlined />
-            </Button>
-          </Dropdown>
-          <span style={{ marginLeft: 8 }}>
-            {hasSelected ? `Selected ${selectedRowKeys.length} items` : ""}
-          </span>
-          </Space>
+          <CreateUserModal onSubmitModal={refetch} />
         </Col>
-        <Col span={8}>
-          
-        </Col>
+        <Col span={8}></Col>
         <Col span={8}>
           <Search
             placeholder="input search text"
             onSearch={(value) => search(value)}
             enterButton
+            autoFocus={true}
           />
         </Col>
       </Row>
-      <br />
+      <Row style={{ marginBottom: "10px", marginTop: "10px" }}>
+        <Dropdown overlay={menu} disabled={!hasSelected}>
+          <Button>
+            Multi actions <DownOutlined />
+          </Button>
+        </Dropdown>
+        <span style={{ marginLeft: 8 }}>
+          {hasSelected ? `Selected ${selectedRowKeys.length} items` : ""}
+        </span>
+      </Row>
+
       <Table
         columns={columns}
         rowKey={(record) => record.Id}
