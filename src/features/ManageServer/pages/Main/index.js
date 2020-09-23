@@ -458,6 +458,7 @@ function MainPage() {
         pagination={false}
         loading={loading}
         onChange={handleTableChange}
+        scroll={{ x: 1500}}
       />
       <Row>
         <Col span={12} offset={6}>
@@ -470,6 +471,7 @@ function MainPage() {
             onChange={handlePageChange}
             showTotal={showTotal}
             style={{ margin: "8px 8px" }}
+            
           />
         </Col>
       </Row>

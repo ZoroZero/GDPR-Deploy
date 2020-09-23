@@ -391,6 +391,7 @@ function MainPage() {
         onChange={handleSortChange}
         // onFilter={handleFilterChange}
         rowSelection={rowSelection}
+        scroll={{ x: 1500}}
       />
       <br />
       <Row>
@@ -406,6 +407,7 @@ function MainPage() {
             defaultPageSize={pagination.pageSize}
             total={pagination.total}
             onChange={handlePageChange}
+            
           />
         </Col>
       </Row>
