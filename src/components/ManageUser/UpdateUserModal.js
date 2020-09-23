@@ -301,6 +301,7 @@ const UpdateUserModal = (pros) => {
         pros.onSubmitModal();
       })
       .catch((error) => {
+        if(!switchState) setSwitchState(!switchState);
         message.error(error.data.message);
       });
 
