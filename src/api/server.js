@@ -1,5 +1,5 @@
 import axios from "axios/auth.instance";
-const FormData = require('form-data');
+// const FormData = require('form-data');
 
 export const getAllServerApi = () => {
   return new Promise((resolve, reject) => {
@@ -17,7 +17,7 @@ export const getAllServerApi = () => {
 };
 
 export const getServersApi = (data) => {
-  console.log("Send params", data);
+  //console.log("Send params", data);
   return new Promise((resolve, reject) => {
     return axios
       .get(`/api/servers`, {
@@ -62,7 +62,7 @@ export const createServerApi = (data) => {
 
 export const updateServerApi = (data) => {
   return new Promise((resolve, reject) => {
-    console.log("Send data", data)
+    //console.log("Send data", data)
     return axios
       .put(`/api/servers`, {
           Id: data.id,
@@ -83,7 +83,7 @@ export const updateServerApi = (data) => {
 
 export const deleteServerApi = (data) => {
   return new Promise((resolve, reject) => {
-    console.log("Delete data", data)
+    //console.log("Delete data", data)
     return axios
       .delete(`/api/servers`, {
           params: {
@@ -101,7 +101,7 @@ export const deleteServerApi = (data) => {
 
 export const updateMultipleStatusApi = (data) => {
   return new Promise((resolve, reject) => {
-    console.log("Send data", data)
+    //console.log("Send data", data)
     return axios
       .put(`/api/servers/multi`, {
           status: data.status,
@@ -119,7 +119,7 @@ export const updateMultipleStatusApi = (data) => {
 
 export const exportServerListApi = (data) => {
   return new Promise((resolve, reject) => {
-    console.log("Data for export", data);
+    //console.log("Data for export", data);
     return axios
       .get(`/api/servers/export`, {
           params: {
@@ -141,7 +141,7 @@ export const exportServerListApi = (data) => {
 }
 
 export const importServerListApi = (data) => {
-  console.log(data);
+  //console.log(data);
   return new Promise((resolve, reject) => {
     return axios
       .post(`/api/servers/import`, {
@@ -159,7 +159,7 @@ export const importServerListApi = (data) => {
 
 export const recoverServerApi = (data) => {
   return new Promise((resolve, reject) => {
-    console.log("Recover data", data)
+    //console.log("Recover data", data)
     return axios
       .put(`/api/servers/recover`, {
           id: data.id

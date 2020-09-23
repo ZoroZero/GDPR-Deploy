@@ -33,7 +33,7 @@ function ImportServer(props){
 
     // Handle import  
     const handleImport = () => {
-        console.log(importFile)
+        //console.log(importFile)
         if(importFile){
           var file = importFile.originFileObj
           if(['xlsx', 'csv'].includes(getExtension(file.name))){
@@ -55,11 +55,11 @@ function ImportServer(props){
                         data: importData
                     })
                     .then((res) => {
-                        console.log('Import customer res',res)
+                        //console.log('Import customer res',res)
                         dispatch(setRefresh(!refresh))
                         props.setVisible(false)
                     }).catch((err) => {
-                        console.log("Import error", err)
+                        //console.log("Import error", err)
                         message.error("Some records might be in incorrect format")
                     }).finally(() => {
                         message.success("Import server list done")
