@@ -340,6 +340,7 @@ function MainPage() {
         loading={loading}
         rowSelection={rowSelection}
         onChange={handleTableChange}
+        scroll={{ x: 1500}}
       />
       <br />
       <Row>

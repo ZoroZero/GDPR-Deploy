@@ -48,7 +48,6 @@ const columns = [
     width: "12%",
     dataIndex: "CreatedDate",
     key: "created-date",
-    fixed: "left",
     sorter: true,
   },
   {
@@ -223,6 +222,7 @@ const MainPage = (props) => {
         dataSource={mergeDataColumn}
         onChange={onTableChange}
         pagination={false}
+        scroll={{ x: 1500}}
       />
       {/* </Col>
       </Row> */}

@@ -118,13 +118,7 @@ function App(props) {
             collapsed={collapsed}
           >
             <Link to="/">
-              <div className="logo">
-                {/* <img
-              src={window.location.origin + "/newlogo.png"}
-              height="30px"
-              alt="React Starter"
-            /> */}
-            </div>
+              <div className="logo" />
             </Link>
             <MainMenu />
           </Sider>
