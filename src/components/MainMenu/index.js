@@ -28,7 +28,7 @@ function MainMenu(props) {
             <Avatar
               style={{ marginRight: "0.82em" }}
               icon={<UserOutlined />}
-              src={`${process.env.REACT_APP_BASE_URL}/api/users/thumbnails/${avatar}`}
+              src={`${process.env.REACT_APP_BASE_URL}/api/users/${avatar}`}
             />
           }
         >
