@@ -45,7 +45,7 @@ function LoginPage(props) {
               alt="React Starter"
             />
             {/* <h1>GDPR</h1> */}
-            <h1>GDPR System</h1>
+            {/* <h1>GDPR System</h1> */}
           </div>
 
           <Form
