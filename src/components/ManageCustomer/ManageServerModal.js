@@ -75,13 +75,6 @@ const ManageServerModal = (props) => {
     }
   };
 
-  function handleOpen() {
-    return new Promise((rs, rj) => {
-      setModalVisible(true);
-      rs();
-    });
-  }
-
   async function handleClickOpen() {
     setModalVisible(true);
     setTimeout(() => setFetch(!fetch), 100);

@@ -7,10 +7,14 @@ import {
   DatePicker,
   notification,
   Select,
+  message,
   Switch,
 } from "antd";
 import { updateCustomerApi } from "api/customer";
-import { getContactPointList, setRefresh } from "../../features/ManageCustomer/slice";
+import {
+  getContactPointList,
+  setRefresh,
+} from "../../features/ManageCustomer/slice";
 import moment from "moment";
 
 const { Option } = Select;
@@ -31,12 +35,16 @@ function EditCustomerModal(props) {
   useEffect(() => {
     if (shouldGetData) {
       {
-        setEndDate(props.record.ContractEndDate
-          ? moment(props.record.ContractEndDate, "DD/MM/YY HH:mm:ss")
-          : null);
-        setBeginDate(props.record.ContractBeginDate
-          ? moment(props.record.ContractBeginDate, "DD/MM/YYYY HH:mm:ss")
-          : null);
+        setEndDate(
+          props.record.ContractEndDate
+            ? moment(props.record.ContractEndDate, "DD/MM/YY HH:mm:ss")
+            : null
+        );
+        setBeginDate(
+          props.record.ContractBeginDate
+            ? moment(props.record.ContractBeginDate, "DD/MM/YYYY HH:mm:ss")
+            : null
+        );
         form.setFieldsValue({
           ContractBeginDate: props.record.ContractBeginDate
             ? moment(props.record.ContractBeginDate, "DD/MM/YYYY HH:mm:ss")
@@ -61,19 +69,9 @@ function EditCustomerModal(props) {
     return updateCustomerApi(values, props.record.Id)
       .then((res) => {
         dispatch(setRefresh(!refresh));
-        openNotification("Sucessfully update customer");
+        message.success("Sucessfully update customer");
       })
       .catch((err) => console.log(err));
-  };
-
-  const openNotification = (message) => {
-    notification.open({
-      message: "Successfully update Customer",
-      description: message,
-      onClick: () => {
-        console.log("Notification Clicked!");
-      },
-    });
   };
 
   const handleOk = () => {
@@ -84,8 +82,6 @@ function EditCustomerModal(props) {
   const handleCancel = () => {
     props.setModalVisible(false);
   };
-
-
 
   return (
     <div>
@@ -139,7 +135,10 @@ function EditCustomerModal(props) {
             >
               {contactPoints.length > 0 &&
                 contactPoints.map((item) => (
-                  <Option disabled={!item.IsActive} key={item.Id}> {item.Email} </Option>
+                  <Option disabled={!item.IsActive} key={item.Id}>
+                    {" "}
+                    {item.Email}{" "}
+                  </Option>
                 ))}
             </Select>
           </Form.Item>
@@ -154,10 +153,16 @@ function EditCustomerModal(props) {
                 },
               ]}
             >
-              <DatePicker showTime
+              <DatePicker
+                showTime
                 onChange={(value) => setBeginDate(value)}
-                disabledDate={d => !d || (endDate && !d.isBefore(moment(endDate).format('YYYY-MM-DD HH:mm:ss')))}
-                style={{ width: "100%" }} />
+                disabledDate={(d) =>
+                  !d ||
+                  (endDate &&
+                    !d.isBefore(moment(endDate).format("YYYY-MM-DD HH:mm:ss")))
+                }
+                style={{ width: "100%" }}
+              />
             </Form.Item>
             <Form.Item
               label="Contract end date"
@@ -173,12 +178,19 @@ function EditCustomerModal(props) {
                 },
               ]}
             >
-              <DatePicker showTime
+              <DatePicker
+                showTime
                 style={{ width: "100%" }}
                 onChange={(value) => setEndDate(value)}
-                disabledDate={
-                  d => { return !d || (beginDate && !d.isAfter(moment(beginDate).format('YYYY-MM-DD HH:mm:ss'))) }
-                }
+                disabledDate={(d) => {
+                  return (
+                    !d ||
+                    (beginDate &&
+                      !d.isAfter(
+                        moment(beginDate).format("YYYY-MM-DD HH:mm:ss")
+                      ))
+                  );
+                }}
               />
             </Form.Item>
           </Form.Item>
@@ -210,4 +222,3 @@ function EditCustomerModal(props) {
 }
 
 export default EditCustomerModal;
-

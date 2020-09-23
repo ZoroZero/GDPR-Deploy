@@ -102,10 +102,7 @@ const ExportRequestForm = (props) => {
     });
   return (
     <>
-      <Button
-        onClick={() => setShowForm(!showForm)}
-        style={{ width: "300px", marginBottom: "20px" }}
-      >
+      <Button onClick={() => setShowForm(!showForm)} style={{ width: "300px" }}>
         Export requests by server
       </Button>
       {showForm && (

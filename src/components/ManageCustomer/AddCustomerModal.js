@@ -75,15 +75,11 @@ function AddCustomerModal(props) {
       await createCustomerApi(values);
       await dispatch(setPagination({ ...pagination, current: 1 }));
       dispatch(setRefresh(!refresh));
-      openNotification("Sucessfully add new customer");
+      message.success("Sucessfully create new customer");
     } catch (error) {
       console.log(error);
     }
   }
-
-  const openNotification = (message) => {
-    message.success("Successfully create Customer");
-  };
 
   return (
     <Modal

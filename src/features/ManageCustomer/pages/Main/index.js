@@ -329,7 +329,6 @@ function MainPage() {
         <Col span={8}></Col>
         <Col span={8}>
           <Search
-            className="search-bar"
             placeholder="input search text"
             enterButton
             onSearch={(value) => {
@@ -388,6 +387,7 @@ function MainPage() {
         dataSource={data}
         loading={loading}
         pagination={false}
+        scroll={{ x: 1500 }}
         onChange={handleSortChange}
         // onFilter={handleFilterChange}
         rowSelection={rowSelection}
