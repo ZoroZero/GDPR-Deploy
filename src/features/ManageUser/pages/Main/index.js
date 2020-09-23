@@ -248,12 +248,14 @@ function MainPage() {
       setSortOrder(sorter.order);
     }
     if (filters.RoleName !== null) {
+      setSelectedRowKeys([]);
       setRole(filters.RoleName.join(","));
       setPageNo(1);
     } else {
       setRole("");
     }
     if (filters.IsActive !== null) {
+      setSelectedRowKeys([]);
       setIsActive(filters.IsActive[0]);
       setPageNo(1);
     } else {
