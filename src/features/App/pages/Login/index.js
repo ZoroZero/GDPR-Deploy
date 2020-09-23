@@ -82,7 +82,7 @@ function LoginPage(props) {
               <Input.Password />
             </Form.Item>
             <Form.Item {...tailLayout}>
-              <Button type="primary" htmlType="submit" style={{ width: "35%" }}>
+              <Button id="loginbtn" type="primary" htmlType="submit" style={{ width: "35%" }}>
                 Submit
               </Button>
               <Button
