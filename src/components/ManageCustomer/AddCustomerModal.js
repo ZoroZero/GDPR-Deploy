@@ -1,5 +1,5 @@
-/* TODO: 
-*/
+/* TODO:
+ */
 import React, { useEffect, useState } from "react";
 import {
   Modal,
@@ -9,6 +9,7 @@ import {
   DatePicker,
   notification,
   Select,
+  message,
   Switch,
 } from "antd";
 import { createCustomerApi } from "api/customer";
@@ -18,7 +19,7 @@ import {
   setRefresh,
 } from "features/ManageCustomer/slice";
 import { useSelector, useDispatch } from "react-redux";
-import moment from 'moment';
+import moment from "moment";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -32,41 +33,44 @@ function AddCustomerModal(props) {
   const shouldGetData = props.modalVisible !== false;
   const [updateKey, setUpdateKey] = useState(1);
   const [updateKey2, setUpdateKey2] = useState(false);
-  const [endDate, setEndDate] = useState()
-  const [beginDate, setBeginDate] = useState()
+  const [endDate, setEndDate] = useState();
+  const [beginDate, setBeginDate] = useState();
+  const [fetch, setFetch] = useState(false);
 
   useEffect(() => {
-    if (shouldGetData) {
-      setBeginDate(null);
-      setEndDate(null);
-      setUpdateKey2(!updateKey2)
-      setUpdateKey(updateKey + 1)
-      form.setFieldsValue({
-        FirstName: null,
-        LastName: null,
-        ContactPointId: null,
-        ContractBeginDate: null,
-        ContractEndDate: null,
-        Description: "",
-        IsActive: true,
-      });
+    setTimeout(() => {
+      if (!props.modalVisible) {
+        setBeginDate(null);
+        setEndDate(null);
+        setUpdateKey2(!updateKey2);
+        setUpdateKey(updateKey + 1);
+        form.setFieldsValue({
+          FirstName: null,
+          LastName: null,
+          ContactPointId: null,
+          ContractBeginDate: null,
+          ContractEndDate: null,
+          Description: "",
+          IsActive: true,
+        });
 
-      dispatch(getContactPointList());
-    }
-  }, [shouldGetData]);
+        dispatch(getContactPointList());
+      }
+    }, 1000);
+  }, [fetch]);
 
   const handleOk = () => {
-
     form.submit();
   };
 
   const handleCancel = () => {
     props.setModalVisible(false);
-
+    setFetch(!fetch);
   };
 
   async function onFinish(values) {
     props.setModalVisible(false);
+    setFetch(!fetch);
     try {
       await createCustomerApi(values);
       await dispatch(setPagination({ ...pagination, current: 1 }));
@@ -78,13 +82,7 @@ function AddCustomerModal(props) {
   }
 
   const openNotification = (message) => {
-    notification.open({
-      message: "Successfully create Customer",
-      description: message,
-      onClick: () => {
-        console.log("Notification Clicked!");
-      },
-    });
+    message.success("Successfully create Customer");
   };
 
   return (
@@ -96,11 +94,16 @@ function AddCustomerModal(props) {
       footer={[
         <Button form="myForm" key="submit" type="primary" htmlType="submit">
           Submit
-                </Button>
-        ,
-        <Button key="cancel" onClick={() => { props.setModalVisible(false) }}>
+        </Button>,
+        <Button
+          key="cancel"
+          onClick={() => {
+            props.setModalVisible(false);
+          }}
+        >
           Cancel
- </Button>]}
+        </Button>,
+      ]}
       // onOk={handleOk}
       onCancel={handleCancel}
     >
@@ -110,12 +113,10 @@ function AddCustomerModal(props) {
           label="First name"
           name="FirstName"
           rules={[
-
             {
               required: true,
               message: "Please enter your first name!",
-
-            }
+            },
           ]}
         >
           <Input />
@@ -147,7 +148,10 @@ function AddCustomerModal(props) {
           >
             {contactPoints.length > 0 &&
               contactPoints.map((item) => (
-                <Option disabled={!item.IsActive} key={item.Id}> {item.Email} </Option>
+                <Option disabled={!item.IsActive} key={item.Id}>
+                  {" "}
+                  {item.Email}{" "}
+                </Option>
               ))}
           </Select>
         </Form.Item>
@@ -161,13 +165,18 @@ function AddCustomerModal(props) {
                 required: false,
               },
             ]}
-          ><DatePicker
+          >
+            <DatePicker
               key={updateKey}
               showTime
               onChange={(value) => setBeginDate(value)}
-              disabledDate={d => !d || (endDate && !d.isBefore(moment(endDate).format('YYYY-MM-DD HH:mm:ss')))}
-
-              style={{ width: "100%" }} />
+              disabledDate={(d) =>
+                !d ||
+                (endDate &&
+                  !d.isBefore(moment(endDate).format("YYYY-MM-DD HH:mm:ss")))
+              }
+              style={{ width: "100%" }}
+            />
           </Form.Item>
           <Form.Item
             label="Contract end date"
@@ -187,10 +196,15 @@ function AddCustomerModal(props) {
               key={updateKey}
               showTime
               onChange={(value) => setEndDate(value)}
-              disabledDate={
-                d => { return !d || (beginDate && !d.isAfter(moment(beginDate).format('YYYY-MM-DD HH:mm:ss'))) }
-              }
-              style={{ width: "100%" }} />
+              disabledDate={(d) => {
+                return (
+                  !d ||
+                  (beginDate &&
+                    !d.isAfter(moment(beginDate).format("YYYY-MM-DD HH:mm:ss")))
+                );
+              }}
+              style={{ width: "100%" }}
+            />
           </Form.Item>
         </Form.Item>
         <Form.Item

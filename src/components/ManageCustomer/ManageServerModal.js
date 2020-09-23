@@ -41,12 +41,9 @@ const ManageServerModal = (props) => {
   });
   const [page, setPage] = useState(2);
   const [keyword, setKeyword] = useState("");
-  const [keyUpdate, setKeyUpdate] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [fetch, setFetch] = useState(false);
-  const [totalOtherServers, setTotalOtherServers] = useState(0);
-  const [addedServer, setAddedServer] = useState([]);
-
+  const [updateKey, setUpdateKey] = useState(false);
   useEffect(() => {
     if (modalVisible) {
       dispatch(getServersCustomer(props.record.Id, keyword));
@@ -66,6 +63,7 @@ const ManageServerModal = (props) => {
 
   const handleOk = () => {
     setModalVisible(false);
+    setTimeout(setUpdateKey(!updateKey), 100);
     dispatch(setServers([]));
     dispatch(setOtherServers([]));
     setKeyword("");
@@ -90,6 +88,7 @@ const ManageServerModal = (props) => {
   }
   const handleCancel = () => {
     setModalVisible(false);
+    setTimeout(setUpdateKey(!updateKey), 100);
     dispatch(
       setServers({
         data: [],
@@ -180,6 +179,7 @@ const ManageServerModal = (props) => {
         <Row>
           <Col span={10} offset={7}>
             <Search
+              key={updateKey}
               className="search-bar"
               name="search-content"
               placeholder="search any server"
@@ -239,7 +239,6 @@ const ManageServerModal = (props) => {
                         <List.Item.Meta
                           avatar={
                             <Checkbox
-                              key={keyUpdate}
                               disabled={
                                 !record.IsActive || !props.record.IsActive
                               }
@@ -300,7 +299,6 @@ const ManageServerModal = (props) => {
                           avatar={
                             <Checkbox
                               disabled={!record.FirstNameCustomer}
-                              key={keyUpdate}
                               defaultChecked={false}
                               onChange={(e) =>
                                 handleCheck(record.Id, e.target.checked)

@@ -184,32 +184,48 @@ const MainPage = (props) => {
   });
   return (
     <>
-      <Row gutter={[16, 16]} justify="center">
+      <Row>
+        <Col span={8}>
+          <CreateRequestForm />
+        </Col>
+        <Col span={8} offset={8}>
+          <Search
+            placeholder="input search text"
+            enterButton
+            onSearch={onSearch}
+          />
+        </Col>
+      </Row>
+      <Row style={{ marginTop: "10px", marginBottom: "10px" }}>
+        <Col span={8}></Col>
+        <Col span={8} offset={8}>
+          <Can I="export" a="request">
+            <ExportRequestForm />
+          </Can>
+        </Col>
+      </Row>
+      {/* <Row gutter={[16, 16]} justify="center">
         <Col span={24}>
           <Can I="export" a="request">
             <Row>
-              <Col span={24}>
-                <ExportRequestForm />
-              </Col>
+              <Col span={24}></Col>
             </Row>
           </Can>
           <Row justify="space-between" gutter={[16, 16]}>
             <Col span={6}>
               <CreateRequestForm />
             </Col>
-            <Col span={6}>
-              <Search placeholder="input search text" onSearch={onSearch} />
-            </Col>
-          </Row>
-          <Table
-            bordered={true}
-            columns={columns}
-            dataSource={mergeDataColumn}
-            onChange={onTableChange}
-            pagination={false}
-          />
-        </Col>
-      </Row>
+            <Col span={6}></Col>
+          </Row> */}
+      <Table
+        bordered={true}
+        columns={columns}
+        dataSource={mergeDataColumn}
+        onChange={onTableChange}
+        pagination={false}
+      />
+      {/* </Col>
+      </Row> */}
       <Row gutter={[16, 16]} justify="center">
         <Col>
           <p>Total: {data.length > 0 ? data[0].Total : 0} items</p>

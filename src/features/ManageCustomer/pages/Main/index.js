@@ -260,7 +260,6 @@ function MainPage() {
         },
       ],
       defaultFilteredValue: filterValue,
-      // onFilter: (value) => handleFilterChange(value),
       render: (val) =>
         val ? <Tag color="green">Active</Tag> : <Tag color="red">Inactive</Tag>,
     },
@@ -299,25 +298,9 @@ function MainPage() {
       defaultSortOrder: sortColumn == "servers" ? sortOrder : null,
       render: (text, record) => (
         <ManageServerModal
-          // modalVisible={modalManageVisible}
           record={record}
           totalServers={text}
-          // setModalVisible={setModalManageVisible}
         ></ManageServerModal>
-        // <Button
-        //   onClick={() => {
-        //     // if (record.IsActive) dispatch(getOtherServers({ status: 'available' }, record.Id, 1, ''))
-        //     setModalManageVisible(true);
-        //     setDataManage({
-        //       Id: record.Id,
-        //       FirstName: record.FirstName,
-        //       LastName: record.LastName,
-        //       IsActive: record.IsActive,
-        //     });
-        //   }}
-        // >
-        //   Manage {text ? text : 0}
-        // </Button>
       ),
     },
   ];
@@ -325,17 +308,6 @@ function MainPage() {
     <>
       <Row>
         <Col span={8}>
-          <div style={{ width: '15%', margin: '8px 0 0px 0'}} >
-            <Button onClick={() => setImporting(exporting => !exporting)} >Import customer list</Button>
-            <ImportCustomerModal visible={importing} setVisible={setImporting}></ImportCustomerModal>
-          </div>
-
-
-          <div style={{ width: '15%', margin: '8px 0 8px 0'}} >
-            <Button onClick={() => setExporting(exporting => !exporting)} >Export customer list</Button>
-            <ExportCustomerModal id='export-server' className='export-server' visible={exporting} setVisible={setExporting}></ExportCustomerModal>
-          </div>
-
           <Button
             type="primary"
             onClick={() => {
@@ -353,20 +325,13 @@ function MainPage() {
             modalVisible={modalEditVisible}
             setModalVisible={setModalEditVisible}
           ></EditCustomerModal>
-          {/* <ManageServerModal
-            record={dataManage}
-            modalVisible={modalManageVisible}
-            setModalVisible={setModalManageVisible}
-          >
-          </ManageServerModal> */}
         </Col>
-        <Col span={8} offset={8}>
+        <Col span={8}></Col>
+        <Col span={8}>
           <Search
             className="search-bar"
-            name="search-content"
             placeholder="input search text"
-            enterButton="Search"
-            size="large"
+            enterButton
             onSearch={(value) => {
               handleSearchChange(value);
             }}
@@ -374,19 +339,49 @@ function MainPage() {
           />
         </Col>
       </Row>
-      <Dropdown overlay={menu} type="primary" disabled={!hasSelected}>
-        <Button>
-          Actions <DownOutlined />
-        </Button>
-      </Dropdown>
-      {selectedRowKeys.length > 0 && (
-        <div style={{ display: "inline-block", padding: "0px 20px 0px 20px" }}>
-          {" "}
-          {selectedRowKeys.length} seleted!{" "}
-        </div>
-      )}
-      <br />
-      <br />
+      <Row style={{ marginTop: "10px", marginBottom: "10px" }}>
+        <Col span={8}>
+          <Dropdown overlay={menu} type="primary" disabled={!hasSelected}>
+            <Button>
+              Multi actions <DownOutlined />
+            </Button>
+          </Dropdown>
+          {selectedRowKeys.length > 0 && (
+            <div
+              style={{ display: "inline-block", padding: "0px 20px 0px 20px" }}
+            >
+              {" "}
+              {selectedRowKeys.length} selected!{" "}
+            </div>
+          )}
+        </Col>
+        <Col span={8}></Col>
+        <Col
+          span={8}
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <Button onClick={() => setImporting((exporting) => !exporting)}>
+            Import customer list
+          </Button>
+          <ImportCustomerModal
+            visible={importing}
+            setVisible={setImporting}
+          ></ImportCustomerModal>
+          <Button onClick={() => setExporting((exporting) => !exporting)}>
+            Export customer list
+          </Button>
+          <ExportCustomerModal
+            id="export-server"
+            className="export-server"
+            visible={exporting}
+            setVisible={setExporting}
+          ></ExportCustomerModal>
+        </Col>
+      </Row>
+
       <Table
         columns={columns}
         rowKey={(record) => record.Id}
