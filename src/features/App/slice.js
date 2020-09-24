@@ -5,6 +5,7 @@ import {
   deleteAllLocalStorageItem,
 } from "utils/localstorage";
 import { loginApi } from "api/authentication";
+import { getAllNotifications, putReadNotificationApi } from "api/notification";
 
 const initialState = {
   userInfo: {
@@ -18,6 +19,8 @@ const initialState = {
   userId: null,
   username: null,
   avatar: null,
+  notifications: [],
+  numberNewNotif: 0,
 };
 
 const slice = createSlice({
@@ -43,10 +46,21 @@ const slice = createSlice({
       state.username = action.payload.username;
       state.avatar = action.payload.avatar;
     },
+    setNotification(state, action) {
+      state.notifications = action.payload.notifications;
+      state.numberNewNotif = action.payload.numberNewNotif;
+    },
   },
 });
 
-export const { login, logout, loading, stopLoading, setua } = slice.actions;
+export const {
+  login,
+  logout,
+  loading,
+  stopLoading,
+  setua,
+  setNotification,
+} = slice.actions;
 export default slice.reducer;
 
 export const onLogout = () => (dispatch) => {
@@ -75,6 +89,38 @@ export const onLogin = (username, password) => (dispatch) => {
       })
       .finally(() => {
         dispatch(stopLoading());
+      });
+  });
+};
+
+export const getNotifications = () => (dispatch) => {
+  return new Promise((resolve, reject) => {
+    return getAllNotifications()
+      .then((res) => {
+        console.log(res);
+        dispatch(
+          setNotification({
+            notifications: res.data,
+            numberNewNotif: res.data.length > 0 ? res.data[0].TotalNew : 0,
+          })
+        );
+        resolve();
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
+export const onReadNotification = (id) => (dispatch) => {
+  return new Promise((resolve, reject) => {
+    return putReadNotificationApi(id)
+      .then((res) => {
+        dispatch(getNotifications());
+        resolve();
+      })
+      .catch((err) => {
+        reject(err);
       });
   });
 };

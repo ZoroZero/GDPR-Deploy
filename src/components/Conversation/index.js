@@ -15,7 +15,7 @@ const ConversationBox = (props) => {
   const { token, userId, avatar } = useSelector((state) => state.app);
 
   useEffect(() => {
-    fetchOldMessage(props.request.Id);
+    if (props.request.Id) fetchOldMessage(props.request.Id);
   }, [props.request.Id]);
 
   useEffect(() => {
