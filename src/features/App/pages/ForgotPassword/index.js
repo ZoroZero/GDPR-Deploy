@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, Button, message, Checkbox } from "antd";
+import { Form, Input, Button, message, Checkbox, Space } from "antd";
 import "./index.scss";
 import PropTypes from "prop-types";
 import { forgotPasswordApi } from "../../../../api/user";
@@ -65,9 +65,14 @@ function ForgotPasswordPage() {
             <Input />
           </Form.Item>
           <Form.Item {...tailLayout}>
+            <Space>
             <Button type="primary" htmlType="submit">
               Submit
             </Button>
+            <Button type="primary" onClick={()=>{history.push("/");}}>
+              Return
+            </Button>
+            </Space>
           </Form.Item>
         </Form>
       </div>
