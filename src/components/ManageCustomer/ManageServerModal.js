@@ -6,6 +6,7 @@ import {
   Row,
   List,
   Button,
+  Badge,
   Spin,
   Typography,
   Modal,
@@ -159,7 +160,11 @@ const ManageServerModal = (props) => {
   return (
     <>
       <Button onClick={handleClickOpen}>
-        Manage {props.totalServers ? props.totalServers : 0}
+        Manage &nbsp;
+        <Badge
+          count={props.totalServers ? props.totalServers : 0}
+          showZero
+        ></Badge>
       </Button>
       <Modal
         centered
