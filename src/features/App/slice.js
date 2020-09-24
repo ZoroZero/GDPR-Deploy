@@ -97,7 +97,6 @@ export const getNotifications = () => (dispatch) => {
   return new Promise((resolve, reject) => {
     return getAllNotifications()
       .then((res) => {
-        console.log(res);
         dispatch(
           setNotification({
             notifications: res.data,
