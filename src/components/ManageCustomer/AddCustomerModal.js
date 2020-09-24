@@ -76,9 +76,7 @@ function AddCustomerModal(props) {
       await dispatch(setPagination({ ...pagination, current: 1 }));
       dispatch(setRefresh(!refresh));
       message.success("Sucessfully create new customer");
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }
 
   return (

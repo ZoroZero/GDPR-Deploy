@@ -45,9 +45,7 @@ const ConversationBox = (props) => {
       .then((res) => {
         setLstMsg(res.data.reverse());
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => {});
   }
   function updateLstMsg(data) {
     setLstMsg([data, ...lstMsg]);
