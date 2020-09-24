@@ -1,1 +1,0 @@
-{"version":3,"sources":["features/ManageRequest/index.js"],"names":["Resource"],"mappings":"sGAAA,2BAQeA,UAJf,WACE,OAAO","file":"static/js/5.a0637808.chunk.js","sourcesContent":["import React from \"react\";\r\n\r\nResource.propTypes = {};\r\n\r\nfunction Resource() {\r\n  return <div>Resource</div>;\r\n}\r\n\r\nexport default Resource;\r\n"],"sourceRoot":""}

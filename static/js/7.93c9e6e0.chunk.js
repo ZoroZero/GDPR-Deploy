@@ -1,2 +1,0 @@
-(this.webpackJsonpfrontend=this.webpackJsonpfrontend||[]).push([[7],{350:function(t,e,n){"use strict";n.r(e),n.d(e,"initialState",(function(){return r})),n.d(e,"setFilter",(function(){return s}));var a=n(83),r={startDate:null,endDate:null},i=Object(a.b)({name:"users",initialState:r,reducers:{setFilter:function(t,e){t.startDate=e.payload.startDate,t.endDate=e.payload.endDate}}}),s=i.actions.setFilter;e.default=i.reducer}}]);
-//# sourceMappingURL=7.93c9e6e0.chunk.js.map

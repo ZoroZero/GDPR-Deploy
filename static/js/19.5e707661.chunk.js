@@ -1,0 +1,2 @@
+(this.webpackJsonpfrontend=this.webpackJsonpfrontend||[]).push([[19],{409:function(e,t,r){"use strict";r.r(t),r.d(t,"initialState",(function(){return c})),r.d(t,"setRecord",(function(){return i}));var n=r(96),c={record:{}},o=Object(n.b)({name:"userSetting",initialState:c,reducers:{setRecord:function(e,t){e.record=t.payload.record}}}),i=o.actions.setRecord;t.default=o.reducer}}]);
+//# sourceMappingURL=19.5e707661.chunk.js.map

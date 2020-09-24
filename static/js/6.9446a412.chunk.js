@@ -1,2 +1,0 @@
-(this.webpackJsonpfrontend=this.webpackJsonpfrontend||[]).push([[6],{352:function(t,e,n){"use strict";n.r(e),n.d(e,"initialState",(function(){return r})),n.d(e,"setFilter",(function(){return a}));var i=n(83),r={blockIds:null},s=Object(i.b)({name:"requestManagement",initialState:r,reducers:{setFilter:function(t,e){t.blockIds=e.payload.blockIds}}}),a=s.actions.setFilter;e.default=s.reducer}}]);
-//# sourceMappingURL=6.9446a412.chunk.js.map
