@@ -54,6 +54,7 @@ const UserSettingPassword = (pros) => {
       .catch((error) => {
         message.error(error.data.message);
       });
+      form.resetFields();
     pros.onSubmitModal();
   };
   useEffect(() => {

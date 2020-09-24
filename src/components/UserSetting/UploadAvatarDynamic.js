@@ -77,7 +77,7 @@ const UploadAvatarDynamic = (pross) => {
   return (
     <ImgCrop beforeCrop={beforeUpload} rotate>
       <Upload
-        action="http://localhost:5000/api/users/avatar"
+        action={process.env.REACT_APP_BASE_URL+"/api/users/avatar"}
         headers={{ Authorization: `Bearer ${token}` }}
         // listType="picture-card"
         fileList={fileList}
