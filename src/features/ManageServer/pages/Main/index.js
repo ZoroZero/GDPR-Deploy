@@ -208,6 +208,9 @@ function MainPage() {
           //console.log("Fetch res", res);
           setLoading(false);
           setTableData(res.data, res.total);
+          if(res.total!=total){
+            setSelectingServerIdList([])
+          }
           showTotal(res.total);
         })
         .catch((err) => {
