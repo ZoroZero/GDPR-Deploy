@@ -1,8 +1,19 @@
 import React, { Suspense, useEffect, useState } from "react";
-import { BrowserRouter, Route, Switch, Link, Redirect } from "react-router-dom";
+import {
+  BrowserRouter,
+  Route,
+  Switch,
+  Link,
+  Redirect,
+  useLocation,
+} from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Layout, Button, message } from "antd";
-import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
+import { Layout, Button, message, Dropdown, Menu, Badge } from "antd";
+import {
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
+  NotificationOutlined,
+} from "@ant-design/icons";
 import "./index.scss";
 import { checkToken } from "utils/localstorage";
 import PropTypes from "prop-types";
@@ -14,12 +25,14 @@ import PrivateRoute from "components/PrivateRoute";
 import MainMenu from "components/MainMenu";
 import Loading from "components/Loading";
 import { getStore } from "store";
-import { login, onLogout } from "./slice";
+import { getNotifications, login, onLogout, setNotification } from "./slice";
 import { AbilityContext } from "permission/can";
 import { useAbility } from "@casl/react";
 import { VerifyAcc } from "./pages/VerifyScreen";
 import { setua } from "features/App/slice";
 import { getAccountDetailApi } from "api/user";
+import socket from "socket/socket";
+import NotificationLink from "components/NotificationLink";
 
 const store = getStore();
 const { Header, Content, Sider } = Layout;
@@ -76,9 +89,13 @@ const ManageCustomer = React.lazy(() =>
 
 function App(props) {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.app);
+  const { loading, notifications, userId, numberNewNotif } = useSelector(
+    (state) => state.app
+  );
   const [collapsed, setCollapsed] = useState(false);
   const ability = useAbility(AbilityContext);
+  const location = useLocation();
+  console.log(notifications);
 
   useEffect(() => {
     const token = checkToken();
@@ -96,15 +113,58 @@ function App(props) {
         );
       })
       .catch((error) => {
-        handleLogout()
+        handleLogout();
         message.error(error.data.message);
       });
   });
+
+  useEffect(() => {
+    fetchNotification();
+  }, []);
+
+  socket.once(userId, (data) => {
+    console.log("here ", data);
+    dispatch(
+      setNotification({
+        notifications: [data, ...notifications],
+        numberNewNotif: numberNewNotif + 1,
+      })
+    );
+  });
+
+  function fetchNotification() {
+    dispatch(getNotifications());
+  }
 
   const handleLogout = () => {
     dispatch(onLogout());
   };
   const toggle = () => setCollapsed(!collapsed);
+
+  const lstNotifies = (
+    <Menu
+      selectedKeys={[location.pathname]}
+      style={{ overflowY: "auto", height: "500px" }}
+    >
+      {notifications.map((val, index) => {
+        return (
+          <Menu.Item key={val.Id}>
+            <NotificationLink
+              link={val.Link}
+              content={val.Content}
+              id={val.Id}
+            />
+            {val.IsRead ? (
+              <p style={{ color: "black" }}>Read</p>
+            ) : (
+              <p style={{ color: "blue" }}>New</p>
+            )}
+            <p>{val.CreatedDate}</p>
+          </Menu.Item>
+        );
+      })}
+    </Menu>
+  );
 
   return (
     <div className="app">
@@ -114,7 +174,6 @@ function App(props) {
             style={{ minHeight: "100vh" }}
             trigger={null}
             collapsible
-
             collapsed={collapsed}
           >
             <Link to="/">
@@ -131,6 +190,13 @@ function App(props) {
                   onClick: toggle,
                 }
               )}
+
+              <Dropdown overlay={lstNotifies}>
+                <Badge count={numberNewNotif}>
+                  <NotificationOutlined />
+                </Badge>
+              </Dropdown>
+
               <Button
                 onClick={handleLogout}
                 style={{ float: "right", margin: 14 }}

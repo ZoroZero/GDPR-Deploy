@@ -27,7 +27,7 @@ export default class ExportonClick extends React.Component {
 
     // You can use any AJAX library you like
     reqwest({
-      url: "http://localhost:5000/api/users/avatar",
+      url: process.env.REACT_APP_BASE_URL+"/api/users/avatar",
       method: "post",
       headers: { Authorization: `Bearer ${token}` },
       processData: false,

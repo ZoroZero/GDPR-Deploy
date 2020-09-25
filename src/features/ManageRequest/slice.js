@@ -102,7 +102,6 @@ export const getListRequests = (params = {}) => (dispatch) => {
 };
 
 export const onCreateNewRequest = (data = {}) => (dispatch) => {
-  console.log("hello");
   return new Promise((resolve, reject) => {
     dispatch(loading());
     return createRequestApi(data)
