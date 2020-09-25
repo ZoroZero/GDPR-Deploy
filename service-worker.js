@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/GDPR-Deploy/precache-manifest.b0bdcfff8d8e71eea249069363f0b87f.js"
+  "/GDPR-Deploy/precache-manifest.a54c941ef72024a3546755a53a1b1741.js"
 );
 
 self.addEventListener('message', (event) => {
